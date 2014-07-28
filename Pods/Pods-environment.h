@@ -6,6 +6,12 @@
 // project.
 
 
+// JSQFlatButton
+#define COCOAPODS_POD_AVAILABLE_JSQFlatButton
+#define COCOAPODS_VERSION_MAJOR_JSQFlatButton 2
+#define COCOAPODS_VERSION_MINOR_JSQFlatButton 0
+#define COCOAPODS_VERSION_PATCH_JSQFlatButton 0
+
 // PaymentKit
 #define COCOAPODS_POD_AVAILABLE_PaymentKit
 #define COCOAPODS_VERSION_MAJOR_PaymentKit 1

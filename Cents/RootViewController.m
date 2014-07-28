@@ -10,6 +10,7 @@
 #define gap 50
 
 #import "RootViewController.h"
+#import "JSQFlatButton.h"
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 @property UILabel *amountLabel;
@@ -137,6 +138,20 @@
     back.frame = CGRectMake(0, 0, buttonSize, buttonSize);
     back.center = CGPointMake(160+gap, gap*4);
     [keyboard addSubview:back];
+
+    JSQFlatButton *request = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-54, 159.5, 54)
+                                                  backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
+                                                  foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                                            title:@"Request"
+                                                            image:nil];//[UIImage imageNamed:@"down"]];
+    [self.view addSubview:request];
+
+    JSQFlatButton *send = [[JSQFlatButton alloc] initWithFrame:CGRectMake(160.5, self.view.frame.size.height-54, 159.5, 54)
+                                              backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
+                                              foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                                        title:@"Send"
+                                                        image:nil];//[UIImage imageNamed:@"up"]];
+    [self.view addSubview:send];
 }
 
 - (void)keyPress:(UIButton *)sender
