@@ -1,14 +1,17 @@
 PODS:
+  - FlatUIKit (1.4)
   - JSQFlatButton (2.0.0)
   - PaymentKit (1.0.5)
   - Stripe (1.1.4):
     - PaymentKit (~> 1.0.4)
 
 DEPENDENCIES:
+  - FlatUIKit
   - JSQFlatButton
   - Stripe
 
 SPEC CHECKSUMS:
+  FlatUIKit: edc1ed0c130687dc64a10e45851cc58925f6893d
   JSQFlatButton: e8a11ba46496e7db757ddc24469774c254365ece
   PaymentKit: 14b54835f57ae9e2bf5628140fcd67001740cba2
   Stripe: a0ed1c0675a3c36f6e8d575820cfec1dc9335f53

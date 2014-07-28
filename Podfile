@@ -1,3 +1,3 @@
 pod 'Stripe'
 pod 'JSQFlatButton'
-pod 'MFLTransformingDigits'
+pod 'FlatUIKit'

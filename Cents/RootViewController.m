@@ -11,9 +11,12 @@
 #define gap 75
 
 #import "RootViewController.h"
+#import "PaymentViewController.h"
 #import "JSQFlatButton.h"
+#import "UIColor+FlatUI.h"
+#import "UIPopoverController+FlatUI.h"
 
-@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate>
 @property UILabel *amountLabel;
 @end
 
@@ -145,7 +148,7 @@
                                                   foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                                             title:@"Request"
                                                             image:nil];//[UIImage imageNamed:@"down"]];
-    [request addTarget:self action:@selector(request) forControlEvents:UIControlEventTouchUpInside];
+    [request addTarget:self action:@selector(request:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:request];
 
     JSQFlatButton *send = [[JSQFlatButton alloc] initWithFrame:CGRectMake(160.5, self.view.frame.size.height-54, 159.5, 54)
@@ -153,26 +156,31 @@
                                               foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                                         title:@"Send"
                                                         image:nil];//[UIImage imageNamed:@"up"]];
-    [send addTarget:self action:@selector(send) forControlEvents:UIControlEventTouchUpInside];
+    [send addTarget:self action:@selector(send:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:send];
 }
 
-- (void)request
+- (void)request:(JSQFlatButton *)sender
 {
     NSLog(@"%f",[_amountLabel.text floatValue]);
 }
 
-- (void)send
+- (void)send:(JSQFlatButton *)sender
 {
     NSLog(@"%f",[_amountLabel.text floatValue]);
+
+//    PaymentViewController *paymentViewController = [[PaymentViewController alloc] init];
+//    UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:paymentViewController];
+//    [popover configureFlatPopoverWithBackgroundColor: [UIColor midnightBlueColor] cornerRadius:3];
+//    popover.delegate = self;
+//    [popover presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 - (void)keyPress:(UIButton *)sender
 {
     if (sender.tag == 10)
     {
-        NSArray *arr = [_amountLabel.text componentsSeparatedByString:@"."];
-        if (arr.count > 1)
+        if ([self containsDecimal])
         {
             [self shakeAmountLabel];
         }
@@ -198,14 +206,47 @@
     }
     else
     {
-        if ([_amountLabel.text isEqualToString:@"$0"])
+        if ([self hasTwoDecimalPlaces])
         {
-            _amountLabel.text = [@"$" stringByAppendingString:@(sender.tag).description];
+            [self shakeAmountLabel];
         }
         else
         {
-            _amountLabel.text = [_amountLabel.text stringByAppendingString:@(sender.tag).description];
+            if ([_amountLabel.text isEqualToString:@"$0"])
+            {
+                _amountLabel.text = [@"$" stringByAppendingString:@(sender.tag).description];
+            }
+            else
+            {
+                _amountLabel.text = [_amountLabel.text stringByAppendingString:@(sender.tag).description];
+            }
         }
+    }
+}
+
+- (BOOL)containsDecimal
+{
+    NSArray *arr = [_amountLabel.text componentsSeparatedByString:@"."];
+    if (arr.count > 1)
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+- (BOOL)hasTwoDecimalPlaces
+{
+    NSRange range = [_amountLabel.text rangeOfString:@"."];
+    if (range.location != NSNotFound && ([_amountLabel.text length]-1-range.location) == 2)
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
     }
 }
 

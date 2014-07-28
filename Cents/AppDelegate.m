@@ -19,9 +19,6 @@
     RootViewController *rootViewController = [[RootViewController alloc] init];
     self.window.rootViewController = rootViewController;
 
-//    PaymentViewController *paymentViewController = [[PaymentViewController alloc] init];
-//    self.window.rootViewController = paymentViewController;
-
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
