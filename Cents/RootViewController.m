@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 SapanBhuta. All rights reserved.
 //
 
-#define buttonSize 50
-#define gap 50
+#define amountFont 100
+#define buttonSize 75
+#define gap 75
 
 #import "RootViewController.h"
 #import "JSQFlatButton.h"
@@ -24,11 +25,11 @@
 
     self.view.backgroundColor = [UIColor purpleColor];
 
-    _amountLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, 320, 50)];
+    _amountLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
     _amountLabel.textColor = [UIColor whiteColor];
-    _amountLabel.text = @"0";
+    _amountLabel.text = @"$0";
     _amountLabel.textAlignment = NSTextAlignmentCenter;
-    _amountLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
+    _amountLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
     [self.view addSubview:_amountLabel];
 
     UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
@@ -124,7 +125,7 @@
     [keyboard addSubview:dot];
 
     UIButton *zero = [UIButton buttonWithType:UIButtonTypeSystem];
-    zero.tag = 11;
+    zero.tag = 0;
     [zero addTarget:self action:@selector(keyPress:) forControlEvents:UIControlEventTouchUpInside];
     [zero setImage:[UIImage imageNamed:@"circle"] forState:UIControlStateNormal];
     zero.frame = CGRectMake(0, 0, buttonSize, buttonSize);
@@ -144,6 +145,7 @@
                                                   foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                                             title:@"Request"
                                                             image:nil];//[UIImage imageNamed:@"down"]];
+    [request addTarget:self action:@selector(request) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:request];
 
     JSQFlatButton *send = [[JSQFlatButton alloc] initWithFrame:CGRectMake(160.5, self.view.frame.size.height-54, 159.5, 54)
@@ -151,21 +153,77 @@
                                               foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                                         title:@"Send"
                                                         image:nil];//[UIImage imageNamed:@"up"]];
+    [send addTarget:self action:@selector(send) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:send];
+}
+
+- (void)request
+{
+    NSLog(@"%f",[_amountLabel.text floatValue]);
+}
+
+- (void)send
+{
+    NSLog(@"%f",[_amountLabel.text floatValue]);
 }
 
 - (void)keyPress:(UIButton *)sender
 {
-    _amountLabel.text = @(sender.tag).description;
-
-    switch (sender.tag) {
-        case 1:
-            NSLog(@"1");
-            break;
-
-        default:
-            break;
+    if (sender.tag == 10)
+    {
+        NSArray *arr = [_amountLabel.text componentsSeparatedByString:@"."];
+        if (arr.count > 1)
+        {
+            [self shakeAmountLabel];
+        }
+        else
+        {
+            _amountLabel.text = [_amountLabel.text stringByAppendingString:@"."];
+        }
     }
+    else if (sender.tag == 12)
+    {
+        if ([_amountLabel.text length] > 2)
+        {
+            _amountLabel.text = [_amountLabel.text substringToIndex:[_amountLabel.text length]-1];
+        }
+        else if (![_amountLabel.text isEqualToString:@"$0"])
+        {
+            _amountLabel.text = @"$0";
+        }
+        else
+        {
+            [self shakeAmountLabel];
+        }
+    }
+    else
+    {
+        if ([_amountLabel.text isEqualToString:@"$0"])
+        {
+            _amountLabel.text = [@"$" stringByAppendingString:@(sender.tag).description];
+        }
+        else
+        {
+            _amountLabel.text = [_amountLabel.text stringByAppendingString:@(sender.tag).description];
+        }
+    }
+}
+
+- (void)shakeAmountLabel
+{
+    [UIView animateWithDuration:0.1 animations:^{
+        _amountLabel.transform = CGAffineTransformMakeTranslation(10, 0);
+    } completion:^(BOOL finished) {
+        // Step 2
+        [UIView animateWithDuration:0.1 animations:^{
+            _amountLabel.transform = CGAffineTransformMakeTranslation(-10, 0);
+        } completion:^(BOOL finished) {
+            // Step 3
+            [UIView animateWithDuration:0.1 animations:^{
+                _amountLabel.transform = CGAffineTransformMakeTranslation(0, 0);
+            }];
+        }];
+    }];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
