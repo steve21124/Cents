@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 #import "RootViewController.h"
-#import "PaymentViewController.h"
 
 @implementation AppDelegate
 

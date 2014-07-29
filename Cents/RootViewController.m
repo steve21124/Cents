@@ -12,12 +12,22 @@
 
 #import "RootViewController.h"
 #import "PaymentViewController.h"
+#import "STPView.h"
 #import "JSQFlatButton.h"
 #import "UIColor+FlatUI.h"
 #import "UIPopoverController+FlatUI.h"
 
-@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate>
+@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, STPViewDelegate>
+@property STPView *stripeView;
 @property UILabel *amountLabel;
+@property UICollectionView *collectionView;
+@property CGFloat amount;
+@property BOOL actionIsSend;
+@property int recipientIndex;
+@property JSQFlatButton *request;
+@property JSQFlatButton *send;
+@property JSQFlatButton *cancel;
+@property JSQFlatButton *confirm;
 @end
 
 @implementation RootViewController
@@ -25,26 +35,50 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _recipientIndex = -1;
+    [self createAmountLabel];
+    [self createKeyboard];
+    [self createSendRequestButtons];
+    [self createContactsView];
+}
 
+- (void)createAmountLabel
+{
     self.view.backgroundColor = [UIColor purpleColor];
 
     _amountLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
+//    _amountLabel.backgroundColor = [UIColor blueColor];
     _amountLabel.textColor = [UIColor whiteColor];
     _amountLabel.text = @"$0";
     _amountLabel.textAlignment = NSTextAlignmentCenter;
+    _amountLabel.adjustsFontSizeToFitWidth = YES;
     _amountLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
     [self.view addSubview:_amountLabel];
 
+//    UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
+//    [self.view addSubview:field];
+//    field.keyboardType = UIKeyboardTypeDecimalPad;
+//    field.keyboardAppearance = UIKeyboardAppearanceDark;
+//    [field becomeFirstResponder];
+//    field.hidden = YES;
+}
+
+- (void)createContactsView
+{
     UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
     flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    UICollectionView *colletionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 90, 320, 70) collectionViewLayout:flow];
-    colletionView.backgroundColor = [UIColor clearColor];
-    colletionView.delegate = self;
-    colletionView.dataSource = self;
-    [self.view addSubview:colletionView];
+    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 30+amountFont, 320, 70) collectionViewLayout:flow];
+    _collectionView.backgroundColor = [UIColor clearColor];
+    _collectionView.delegate = self;
+    _collectionView.dataSource = self;
+    [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
+    [self.view addSubview:_collectionView];
+}
 
-
+- (void)createKeyboard
+{
     UIView *keyboard = [[UIView alloc] initWithFrame:CGRectMake(0, 160, 320, 5*gap)];
+//    keyboard.backgroundColor = [UIColor blackColor];
     [self.view addSubview:keyboard];
 
     UIButton *one = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -142,38 +176,37 @@
     back.frame = CGRectMake(0, 0, buttonSize, buttonSize);
     back.center = CGPointMake(160+gap, gap*4);
     [keyboard addSubview:back];
+}
 
-    JSQFlatButton *request = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-54, 159.5, 54)
+- (void)createSendRequestButtons
+{
+    _request = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-54, 159.75, 54)
                                                   backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
                                                   foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                                             title:@"Request"
                                                             image:nil];//[UIImage imageNamed:@"down"]];
-    [request addTarget:self action:@selector(request:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:request];
+    [_request addTarget:self action:@selector(request:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_request];
 
-    JSQFlatButton *send = [[JSQFlatButton alloc] initWithFrame:CGRectMake(160.5, self.view.frame.size.height-54, 159.5, 54)
+    _send = [[JSQFlatButton alloc] initWithFrame:CGRectMake(160.25, self.view.frame.size.height-54, 159.75, 54)
                                               backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
                                               foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                                         title:@"Send"
                                                         image:nil];//[UIImage imageNamed:@"up"]];
-    [send addTarget:self action:@selector(send:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:send];
+    [_send addTarget:self action:@selector(send:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_send];
 }
 
 - (void)request:(JSQFlatButton *)sender
 {
-    NSLog(@"%f",[_amountLabel.text floatValue]);
+    _actionIsSend = NO;
+
 }
 
 - (void)send:(JSQFlatButton *)sender
 {
-    NSLog(@"%f",[_amountLabel.text floatValue]);
+    _actionIsSend = YES;
 
-//    PaymentViewController *paymentViewController = [[PaymentViewController alloc] init];
-//    UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:paymentViewController];
-//    [popover configureFlatPopoverWithBackgroundColor: [UIColor midnightBlueColor] cornerRadius:3];
-//    popover.delegate = self;
-//    [popover presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 - (void)keyPress:(UIButton *)sender
@@ -222,6 +255,8 @@
             }
         }
     }
+
+    _amount = [_amountLabel.text floatValue];
 }
 
 - (BOOL)containsDecimal
@@ -272,18 +307,55 @@
     return UIStatusBarStyleLightContent;
 }
 
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+#pragma mark - UICollectionView DataSource/Delegate Methods
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 1;
+    if (_recipientIndex == (int)indexPath.item)
+    {
+        _recipientIndex = -1;
+    }
+    else
+    {
+        _recipientIndex = (int)indexPath.item;
+    }
+    [collectionView reloadData];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 0;
+    return 10;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return nil;
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
+
+
+    if (_recipientIndex == (int)indexPath.item)
+    {
+        UIImageView *check = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"check"]];
+        check.layer.masksToBounds = YES;
+        check.layer.cornerRadius = 48/2;
+        cell.backgroundView = check;
+    }
+    else
+    {
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Profile"]];;
+//        [imageView setImageWithURL:[NSURL URLWithString:@"Profile"] placeholderImage:[UIImage imageNamed:@"Profile"]];
+        imageView.layer.masksToBounds = YES;
+        imageView.layer.cornerRadius = 48/2;
+        cell.backgroundView = imageView;
+    }
+
+    return cell;
 }
+
+- (CGSize)collectionView:(UICollectionView *)collectionView
+                  layout:(UICollectionViewLayout*)collectionViewLayout
+  sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return CGSizeMake(48,48);
+}
+
 @end

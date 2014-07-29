@@ -22,16 +22,23 @@
     self.stripeView = [[STPView alloc] initWithFrame:CGRectMake(15,20,290,55) andKey:@"pk_test_4SpEIGtYzfx4J0NZbNBxMfr8"];
     self.stripeView.delegate = self;
     [self.view addSubview:self.stripeView];
+}
 
-    [self.stripeView createToken:^(STPToken *token, NSError *error) {
-        if (error) {
-            // Handle error
-            // [self handleError:error];
-        } else {
-            // Send off token to your server = save token in parse and associate with phone number or fb login
-            // [self handleToken:token];
-        }
-    }];
+- (void)save
+{
+    [self.stripeView createToken:^(STPToken *token, NSError *error)
+     {
+         if (error)
+         {
+             // Handle error
+             [self handleError:error];
+         }
+         else
+         {
+             // Send off token to your server = save token in parse and associate with phone number or fb login
+             // [self handleToken:token];
+         }
+     }];
 }
 
 - (void)handleError:(NSError *)error
