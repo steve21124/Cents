@@ -26,9 +26,17 @@
 
     self.view.backgroundColor = [UIColor wisteriaColor];
 
-    _phoneEntry = [[UITextField alloc] initWithFrame:CGRectMake(15, 100, self.view.frame.size.width-2*15, 100)];
+    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, self.view.frame.size.width-2*10, 50)];
+    title.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
+    title.textColor = [UIColor whiteColor];
+    title.text = @"Verify Number";
+    title.adjustsFontSizeToFitWidth = YES;
+    title.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:title];
+
+    _phoneEntry = [[UITextField alloc] initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-2*20, 100)];
     _phoneEntry.placeholder = @"enter code";
-    _phoneEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
+    _phoneEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40];
     _phoneEntry.textColor = [UIColor whiteColor];
     _phoneEntry.adjustsFontSizeToFitWidth = YES;
     _phoneEntry.keyboardAppearance = UIKeyboardAppearanceDark;
@@ -78,6 +86,7 @@
 
 - (void)resend
 {
+    _phoneEntry.text = @"";
     [self sendText];
 }
 

@@ -30,6 +30,14 @@
 {
     [super viewDidLoad];
 
+    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, self.view.frame.size.width-2*10, 50)];
+    title.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
+    title.textColor = [UIColor whiteColor];
+    title.text = @"Credit or Debit Card";
+    title.adjustsFontSizeToFitWidth = YES;
+    title.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:title];
+
     _customCheckout = NO;
     _customCheckout ? [self createStripeViewCustom] : [self createStripeViewDefault];
 

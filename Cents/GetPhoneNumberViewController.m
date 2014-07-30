@@ -26,13 +26,22 @@
 
     self.view.backgroundColor = [UIColor wisteriaColor];
 
+    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, self.view.frame.size.width-2*10, 50)];
+    title.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
+    title.textColor = [UIColor whiteColor];
+    title.text = @"Phone Number";
+    title.adjustsFontSizeToFitWidth = YES;
+    title.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:title];
+
     _phoneEntry = [[LTPhoneNumberField alloc] initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-2*20, 100)];
-    _phoneEntry.placeholder = @"phone number";
-    _phoneEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
+    _phoneEntry.placeholder = @"enter phone number";
+    _phoneEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40];
     _phoneEntry.textColor = [UIColor whiteColor];
     _phoneEntry.adjustsFontSizeToFitWidth = YES;
     _phoneEntry.keyboardAppearance = UIKeyboardAppearanceDark;
     _phoneEntry.keyboardType = UIKeyboardTypePhonePad;
+    _phoneEntry.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_phoneEntry];
     [_phoneEntry becomeFirstResponder];
 
