@@ -8,7 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		4A1A39A9BC824263B6EDC4D7 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F53920D10514BACA85462A0 /* libPods.a */; };
-		8E639728198716C500914F2C /* PaymentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E639727198716C500914F2C /* PaymentViewController.m */; };
+		8E6F7B64198889FC00068ED7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */; };
+		8E6F7B6619888A0700068ED7 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6519888A0700068ED7 /* CFNetwork.framework */; };
+		8E6F7B6819888A1B00068ED7 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6719888A1B00068ED7 /* CoreLocation.framework */; };
+		8E6F7B6A19888A2C00068ED7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6919888A2C00068ED7 /* libz.dylib */; };
+		8E6F7B6C19888A3600068ED7 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6B19888A3600068ED7 /* MobileCoreServices.framework */; };
+		8E6F7B6E19888A7D00068ED7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6D19888A7D00068ED7 /* Security.framework */; };
+		8E6F7B7019888A8800068ED7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6F19888A8800068ED7 /* StoreKit.framework */; };
+		8E6F7B7219888A9500068ED7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B7119888A9500068ED7 /* SystemConfiguration.framework */; };
+		8E6F7B7419888DDF00068ED7 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B7319888DDF00068ED7 /* Social.framework */; };
+		8E6F7B7619888DE600068ED7 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B7519888DE600068ED7 /* Accounts.framework */; };
+		8E6F7B791988A7A700068ED7 /* GetPhoneNumberViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E6F7B781988A7A700068ED7 /* GetPhoneNumberViewController.m */; };
+		8E6F7B7C1988A7B400068ED7 /* VerifyPhoneNumberViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E6F7B7B1988A7B400068ED7 /* VerifyPhoneNumberViewController.m */; };
+		8E6F7B7F1988A7CA00068ED7 /* GetPaymentCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E6F7B7E1988A7CA00068ED7 /* GetPaymentCardViewController.m */; };
 		8E782729198566360030DB99 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E782728198566360030DB99 /* Foundation.framework */; };
 		8E78272B198566360030DB99 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E78272A198566360030DB99 /* CoreGraphics.framework */; };
 		8E78272D198566360030DB99 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E78272C198566360030DB99 /* UIKit.framework */; };
@@ -38,8 +50,22 @@
 
 /* Begin PBXFileReference section */
 		2F53920D10514BACA85462A0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		8E639726198716C500914F2C /* PaymentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PaymentViewController.h; sourceTree = "<group>"; };
-		8E639727198716C500914F2C /* PaymentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PaymentViewController.m; sourceTree = "<group>"; };
+		8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		8E6F7B6519888A0700068ED7 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		8E6F7B6719888A1B00068ED7 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		8E6F7B6919888A2C00068ED7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		8E6F7B6B19888A3600068ED7 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		8E6F7B6D19888A7D00068ED7 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		8E6F7B6F19888A8800068ED7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		8E6F7B7119888A9500068ED7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		8E6F7B7319888DDF00068ED7 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		8E6F7B7519888DE600068ED7 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		8E6F7B771988A7A700068ED7 /* GetPhoneNumberViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetPhoneNumberViewController.h; sourceTree = "<group>"; };
+		8E6F7B781988A7A700068ED7 /* GetPhoneNumberViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPhoneNumberViewController.m; sourceTree = "<group>"; };
+		8E6F7B7A1988A7B400068ED7 /* VerifyPhoneNumberViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerifyPhoneNumberViewController.h; sourceTree = "<group>"; };
+		8E6F7B7B1988A7B400068ED7 /* VerifyPhoneNumberViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerifyPhoneNumberViewController.m; sourceTree = "<group>"; };
+		8E6F7B7D1988A7CA00068ED7 /* GetPaymentCardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetPaymentCardViewController.h; sourceTree = "<group>"; };
+		8E6F7B7E1988A7CA00068ED7 /* GetPaymentCardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPaymentCardViewController.m; sourceTree = "<group>"; };
 		8E782725198566360030DB99 /* Cents.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cents.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E782728198566360030DB99 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8E78272A198566360030DB99 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -68,8 +94,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8EE3184519858DDD00266CF0 /* QuartzCore.framework in Frameworks */,
+				8E6F7B7619888DE600068ED7 /* Accounts.framework in Frameworks */,
+				8E6F7B7419888DDF00068ED7 /* Social.framework in Frameworks */,
+				8E6F7B7219888A9500068ED7 /* SystemConfiguration.framework in Frameworks */,
+				8E6F7B7019888A8800068ED7 /* StoreKit.framework in Frameworks */,
+				8E6F7B6E19888A7D00068ED7 /* Security.framework in Frameworks */,
+				8E6F7B6C19888A3600068ED7 /* MobileCoreServices.framework in Frameworks */,
+				8E6F7B6A19888A2C00068ED7 /* libz.dylib in Frameworks */,
+				8E6F7B6819888A1B00068ED7 /* CoreLocation.framework in Frameworks */,
 				8E78272B198566360030DB99 /* CoreGraphics.framework in Frameworks */,
+				8E6F7B6619888A0700068ED7 /* CFNetwork.framework in Frameworks */,
+				8E6F7B64198889FC00068ED7 /* AudioToolbox.framework in Frameworks */,
+				8EE3184519858DDD00266CF0 /* QuartzCore.framework in Frameworks */,
 				8E78272D198566360030DB99 /* UIKit.framework in Frameworks */,
 				8E782729198566360030DB99 /* Foundation.framework in Frameworks */,
 				4A1A39A9BC824263B6EDC4D7 /* libPods.a in Frameworks */,
@@ -112,6 +148,16 @@
 		8E782727198566360030DB99 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8E6F7B7519888DE600068ED7 /* Accounts.framework */,
+				8E6F7B7319888DDF00068ED7 /* Social.framework */,
+				8E6F7B7119888A9500068ED7 /* SystemConfiguration.framework */,
+				8E6F7B6F19888A8800068ED7 /* StoreKit.framework */,
+				8E6F7B6D19888A7D00068ED7 /* Security.framework */,
+				8E6F7B6B19888A3600068ED7 /* MobileCoreServices.framework */,
+				8E6F7B6919888A2C00068ED7 /* libz.dylib */,
+				8E6F7B6719888A1B00068ED7 /* CoreLocation.framework */,
+				8E6F7B6519888A0700068ED7 /* CFNetwork.framework */,
+				8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */,
 				8EE3184419858DDD00266CF0 /* QuartzCore.framework */,
 				8E782728198566360030DB99 /* Foundation.framework */,
 				8E78272A198566360030DB99 /* CoreGraphics.framework */,
@@ -130,8 +176,12 @@
 				8E782738198566360030DB99 /* AppDelegate.m */,
 				8E782759198566E80030DB99 /* RootViewController.h */,
 				8E78275A198566E80030DB99 /* RootViewController.m */,
-				8E639726198716C500914F2C /* PaymentViewController.h */,
-				8E639727198716C500914F2C /* PaymentViewController.m */,
+				8E6F7B771988A7A700068ED7 /* GetPhoneNumberViewController.h */,
+				8E6F7B781988A7A700068ED7 /* GetPhoneNumberViewController.m */,
+				8E6F7B7A1988A7B400068ED7 /* VerifyPhoneNumberViewController.h */,
+				8E6F7B7B1988A7B400068ED7 /* VerifyPhoneNumberViewController.m */,
+				8E6F7B7D1988A7CA00068ED7 /* GetPaymentCardViewController.h */,
+				8E6F7B7E1988A7CA00068ED7 /* GetPaymentCardViewController.m */,
 				8E78273A198566360030DB99 /* Images.xcassets */,
 				8E78272F198566360030DB99 /* Supporting Files */,
 			);
@@ -299,9 +349,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E782739198566360030DB99 /* AppDelegate.m in Sources */,
+				8E6F7B7C1988A7B400068ED7 /* VerifyPhoneNumberViewController.m in Sources */,
+				8E6F7B7F1988A7CA00068ED7 /* GetPaymentCardViewController.m in Sources */,
 				8E782735198566360030DB99 /* main.m in Sources */,
 				8E78275B198566E80030DB99 /* RootViewController.m in Sources */,
-				8E639728198716C500914F2C /* PaymentViewController.m in Sources */,
+				8E6F7B791988A7A700068ED7 /* GetPhoneNumberViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,6 +471,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Cents/Cents-Prefix.pch";
 				INFOPLIST_FILE = "Cents/Cents-Info.plist";
@@ -433,6 +489,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Cents/Cents-Prefix.pch";
 				INFOPLIST_FILE = "Cents/Cents-Info.plist";

@@ -1,6 +1,11 @@
 PODS:
+  - Bolts (1.1.0)
+  - Facebook-iOS-SDK (3.16.2):
+    - Bolts
   - FlatUIKit (1.4)
   - JSQFlatButton (2.0.0)
+  - Parse (1.2.20):
+    - Facebook-iOS-SDK (~> 3.11)
   - PaymentKit (1.0.5)
   - Stripe (1.1.4):
     - PaymentKit (~> 1.0.4)
@@ -8,11 +13,15 @@ PODS:
 DEPENDENCIES:
   - FlatUIKit
   - JSQFlatButton
+  - Parse
   - Stripe
 
 SPEC CHECKSUMS:
+  Bolts: 91c2af8eae1d44e1dd75946a5b0ae04a43ea43e4
+  Facebook-iOS-SDK: 34eef640c2cc4c8618ba0f574ad2b290e07f1b4e
   FlatUIKit: edc1ed0c130687dc64a10e45851cc58925f6893d
   JSQFlatButton: e8a11ba46496e7db757ddc24469774c254365ece
+  Parse: 28c0dc54f30201a369d29a2f76c09fa43b2add16
   PaymentKit: 14b54835f57ae9e2bf5628140fcd67001740cba2
   Stripe: a0ed1c0675a3c36f6e8d575820cfec1dc9335f53
 

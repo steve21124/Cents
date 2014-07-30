@@ -11,14 +11,12 @@
 #define gap 75
 
 #import "RootViewController.h"
-#import "PaymentViewController.h"
-#import "STPView.h"
 #import "JSQFlatButton.h"
 #import "UIColor+FlatUI.h"
-#import "UIPopoverController+FlatUI.h"
+#import <MessageUI/MessageUI.h>
+#import <Parse/Parse.h>
 
-@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, STPViewDelegate>
-@property STPView *stripeView;
+@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate>
 @property UILabel *amountLabel;
 @property UICollectionView *collectionView;
 @property CGFloat amount;
@@ -28,6 +26,8 @@
 @property JSQFlatButton *send;
 @property JSQFlatButton *cancel;
 @property JSQFlatButton *confirm;
+@property NSArray *contacts;
+@property NSTimer *buttonCheckTimer;
 @end
 
 @implementation RootViewController
@@ -35,32 +35,46 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
     _recipientIndex = -1;
+    [self fetchContacts];
     [self createAmountLabel];
     [self createKeyboard];
     [self createSendRequestButtons];
     [self createContactsView];
+
+    self.buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:1/10 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
+}
+
+- (void)fetchContacts
+{
+#warning fetch contacts from address book
+
+    _contacts = @[
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
+                  ];
 }
 
 - (void)createAmountLabel
 {
-    self.view.backgroundColor = [UIColor purpleColor];
+    self.view.backgroundColor = [UIColor wisteriaColor];
 
     _amountLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
-//    _amountLabel.backgroundColor = [UIColor blueColor];
     _amountLabel.textColor = [UIColor whiteColor];
     _amountLabel.text = @"$0";
     _amountLabel.textAlignment = NSTextAlignmentCenter;
     _amountLabel.adjustsFontSizeToFitWidth = YES;
     _amountLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
     [self.view addSubview:_amountLabel];
-
-//    UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
-//    [self.view addSubview:field];
-//    field.keyboardType = UIKeyboardTypeDecimalPad;
-//    field.keyboardAppearance = UIKeyboardAppearanceDark;
-//    [field becomeFirstResponder];
-//    field.hidden = YES;
 }
 
 - (void)createContactsView
@@ -78,7 +92,7 @@
 - (void)createKeyboard
 {
     UIView *keyboard = [[UIView alloc] initWithFrame:CGRectMake(0, 160, 320, 5*gap)];
-//    keyboard.backgroundColor = [UIColor blackColor];
+    //    keyboard.backgroundColor = [UIColor blackColor];
     [self.view addSubview:keyboard];
 
     UIButton *one = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -181,32 +195,69 @@
 - (void)createSendRequestButtons
 {
     _request = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-54, 159.75, 54)
-                                                  backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
-                                                  foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
-                                                            title:@"Request"
-                                                            image:nil];//[UIImage imageNamed:@"down"]];
+                                    backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
+                                    foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                              title:@"Request"
+                                              image:nil];//[UIImage imageNamed:@"down"]];
     [_request addTarget:self action:@selector(request:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_request];
 
     _send = [[JSQFlatButton alloc] initWithFrame:CGRectMake(160.25, self.view.frame.size.height-54, 159.75, 54)
-                                              backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
-                                              foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
-                                                        title:@"Send"
-                                                        image:nil];//[UIImage imageNamed:@"up"]];
+                                 backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
+                                 foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                           title:@"Send"
+                                           image:nil];//[UIImage imageNamed:@"up"]];
     [_send addTarget:self action:@selector(send:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_send];
+}
+
+- (void)buttonCheck
+{
+    if (_recipientIndex == -1)
+    {
+        _request.enabled = NO;
+        _send.enabled = NO;
+    }
+    else
+    {
+        _request.enabled = YES;
+        _send.enabled = YES;
+    }
 }
 
 - (void)request:(JSQFlatButton *)sender
 {
     _actionIsSend = NO;
 
+    if ([self userIsInDataBase:_contacts[_recipientIndex][@"phone"]])
+    {
+#warning send push notification and chat head bubble to recipient asking for money
+#warning create unique rootView screen with pre selected amount and person
+    }
+    else
+    {
+        [self showSMS:_amountLabel.text];
+    }
 }
 
 - (void)send:(JSQFlatButton *)sender
 {
     _actionIsSend = YES;
 
+    if ([self userIsInDataBase:_contacts[_recipientIndex][@"phone"]])
+    {
+#warning make a new charge using stripe
+#warning show a confirmation
+    }
+    else
+    {
+        [self showSMS:_amountLabel.text];
+    }
+}
+
+- (BOOL)userIsInDataBase:(NSString *)number
+{
+    return NO;
 }
 
 - (void)keyPress:(UIButton *)sender
@@ -342,7 +393,7 @@
     else
     {
         UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Profile"]];;
-//        [imageView setImageWithURL:[NSURL URLWithString:@"Profile"] placeholderImage:[UIImage imageNamed:@"Profile"]];
+        //        [imageView setImageWithURL:[NSURL URLWithString:@"Profile"] placeholderImage:[UIImage imageNamed:@"Profile"]];
         imageView.layer.masksToBounds = YES;
         imageView.layer.cornerRadius = 48/2;
         cell.backgroundView = imageView;
@@ -356,6 +407,65 @@
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return CGSizeMake(48,48);
+}
+
+#pragma mark - SMS Messaging
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
+{
+    switch (result)
+    {
+        case MessageComposeResultCancelled:
+            break;
+
+        case MessageComposeResultFailed:
+        {
+            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to send SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [warningAlert show];
+            break;
+        }
+
+        case MessageComposeResultSent:
+            break;
+
+        default:
+            break;
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)showSMS:(NSString*)file
+{
+
+    if(![MFMessageComposeViewController canSendText])
+    {
+        UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device doesn't support SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [warningAlert show];
+        return;
+    }
+
+//    NSArray *recipients = @[@"12345678", @"72345524"];
+    NSArray *recipients = @[_contacts[_recipientIndex][@"phone"]];
+    NSString *message;
+    if (_actionIsSend)
+    {
+        message = [NSString stringWithFormat:@"Here's %@. Download this app to get it: appstore.com/cents", file];
+    }
+    else
+    {
+        message = [NSString stringWithFormat:@"Please send me %@ on this app: appstore.com/cents", file];
+    }
+
+    MFMessageComposeViewController *messageController = [[MFMessageComposeViewController alloc] init];
+    messageController.messageComposeDelegate = self;
+    [messageController setRecipients:recipients];
+    [messageController setBody:message];
+    [self presentViewController:messageController animated:YES completion:nil];
+}
+
+- (void)chargeStripe
+{
+
 }
 
 @end
