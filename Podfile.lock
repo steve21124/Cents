@@ -11,6 +11,7 @@ PODS:
   - Parse (1.2.20):
     - Facebook-iOS-SDK (~> 3.11)
   - PaymentKit (1.0.5)
+  - Shimmer (1.0.1)
   - Stripe (1.1.4):
     - PaymentKit (~> 1.0.4)
   - TSCurrencyTextField (0.1.0):
@@ -23,6 +24,7 @@ DEPENDENCIES:
   - JSQFlatButton
   - LTPhoneNumberField
   - Parse
+  - Shimmer
   - Stripe
   - TSCurrencyTextField (~> 0.1.0)
 
@@ -36,6 +38,7 @@ SPEC CHECKSUMS:
   LTPhoneNumberField: 5c7357f959e8175d297132c4dd09cf262922fe35
   Parse: 28c0dc54f30201a369d29a2f76c09fa43b2add16
   PaymentKit: 14b54835f57ae9e2bf5628140fcd67001740cba2
+  Shimmer: 35aa2a57b8fbc17f9e16706021665966fd93dbd1
   Stripe: a0ed1c0675a3c36f6e8d575820cfec1dc9335f53
   TSCurrencyTextField: d63c385890f2d41200ecdd2268f01fd5968405cc
 

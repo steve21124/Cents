@@ -11,6 +11,7 @@
 #import "UIColor+FlatUI.h"
 #import "VerifyPhoneNumberViewController.h"
 #import "LTPhoneNumberField.h"
+//#import "FBShimmering/FBShimmeringView.h"
 
 @interface GetPhoneNumberViewController ()
 @property LTPhoneNumberField *phoneEntry;
@@ -34,6 +35,11 @@
     title.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:title];
 
+
+//    FBShimmeringView *shimmeringView = [[FBShimmeringView alloc] initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-2*20, 100)];
+//    [self.view addSubview:shimmeringView];
+
+//    _phoneEntry = [[LTPhoneNumberField alloc] initWithFrame:shimmeringView.bounds];
     _phoneEntry = [[LTPhoneNumberField alloc] initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-2*20, 100)];
     _phoneEntry.placeholder = @"enter phone number";
     _phoneEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40];
@@ -44,6 +50,9 @@
     _phoneEntry.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_phoneEntry];
     [_phoneEntry becomeFirstResponder];
+
+//    shimmeringView.contentView = _phoneEntry;
+//    shimmeringView.shimmering = YES;
 
     _verify = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0,
                                                               self.view.frame.size.height-216-54,
