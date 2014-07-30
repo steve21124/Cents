@@ -12,7 +12,10 @@
 #import "GetPaymentCardViewController.h"
 
 @interface VerifyPhoneNumberViewController ()
-
+@property UITextField *phoneEntry;
+@property NSTimer *buttonCheckTimer;
+@property JSQFlatButton *enter;
+@property int randomNum;
 @end
 
 @implementation VerifyPhoneNumberViewController
@@ -23,15 +26,16 @@
 
     self.view.backgroundColor = [UIColor wisteriaColor];
 
-    UITextField *phoneEntry = [[UITextField alloc] initWithFrame:CGRectMake(15, 100, self.view.frame.size.width-2*15, 100)];
-    phoneEntry.placeholder = @"enter code";
-    phoneEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
-    phoneEntry.textColor = [UIColor whiteColor];
-    phoneEntry.adjustsFontSizeToFitWidth = YES;
-    phoneEntry.keyboardAppearance = UIKeyboardAppearanceDark;
-    phoneEntry.keyboardType = UIKeyboardTypeNumberPad;
-    [self.view addSubview:phoneEntry];
-    [phoneEntry becomeFirstResponder];
+    _phoneEntry = [[UITextField alloc] initWithFrame:CGRectMake(15, 100, self.view.frame.size.width-2*15, 100)];
+    _phoneEntry.placeholder = @"enter code";
+    _phoneEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
+    _phoneEntry.textColor = [UIColor whiteColor];
+    _phoneEntry.adjustsFontSizeToFitWidth = YES;
+    _phoneEntry.keyboardAppearance = UIKeyboardAppearanceDark;
+    _phoneEntry.keyboardType = UIKeyboardTypeNumberPad;
+    _phoneEntry.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:_phoneEntry];
+    [_phoneEntry becomeFirstResponder];
 
     JSQFlatButton *resend = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0,
                                                                            self.view.frame.size.height-216-54,
@@ -45,20 +49,30 @@
     [self.view addSubview:resend];
 
 
-    JSQFlatButton *enter = [[JSQFlatButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2+.25,
-                                                                           self.view.frame.size.height-216-54,
-                                                                           self.view.frame.size.width/2-.25,
-                                                                           54)
-                                                 backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
-                                                 foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
-                                                           title:@"enter"
-                                                           image:nil];
-    [enter addTarget:self action:@selector(enter) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:enter];
+    _enter = [[JSQFlatButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2+.25,
+                                                             self.view.frame.size.height-216-54,
+                                                             self.view.frame.size.width/2-.25,
+                                                             54)
+                                  backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
+                                  foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                            title:@"enter"
+                                            image:nil];
+    [_enter addTarget:self action:@selector(enter:) forControlEvents:UIControlEventTouchUpInside];
+    _enter.enabled = NO;
+    [self.view addSubview:_enter];
+
+    _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
+
+    [self sendText];
 }
 
 - (void)sendText
 {
+//    _randomNum = arc4random_uniform(10000);
+    _randomNum = 1234;
+    NSString *message = [NSString stringWithFormat:@"Cents code: %i",_randomNum];
+    NSLog(@"%@",message);
+
 #warning send text from Twilio
 }
 
@@ -67,10 +81,21 @@
     [self sendText];
 }
 
-- (void)enter
+- (void)enter:(UIButton *)sender
 {
     GetPaymentCardViewController *vc = [GetPaymentCardViewController new];
     [self presentViewController:vc animated:NO completion:nil];
+}
+
+- (BOOL)codeIsValid
+{
+    return _randomNum == [_phoneEntry.text intValue];
+}
+
+- (void)buttonCheck
+{
+    [self codeIsValid] ? [_phoneEntry setTextColor:[UIColor greenColor]] : [_phoneEntry setTextColor:[UIColor whiteColor]];
+    _enter.enabled = [self codeIsValid];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle

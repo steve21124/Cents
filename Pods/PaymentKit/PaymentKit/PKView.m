@@ -132,6 +132,7 @@ static NSString *const kPKOldLocalizedStringsTableName = @"STPaymentLocalizable"
     self.cardNumberField.delegate = self;
     self.cardNumberField.placeholder = [self.class localizedStringWithKey:@"placeholder.card_number" defaultValue:@"1234 5678 9012 3456"];
     self.cardNumberField.keyboardType = UIKeyboardTypeNumberPad;
+    self.cardNumberField.keyboardAppearance = UIKeyboardAppearanceDark;
     self.cardNumberField.textColor = DarkGreyColor;
     self.cardNumberField.font = DefaultBoldFont;
 
@@ -144,6 +145,7 @@ static NSString *const kPKOldLocalizedStringsTableName = @"STPaymentLocalizable"
     self.cardExpiryField.delegate = self;
     self.cardExpiryField.placeholder = [self.class localizedStringWithKey:@"placeholder.card_expiry" defaultValue:@"MM/YY"];
     self.cardExpiryField.keyboardType = UIKeyboardTypeNumberPad;
+    self.cardExpiryField.keyboardAppearance = UIKeyboardAppearanceDark;
     self.cardExpiryField.textColor = DarkGreyColor;
     self.cardExpiryField.font = DefaultBoldFont;
 
@@ -156,6 +158,7 @@ static NSString *const kPKOldLocalizedStringsTableName = @"STPaymentLocalizable"
     self.cardCVCField.delegate = self;
     self.cardCVCField.placeholder = [self.class localizedStringWithKey:@"placeholder.card_cvc" defaultValue:@"CVC"];
     self.cardCVCField.keyboardType = UIKeyboardTypeNumberPad;
+    self.cardCVCField.keyboardAppearance = UIKeyboardAppearanceDark;
     self.cardCVCField.textColor = DarkGreyColor;
     self.cardCVCField.font = DefaultBoldFont;
 
