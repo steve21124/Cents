@@ -7,21 +7,21 @@
 //
 
 #define kStripeKey @"pk_test_4SpEIGtYzfx4J0NZbNBxMfr8"
+#define kCardioToken @"6f029e310ea241408c0f67514801d637"
 
 #import "GetPaymentCardViewController.h"
 #import "STPView.h"
 #import "JSQFlatButton.h"
 #import "UIColor+FlatUI.h"
 #import "RootViewController.h"
+#import "CardIO.h"
 
-@interface GetPaymentCardViewController () <STPViewDelegate>
+@interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate>
 @property STPView *stripeView;
 @property STPCard *stripeCard;
 @property JSQFlatButton *save;
-@property BOOL customCheckout;
-@property UITextField *number;
-@property UITextField *expiry;
-@property UITextField *cvc;
+@property JSQFlatButton *camera;
+@property UIButton *cameraIcon;
 @end
 
 @implementation GetPaymentCardViewController
@@ -38,12 +38,12 @@
     title.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:title];
 
-    _customCheckout = NO;
-    _customCheckout ? [self createStripeViewCustom] : [self createStripeViewDefault];
+    [self createStripeViewDefault];
 
     self.view.backgroundColor = [UIColor wisteriaColor];
 
     [self createSaveButton];
+    [self createCameraButton];
 }
 
 - (void)createSaveButton
@@ -63,14 +63,103 @@
 
 - (void)save:(UIButton *)sender
 {
-    _customCheckout ? [self saveStripeInfoCustom] : [self saveStripeInfoDefault];
     RootViewController *vc = [RootViewController new];
     [self presentViewController:vc animated:NO completion:nil];
+}
+
+- (void)createCameraButton
+{
+    _camera = [[JSQFlatButton alloc] initWithFrame:CGRectMake(50,
+                                                              200,
+                                                              self.view.frame.size.width - 100,
+                                                              54)
+                                   backgroundColor:[UIColor tangerineColor]
+                                   foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                             title:@"use camera"
+                                             image:nil];
+    [_camera addTarget:self action:@selector(camera:) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:_camera];
+
+    _cameraIcon = [UIButton buttonWithType:UIButtonTypeSystem];
+    [_cameraIcon addTarget:self action:@selector(camera:) forControlEvents:UIControlEventTouchUpInside];
+    [_cameraIcon setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
+    _cameraIcon.frame = CGRectMake(self.view.frame.size.width - 53, 121.5, 48, 48);
+//    _cameraIcon.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-100);
+    [self.view addSubview:_cameraIcon];
+}
+
+- (void)camera:(UIButton *)sender
+{
+    _stripeView.hidden = YES;
+    _cameraIcon.hidden = YES;
+    [UIView animateWithDuration:.3 animations:^{
+        _save.transform = CGAffineTransformMakeTranslation(0, _save.transform.ty+216);
+    }];
+    [self scanCard];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleLightContent;
+}
+
+#pragma mark - Card.io
+
+- (void)scanCard
+{
+    CardIOPaymentViewController *scanViewController = [[CardIOPaymentViewController alloc] initWithPaymentDelegate:self];
+    scanViewController.appToken = kCardioToken;
+    [self presentViewController:scanViewController animated:YES completion:nil];
+}
+
+- (void)userDidCancelPaymentViewController:(CardIOPaymentViewController *)scanViewController
+{
+    NSLog(@"User canceled payment info");
+    [scanViewController dismissViewControllerAnimated:YES completion:nil];
+    _stripeView.hidden = NO;
+    _cameraIcon.hidden = NO;
+    [_stripeView.paymentView becomeFirstResponder];
+    [UIView animateWithDuration:.3 animations:^{
+        _save.transform = CGAffineTransformMakeTranslation(0, _save.transform.ty-216);
+    }];
+}
+
+- (void)userDidProvideCreditCardInfo:(CardIOCreditCardInfo *)info
+             inPaymentViewController:(CardIOPaymentViewController *)scanViewController
+{
+    // The full card number is available as info.cardNumber, but don't log that!
+    NSLog(@"Received card info. Number: %@, expiry: %02i/%i, cvv: %@.", info.redactedCardNumber,
+                                                                        info.expiryMonth,
+                                                                        info.expiryYear,
+                                                                        info.cvv);
+
+    [scanViewController dismissViewControllerAnimated:YES completion:nil];
+
+    _stripeCard = [[STPCard alloc] init];
+    _stripeCard.number = info.cardNumber;
+    _stripeCard.expMonth = info.expiryMonth;
+    _stripeCard.expYear = info.expiryYear;
+    _stripeCard.cvc = info.cvv;
+
+    [Stripe createTokenWithCard:_stripeCard publishableKey:kStripeKey completion:^(STPToken *token, NSError *error)
+    {
+        if (error)
+        {
+            _stripeView.hidden = NO;
+            _cameraIcon.hidden = NO;
+            [_stripeView.paymentView becomeFirstResponder];
+            [UIView animateWithDuration:.3 animations:^{
+                _save.transform = CGAffineTransformMakeTranslation(0, _save.transform.ty-216);
+            }];
+            [self handleError:error];
+        }
+        else
+        {
+            _save.enabled = YES;
+            [self handleToken:token];
+        }
+     }];
+
 }
 
 #pragma mark - Stripe
@@ -82,79 +171,34 @@
     [self.view addSubview:self.stripeView];
 }
 
-- (void)saveStripeInfoDefault
+- (void)stripeView:(STPView *)view withCard:(PKCard *)card isValid:(BOOL)valid
 {
-    [self.stripeView createToken:^(STPToken *token, NSError *error)
-     {
-         if (error)
-         {
-             NSLog(@"Error");
-             [self handleError:error];
-         }
-         else
-         {
-             NSLog(@"Create Token");
-             // Send off token to your server = save token in parse and associate with phone number or fb login
-             // [self handleToken:token];
-         }
-     }];
-}
-
-- (void)createStripeViewCustom
-{
-    //number field
-    //date field
-    //cvc field
-
-    _stripeCard = [STPCard new];
-
-    _number = [[UITextField alloc] initWithFrame:CGRectMake(20, 20, self.view.frame.size.width-2*20, 100)];
-    _number.placeholder = @"card number";
-    _number.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
-    _number.textColor = [UIColor whiteColor];
-    _number.adjustsFontSizeToFitWidth = YES;
-    _number.keyboardAppearance = UIKeyboardAppearanceDark;
-    _number.keyboardType = UIKeyboardTypeNumberPad;
-    [self.view addSubview:_number];
-    [_number becomeFirstResponder];
-
-    _expiry = [[UITextField alloc] initWithFrame:CGRectMake(20, 120, self.view.frame.size.width-2*20, 50)];
-    _expiry.placeholder = @"expiry date";
-    _expiry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
-    _expiry.textColor = [UIColor whiteColor];
-    _expiry.adjustsFontSizeToFitWidth = YES;
-    _expiry.keyboardAppearance = UIKeyboardAppearanceDark;
-    _expiry.keyboardType = UIKeyboardTypeNumberPad;
-    [self.view addSubview:_expiry];
-
-    _cvc = [[UITextField alloc] initWithFrame:CGRectMake(20, 220, self.view.frame.size.width-2*20, 50)];
-    _cvc.placeholder = @"CVC";
-    _cvc.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
-    _cvc.textColor = [UIColor whiteColor];
-    _cvc.adjustsFontSizeToFitWidth = YES;
-    _cvc.keyboardAppearance = UIKeyboardAppearanceDark;
-    _cvc.keyboardType = UIKeyboardTypeNumberPad;
-    [self.view addSubview:_cvc];
-}
-
-- (void)saveStripeInfoCustom
-{
-    [Stripe createTokenWithCard:_stripeCard publishableKey:kStripeKey completion:^(STPToken *token, NSError *error)
+    if (valid)
     {
-         if (error)
+        [self.stripeView createToken:^(STPToken *token, NSError *error)
          {
-             [self handleError:error];
-         }
-         else
-         {
-             NSLog(@"Create Token");
-//             [self handleToken:token];
-         }
-    }];
+             if (error)
+             {
+                 [self handleError:error];
+             }
+             else
+             {
+                 _save.enabled = YES;
+                 [self handleToken:token];
+             }
+         }];
+        [_stripeView.paymentView becomeFirstResponder];
+    }
+    else
+    {
+        _save.enabled = NO;
+        _cameraIcon.hidden = NO;
+    }
 }
 
 - (void)handleError:(NSError *)error
 {
+    NSLog(@"Error");
     UIAlertView *message = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error")
                                                       message:[error localizedDescription]
                                                      delegate:nil
@@ -165,25 +209,24 @@
 
 - (void)handleToken:(STPToken *)token
 {
-    NSLog(@"Received token %@", token.tokenId);
+    NSLog(@"Created Token");
+    
+#warning Send off token to your server = save token in parse and associate with phone number or fb login
 
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://example.com"]];
-    request.HTTPMethod = @"POST";
-    NSString *body     = [NSString stringWithFormat:@"stripeToken=%@", token.tokenId];
-    request.HTTPBody   = [body dataUsingEncoding:NSUTF8StringEncoding];
-
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                               if (error) {
-                                   // Handle error
-                               }
-                           }];
-}
-
-- (void)stripeView:(STPView *)view withCard:(PKCard *)card isValid:(BOOL)valid
-{
-    _save.enabled = valid;
+//    NSLog(@"Received token %@", token.tokenId);
+//
+//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://example.com"]];
+//    request.HTTPMethod = @"POST";
+//    NSString *body     = [NSString stringWithFormat:@"stripeToken=%@", token.tokenId];
+//    request.HTTPBody   = [body dataUsingEncoding:NSUTF8StringEncoding];
+//
+//    [NSURLConnection sendAsynchronousRequest:request
+//                                       queue:[NSOperationQueue mainQueue]
+//                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+//                               if (error) {
+//                                   // Handle error
+//                               }
+//                           }];
 }
 
 @end

@@ -76,7 +76,7 @@
 
 - (void)sendText
 {
-//    _randomNum = arc4random_uniform(10000);
+//    _randomNum = arc4random_uniform(9999);
     _randomNum = 1234;
     NSString *message = [NSString stringWithFormat:@"Cents code: %i",_randomNum];
     NSLog(@"%@",message);
@@ -103,7 +103,15 @@
 
 - (void)buttonCheck
 {
-    [self codeIsValid] ? [_phoneEntry setTextColor:[UIColor greenColor]] : [_phoneEntry setTextColor:[UIColor whiteColor]];
+    if ([_phoneEntry.text length] > 3)
+    {
+        [self codeIsValid] ? [_phoneEntry setTextColor:[UIColor greenColor]] : [_phoneEntry setTextColor:[UIColor redColor]];
+    }
+    else
+    {
+        _phoneEntry.textColor = [UIColor whiteColor];
+    }
+
     _enter.enabled = [self codeIsValid];
 }
 

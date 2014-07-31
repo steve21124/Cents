@@ -101,6 +101,7 @@
                                               image:nil];//[UIImage imageNamed:@"down"]];
     [_request addTarget:self action:@selector(request:) forControlEvents:UIControlEventTouchUpInside];
     _request.enabled = NO;
+    _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
     [self.view addSubview:_request];
 
     _send = [[JSQFlatButton alloc] initWithFrame:CGRectMake(160.25, self.view.frame.size.height-216-54, 159.75, 54)
@@ -110,7 +111,10 @@
                                            image:nil];//[UIImage imageNamed:@"up"]];
     [_send addTarget:self action:@selector(send:) forControlEvents:UIControlEventTouchUpInside];
     _send.enabled = NO;
+    _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
     [self.view addSubview:_send];
+
+    [self slideInButtons];
 }
 
 - (void)buttonCheck
@@ -138,6 +142,7 @@
     }
     else
     {
+        [self slideOutButtons];
         [self showSMS:_amountLabel.text];
     }
 }
@@ -153,106 +158,31 @@
     }
     else
     {
+        [self slideOutButtons];
         [self showSMS:_amountLabel.text];
     }
 }
 
+- (void)slideOutButtons
+{
+    [UIView animateWithDuration:.3 animations:^{
+        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
+        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
+    }];
+}
+
+- (void)slideInButtons
+{
+    [UIView animateWithDuration:.3 animations:^{
+        _send.transform = CGAffineTransformMakeTranslation(0, 0);
+        _request.transform = CGAffineTransformMakeTranslation(0, 0);
+    }];
+}
+
 - (BOOL)userIsInDataBase:(NSString *)number
 {
+#warning check phone number is in database
     return NO;
-}
-
-- (void)keyPress:(UIButton *)sender
-{
-    if (sender.tag == 10)
-    {
-        if ([self containsDecimal])
-        {
-            [self shakeAmountLabel];
-        }
-        else
-        {
-            _amountLabel.text = [_amountLabel.text stringByAppendingString:@"."];
-        }
-    }
-    else if (sender.tag == 12)
-    {
-        if ([_amountLabel.text length] > 2)
-        {
-            _amountLabel.text = [_amountLabel.text substringToIndex:[_amountLabel.text length]-1];
-        }
-        else if (![_amountLabel.text isEqualToString:@"$0"])
-        {
-            _amountLabel.text = @"$0";
-        }
-        else
-        {
-            [self shakeAmountLabel];
-        }
-    }
-    else
-    {
-        if ([self hasTwoDecimalPlaces])
-        {
-            [self shakeAmountLabel];
-        }
-        else
-        {
-            if ([_amountLabel.text isEqualToString:@"$0"])
-            {
-                _amountLabel.text = [@"$" stringByAppendingString:@(sender.tag).description];
-            }
-            else
-            {
-                _amountLabel.text = [_amountLabel.text stringByAppendingString:@(sender.tag).description];
-            }
-        }
-    }
-
-    _amount = [_amountLabel.text floatValue];
-}
-
-- (BOOL)containsDecimal
-{
-    NSArray *arr = [_amountLabel.text componentsSeparatedByString:@"."];
-    if (arr.count > 1)
-    {
-        return YES;
-    }
-    else
-    {
-        return NO;
-    }
-}
-
-- (BOOL)hasTwoDecimalPlaces
-{
-    NSRange range = [_amountLabel.text rangeOfString:@"."];
-    if (range.location != NSNotFound && ([_amountLabel.text length]-1-range.location) == 2)
-    {
-        return YES;
-    }
-    else
-    {
-        return NO;
-    }
-}
-
-- (void)shakeAmountLabel
-{
-    [UIView animateWithDuration:0.1 animations:^{
-        _amountLabel.transform = CGAffineTransformMakeTranslation(10, 0);
-    } completion:^(BOOL finished) {
-        // Step 2
-        [UIView animateWithDuration:0.1 animations:^{
-            _amountLabel.transform = CGAffineTransformMakeTranslation(-10, 0);
-        } completion:^(BOOL finished) {
-            // Step 3
-            [UIView animateWithDuration:0.1 animations:^{
-                _amountLabel.transform = CGAffineTransformMakeTranslation(0, 0);
-            }];
-        }];
-    }];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -322,7 +252,10 @@
 
         case MessageComposeResultFailed:
         {
-            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to send SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                                   message:@"Failed to send SMS!"
+                                                                  delegate:nil cancelButtonTitle:@"OK"
+                                                         otherButtonTitles:nil];
             [warningAlert show];
             break;
         }
@@ -333,7 +266,10 @@
         default:
             break;
     }
+
     [self dismissViewControllerAnimated:YES completion:nil];
+    [self slideInButtons];
+    [_amountLabel becomeFirstResponder];
 }
 
 - (void)showSMS:(NSString*)file
@@ -367,7 +303,7 @@
 
 - (void)chargeStripe
 {
-
+#warning chargeStripe
 }
 
 @end
