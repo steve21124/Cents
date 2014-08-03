@@ -23,61 +23,42 @@
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    UIViewController *vc;
-
-    if (![self userHasPhoneNumber])
-    {
-        vc = [GetPhoneNumberViewController new];
-    }
-    else if (![self userHasPaymentCard])
-    {
-        vc = [GetPaymentCardViewController new];
-    }
-    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-    {
-        vc = [GetContactsViewController new];
-    }
-    else
-    {
-        vc = [RootViewController new];
-    }
-
-    self.window.rootViewController = vc;
+    self.window.rootViewController = [self vcFromFlowOrder];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
 }
 
+- (UIViewController *)vcFromFlowOrder
+{
+    if (![self userHasPhoneNumber])
+    {
+        return [GetPhoneNumberViewController new];
+    }
+    else if (![self userHasPaymentCard])
+    {
+        return [GetPaymentCardViewController new];
+    }
+    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+    {
+        return [GetContactsViewController new];
+    }
+    else
+    {
+        return [RootViewController new];
+    }
+}
+
 - (BOOL)userHasPhoneNumber
 {
 #warning check parse for phone num
-    return !NO;
+    return NO;
 }
 
 - (BOOL)userHasPaymentCard
 {
 #warning check parse for pay card
-    return !NO;
-}
-
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
+    return NO;
 }
 
 @end

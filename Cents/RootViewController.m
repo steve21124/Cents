@@ -17,6 +17,7 @@
 #import <Parse/Parse.h>
 #import "TSCurrencyTextField.h"
 #import "JDFCurrencyTextField.h"
+#import "Contacts.h"
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
 @property TSCurrencyTextField *amountLabel;
@@ -49,20 +50,8 @@
 
 - (void)fetchContacts
 {
-#warning fetch contacts from address book
-
-    _contacts = @[
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  @{@"first_name":@"Sapan",@"lastname":@"Bhuta",@"phone":@"6149377494"},
-                  ];
+    Contacts *contacts = [Contacts new];
+    _contacts = contacts.contacts;
 }
 
 - (void)createAmountLabel
