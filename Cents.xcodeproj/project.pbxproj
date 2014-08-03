@@ -22,7 +22,6 @@
 		8E6F7B7C1988A7B400068ED7 /* VerifyPhoneNumberViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E6F7B7B1988A7B400068ED7 /* VerifyPhoneNumberViewController.m */; };
 		8E6F7B7F1988A7CA00068ED7 /* GetPaymentCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E6F7B7E1988A7CA00068ED7 /* GetPaymentCardViewController.m */; };
 		8E6F7B8C198D97B200068ED7 /* GetContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E6F7B8B198D97B200068ED7 /* GetContactsViewController.m */; };
-		8E6F7B8F198DD3AB00068ED7 /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E6F7B8E198DD3AB00068ED7 /* Contacts.m */; };
 		8E782729198566360030DB99 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E782728198566360030DB99 /* Foundation.framework */; };
 		8E78272B198566360030DB99 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E78272A198566360030DB99 /* CoreGraphics.framework */; };
 		8E78272D198566360030DB99 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E78272C198566360030DB99 /* UIKit.framework */; };
@@ -70,8 +69,6 @@
 		8E6F7B7E1988A7CA00068ED7 /* GetPaymentCardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPaymentCardViewController.m; sourceTree = "<group>"; };
 		8E6F7B8A198D97B200068ED7 /* GetContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetContactsViewController.h; sourceTree = "<group>"; };
 		8E6F7B8B198D97B200068ED7 /* GetContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetContactsViewController.m; sourceTree = "<group>"; };
-		8E6F7B8D198DD3AB00068ED7 /* Contacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contacts.h; sourceTree = "<group>"; };
-		8E6F7B8E198DD3AB00068ED7 /* Contacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contacts.m; sourceTree = "<group>"; };
 		8E782725198566360030DB99 /* Cents.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cents.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E782728198566360030DB99 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8E78272A198566360030DB99 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -197,8 +194,6 @@
 				8E782738198566360030DB99 /* AppDelegate.m */,
 				8E782759198566E80030DB99 /* RootViewController.h */,
 				8E78275A198566E80030DB99 /* RootViewController.m */,
-				8E6F7B8D198DD3AB00068ED7 /* Contacts.h */,
-				8E6F7B8E198DD3AB00068ED7 /* Contacts.m */,
 				8E6F7B801988C7A400068ED7 /* Onboard */,
 				8E78273A198566360030DB99 /* Images.xcassets */,
 				8E78272F198566360030DB99 /* Supporting Files */,
@@ -370,7 +365,6 @@
 				8E6F7B7C1988A7B400068ED7 /* VerifyPhoneNumberViewController.m in Sources */,
 				8E6F7B7F1988A7CA00068ED7 /* GetPaymentCardViewController.m in Sources */,
 				8E782735198566360030DB99 /* main.m in Sources */,
-				8E6F7B8F198DD3AB00068ED7 /* Contacts.m in Sources */,
 				8E78275B198566E80030DB99 /* RootViewController.m in Sources */,
 				8E6F7B791988A7A700068ED7 /* GetPhoneNumberViewController.m in Sources */,
 				8E6F7B8C198D97B200068ED7 /* GetContactsViewController.m in Sources */,

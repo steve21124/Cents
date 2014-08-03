@@ -17,7 +17,7 @@
 #import <Parse/Parse.h>
 #import "TSCurrencyTextField.h"
 #import "JDFCurrencyTextField.h"
-#import "Contacts.h"
+@import AddressBook;
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
 @property TSCurrencyTextField *amountLabel;
@@ -29,7 +29,7 @@
 @property JSQFlatButton *send;
 @property JSQFlatButton *cancel;
 @property JSQFlatButton *confirm;
-@property NSArray *contacts;
+@property NSMutableArray *contacts;
 @property NSTimer *buttonCheckTimer;
 @end
 
@@ -46,12 +46,6 @@
     [self createContactsView];
 
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
-}
-
-- (void)fetchContacts
-{
-    Contacts *contacts = [Contacts new];
-    _contacts = contacts.contacts;
 }
 
 - (void)createAmountLabel
@@ -72,8 +66,19 @@
 - (void)createContactsView
 {
     UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
-    flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 30+amountFont, 320, 70) collectionViewLayout:flow];
+    CGRect frame;
+    if (self.view.frame.size.height <= 480)
+    {
+        flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        frame = CGRectMake(0, 30+amountFont, 320, 70);
+    }
+    else
+    {
+        flow.scrollDirection = UICollectionViewScrollDirectionVertical;
+        frame = CGRectMake(0, 30+amountFont, 320, self.view.frame.size.height - 30 - amountFont - 216 -54);
+    }
+
+    _collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:flow];
     _collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
@@ -124,15 +129,23 @@
 {
     _actionIsSend = NO;
 
-    if ([self userIsInDataBase:_contacts[_recipientIndex][@"phone"]])
+    if ([self userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
 #warning send push notification and chat head bubble to recipient asking for money
 #warning create unique rootView screen with pre selected amount and person
     }
     else
     {
-        [self slideOutButtons];
-        [self showSMS:_amountLabel.text];
+        if([MFMessageComposeViewController canSendText])
+        {
+            [self slideOutButtons];
+            [self showSMS:_amountLabel.text];
+        }
+        else
+        {
+            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device doesn't support SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [warningAlert show];
+        }
     }
 }
 
@@ -140,15 +153,23 @@
 {
     _actionIsSend = YES;
 
-    if ([self userIsInDataBase:_contacts[_recipientIndex][@"phone"]])
+    if ([self userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
 #warning make a new charge using stripe
 #warning show a confirmation
     }
     else
     {
-        [self slideOutButtons];
-        [self showSMS:_amountLabel.text];
+        if([MFMessageComposeViewController canSendText])
+        {
+            [self slideOutButtons];
+            [self showSMS:_amountLabel.text];
+        }
+        else
+        {
+            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device doesn't support SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [warningAlert show];
+        }
     }
 }
 
@@ -196,13 +217,12 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 10;
+    return _contacts.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-
 
     if (_recipientIndex == (int)indexPath.item)
     {
@@ -213,8 +233,8 @@
     }
     else
     {
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Profile"]];;
-        //        [imageView setImageWithURL:[NSURL URLWithString:@"Profile"] placeholderImage:[UIImage imageNamed:@"Profile"]];
+        NSData *imageData = _contacts[indexPath.item][@"image"];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageData]];
         imageView.layer.masksToBounds = YES;
         imageView.layer.cornerRadius = 48/2;
         cell.backgroundView = imageView;
@@ -263,16 +283,8 @@
 
 - (void)showSMS:(NSString*)file
 {
-
-    if(![MFMessageComposeViewController canSendText])
-    {
-        UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device doesn't support SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [warningAlert show];
-        return;
-    }
-
 //    NSArray *recipients = @[@"12345678", @"72345524"];
-    NSArray *recipients = @[_contacts[_recipientIndex][@"phone"]];
+    NSArray *recipients = @[_contacts[_recipientIndex][@"Phone"]];
     NSString *message;
     if (_actionIsSend)
     {
@@ -293,6 +305,74 @@
 - (void)chargeStripe
 {
 #warning chargeStripe
+}
+
+
+#pragma mark - Contacts
+
+- (void)fetchContacts
+{
+    ABAddressBookRef addressBook = ABAddressBookCreate();
+
+    if (ABAddressBookRequestAccessWithCompletion != NULL)
+    {
+        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error)
+                                                 {
+                                                     if (granted)
+                                                     {
+                                                         [self getContactsWithAddressBook:addressBook];
+                                                     }
+                                                 });
+    }
+}
+
+- (void)getContactsWithAddressBook:(ABAddressBookRef)addressBook
+{
+    _contacts = [NSMutableArray new];
+    CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+	CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
+
+    for (int i=0;i < nPeople;i++)
+    {
+		NSMutableDictionary *dOfPerson = [NSMutableDictionary new];
+
+		ABRecordRef person = CFArrayGetValueAtIndex(allPeople,i);
+
+		ABMultiValueRef phones =(__bridge ABMultiValueRef)((__bridge NSString*)ABRecordCopyValue(person, kABPersonPhoneProperty));
+        CFStringRef firstName, lastName;
+		firstName = ABRecordCopyValue(person, kABPersonFirstNameProperty);
+		lastName  = ABRecordCopyValue(person, kABPersonLastNameProperty);
+		[dOfPerson setObject:[NSString stringWithFormat:@"%@ %@", firstName, lastName] forKey:@"name"];
+
+		NSString *mobileLabel;
+		for(CFIndex i = 0; i < ABMultiValueGetCount(phones); i++)
+        {
+			mobileLabel = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(phones, i);
+			if([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel])
+			{
+				[dOfPerson setObject:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i) forKey:@"Phone"];
+			}
+			else if ([mobileLabel isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel])
+			{
+				[dOfPerson setObject:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i) forKey:@"Phone"];
+				break;
+			}
+        }
+
+        if (ABPersonHasImageData(person))
+        {
+            NSData *contactImageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
+            [dOfPerson setObject:contactImageData forKey:@"image"];
+        }
+        
+        if (dOfPerson[@"Phone"] && dOfPerson[@"image"])
+        {
+            [_contacts addObject:dOfPerson];
+        }
+	}
+    
+    NSLog(@"Contacts = %@",_contacts);
+    [_collectionView reloadData];
 }
 
 @end
