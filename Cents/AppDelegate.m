@@ -11,6 +11,8 @@
 #import <Parse/Parse.h>
 #import "GetPhoneNumberViewController.h"
 #import "GetPaymentCardViewController.h"
+#import "GetContactsViewController.h"
+@import AddressBook;
 
 @implementation AppDelegate
 
@@ -21,23 +23,26 @@
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    UIViewController *vc;
 
     if (![self userHasPhoneNumber])
     {
-        GetPhoneNumberViewController *vc = [GetPhoneNumberViewController new];
-        self.window.rootViewController = vc;
+        vc = [GetPhoneNumberViewController new];
     }
     else if (![self userHasPaymentCard])
     {
-        GetPaymentCardViewController *vc = [GetPaymentCardViewController new];
-        self.window.rootViewController = vc;
+        vc = [GetPaymentCardViewController new];
+    }
+    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+    {
+        vc = [GetContactsViewController new];
     }
     else
     {
-        RootViewController *vc = [[RootViewController alloc] init];
-        self.window.rootViewController = vc;
+        vc = [RootViewController new];
     }
 
+    self.window.rootViewController = vc;
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
@@ -46,13 +51,13 @@
 - (BOOL)userHasPhoneNumber
 {
 #warning check parse for phone num
-    return NO;
+    return !NO;
 }
 
 - (BOOL)userHasPaymentCard
 {
 #warning check parse for pay card
-    return NO;
+    return !NO;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

@@ -13,10 +13,12 @@
 #import "STPView.h"
 #import "JSQFlatButton.h"
 #import "UIColor+FlatUI.h"
+#import "GetContactsViewController.h"
 #import "RootViewController.h"
 #import "CardIO.h"
+@import AddressBook;
 
-@interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate>
+@interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate, CardIOViewDelegate>
 @property STPView *stripeView;
 @property STPCard *stripeCard;
 @property JSQFlatButton *save;
@@ -63,28 +65,71 @@
 
 - (void)save:(UIButton *)sender
 {
-    RootViewController *vc = [RootViewController new];
+    _save.enabled = NO;
+
+    if (_stripeCard && [_stripeCard validateCardReturningError:nil])
+    {
+        [Stripe createTokenWithCard:_stripeCard publishableKey:kStripeKey completion:^(STPToken *token, NSError *error)
+         {
+             if (error)
+             {
+                 _save.enabled = YES;
+                 [self handleError:error];
+
+                 _stripeView.hidden = NO;
+                 _cameraIcon.hidden = NO;
+                 [_stripeView.paymentView becomeFirstResponder];
+                 [UIView animateWithDuration:.3 animations:^{
+                     _save.transform = CGAffineTransformMakeTranslation(0, _save.transform.ty-216);
+                 }];
+             }
+             else
+             {
+                 [self success:token];
+             }
+         }];
+    }
+    else
+    {
+        [self.stripeView createToken:^(STPToken *token, NSError *error)
+         {
+             if (error)
+             {
+                 _save.enabled = YES;
+                 [self handleError:error];
+             }
+             else
+             {
+                 [self success:token];
+             }
+         }];
+        [_stripeView.paymentView becomeFirstResponder];
+    }
+}
+
+- (void)success:(STPToken *)token
+{
+    [self handleToken:token];
+
+    UIViewController *vc;
+    if (ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusNotDetermined)
+    {
+        vc = [RootViewController new];
+    }
+    else
+    {
+        vc = [GetContactsViewController new];
+    }
     [self presentViewController:vc animated:NO completion:nil];
 }
 
 - (void)createCameraButton
 {
-    _camera = [[JSQFlatButton alloc] initWithFrame:CGRectMake(50,
-                                                              200,
-                                                              self.view.frame.size.width - 100,
-                                                              54)
-                                   backgroundColor:[UIColor tangerineColor]
-                                   foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
-                                             title:@"use camera"
-                                             image:nil];
-    [_camera addTarget:self action:@selector(camera:) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:_camera];
-
     _cameraIcon = [UIButton buttonWithType:UIButtonTypeSystem];
     [_cameraIcon addTarget:self action:@selector(camera:) forControlEvents:UIControlEventTouchUpInside];
     [_cameraIcon setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
     _cameraIcon.frame = CGRectMake(self.view.frame.size.width - 53, 121.5, 48, 48);
-//    _cameraIcon.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-100);
+    _cameraIcon.hidden = ![UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera];
     [self.view addSubview:_cameraIcon];
 }
 
@@ -96,6 +141,7 @@
         _save.transform = CGAffineTransformMakeTranslation(0, _save.transform.ty+216);
     }];
     [self scanCard];
+//    [self scanCard2];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -104,6 +150,29 @@
 }
 
 #pragma mark - Card.io
+
+- (void)scanCard2
+{
+    [_stripeView.paymentView resignFirstResponder];
+    CardIOView *cardIOView = [[CardIOView alloc] initWithFrame:self.view.bounds];
+    cardIOView.appToken = kCardioToken;
+    cardIOView.delegate = self;
+    [self.view addSubview:cardIOView];
+}
+
+- (void)cardIOView:(CardIOView *)cardIOView didScanCard:(CardIOCreditCardInfo *)info
+{
+    if (info)
+    {
+        NSLog(@"Card info. Number: %@, expiry: %02i/%i, cvv: %@.", info.redactedCardNumber, info.expiryMonth, info.expiryYear, info.cvv);
+
+    }
+    else
+    {
+        NSLog(@"User cancelled payment info");
+    }
+    [cardIOView removeFromSuperview];
+}
 
 - (void)scanCard
 {
@@ -127,12 +196,6 @@
 - (void)userDidProvideCreditCardInfo:(CardIOCreditCardInfo *)info
              inPaymentViewController:(CardIOPaymentViewController *)scanViewController
 {
-    // The full card number is available as info.cardNumber, but don't log that!
-    NSLog(@"Received card info. Number: %@, expiry: %02i/%i, cvv: %@.", info.redactedCardNumber,
-                                                                        info.expiryMonth,
-                                                                        info.expiryYear,
-                                                                        info.cvv);
-
     [scanViewController dismissViewControllerAnimated:YES completion:nil];
 
     _stripeCard = [[STPCard alloc] init];
@@ -141,25 +204,10 @@
     _stripeCard.expYear = info.expiryYear;
     _stripeCard.cvc = info.cvv;
 
-    [Stripe createTokenWithCard:_stripeCard publishableKey:kStripeKey completion:^(STPToken *token, NSError *error)
+    if ([_stripeCard validateCardReturningError:nil])
     {
-        if (error)
-        {
-            _stripeView.hidden = NO;
-            _cameraIcon.hidden = NO;
-            [_stripeView.paymentView becomeFirstResponder];
-            [UIView animateWithDuration:.3 animations:^{
-                _save.transform = CGAffineTransformMakeTranslation(0, _save.transform.ty-216);
-            }];
-            [self handleError:error];
-        }
-        else
-        {
-            _save.enabled = YES;
-            [self handleToken:token];
-        }
-     }];
-
+        _save.enabled = YES;
+    }
 }
 
 #pragma mark - Stripe
@@ -173,27 +221,7 @@
 
 - (void)stripeView:(STPView *)view withCard:(PKCard *)card isValid:(BOOL)valid
 {
-    if (valid)
-    {
-        [self.stripeView createToken:^(STPToken *token, NSError *error)
-         {
-             if (error)
-             {
-                 [self handleError:error];
-             }
-             else
-             {
-                 _save.enabled = YES;
-                 [self handleToken:token];
-             }
-         }];
-        [_stripeView.paymentView becomeFirstResponder];
-    }
-    else
-    {
-        _save.enabled = NO;
-        _cameraIcon.hidden = NO;
-    }
+    _save.enabled = valid;
 }
 
 - (void)handleError:(NSError *)error
@@ -211,7 +239,7 @@
 {
     NSLog(@"Created Token");
     
-#warning Send off token to your server = save token in parse and associate with phone number or fb login
+#warning Send off token to your server = save token in parse and associate with phone number
 
 //    NSLog(@"Received token %@", token.tokenId);
 //
