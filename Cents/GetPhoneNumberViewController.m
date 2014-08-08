@@ -63,6 +63,7 @@
 
 - (void)verify:(UIButton *)sender
 {
+    [[NSUserDefaults standardUserDefaults] setObject:_phoneEntry.text forKey:@"phoneNumber"];
     VerifyPhoneNumberViewController *vc = [VerifyPhoneNumberViewController new];
     [self presentViewController:vc animated:NO completion:nil];
 }

@@ -10,9 +10,10 @@
 #import "JSQFlatButton.h"
 #import "UIColor+FlatUI.h"
 #import "GetPaymentCardViewController.h"
+#import <Parse/Parse.h>
 
 @interface VerifyPhoneNumberViewController ()
-@property UITextField *phoneEntry;
+@property UITextField *codeEntry;
 @property NSTimer *buttonCheckTimer;
 @property JSQFlatButton *enter;
 @property int randomNum;
@@ -34,16 +35,16 @@
     title.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:title];
 
-    _phoneEntry = [[UITextField alloc] initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-2*20, 100)];
-    _phoneEntry.placeholder = @"enter code";
-    _phoneEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40];
-    _phoneEntry.textColor = [UIColor whiteColor];
-    _phoneEntry.adjustsFontSizeToFitWidth = YES;
-    _phoneEntry.keyboardAppearance = UIKeyboardAppearanceDark;
-    _phoneEntry.keyboardType = UIKeyboardTypeNumberPad;
-    _phoneEntry.textAlignment = NSTextAlignmentCenter;
-    [self.view addSubview:_phoneEntry];
-    [_phoneEntry becomeFirstResponder];
+    _codeEntry = [[UITextField alloc] initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-2*20, 100)];
+    _codeEntry.placeholder = @"enter code";
+    _codeEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40];
+    _codeEntry.textColor = [UIColor whiteColor];
+    _codeEntry.adjustsFontSizeToFitWidth = YES;
+    _codeEntry.keyboardAppearance = UIKeyboardAppearanceDark;
+    _codeEntry.keyboardType = UIKeyboardTypeNumberPad;
+    _codeEntry.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:_codeEntry];
+    [_codeEntry becomeFirstResponder];
 
     JSQFlatButton *resend = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0,
                                                                            self.view.frame.size.height-216-54,
@@ -70,24 +71,18 @@
     [self.view addSubview:_enter];
 
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
-
-    [self sendText];
 }
 
-- (void)sendText
+- (void)viewDidAppear:(BOOL)animated
 {
-//    _randomNum = arc4random_uniform(9999);
-    _randomNum = 1234;
-    NSString *message = [NSString stringWithFormat:@"Cents code: %i",_randomNum];
-    NSLog(@"%@",message);
-
-#warning send text from Twilio
+    [super viewDidAppear:animated];
+    [self sendSMSToNumber:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
 }
 
 - (void)resend
 {
-    _phoneEntry.text = @"";
-    [self sendText];
+    _codeEntry.text = @"";
+    [self sendSMSToNumber:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
 }
 
 - (void)enter:(UIButton *)sender
@@ -98,18 +93,18 @@
 
 - (BOOL)codeIsValid
 {
-    return _randomNum == [_phoneEntry.text intValue];
+    return _randomNum == [_codeEntry.text intValue];
 }
 
 - (void)buttonCheck
 {
-    if ([_phoneEntry.text length] > 3)
+    if ([_codeEntry.text length] > 3)
     {
-        [self codeIsValid] ? [_phoneEntry setTextColor:[UIColor greenColor]] : [_phoneEntry setTextColor:[UIColor redColor]];
+        [self codeIsValid] ? [_codeEntry setTextColor:[UIColor greenColor]] : [_codeEntry setTextColor:[UIColor redColor]];
     }
     else
     {
-        _phoneEntry.textColor = [UIColor whiteColor];
+        _codeEntry.textColor = [UIColor whiteColor];
     }
 
     _enter.enabled = [self codeIsValid];
@@ -118,6 +113,23 @@
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleLightContent;
+}
+
+- (void)sendSMSToNumber:(NSString *)number
+{
+//    _randomNum = arc4random_uniform(9999);
+    _randomNum = 1234;
+    NSLog(@"%@",@(_randomNum).description);
+
+    [PFCloud callFunctionInBackground:@"inviteWithTwilio"
+                       withParameters:@{@"number" : number, @"message":@(_randomNum).description}
+                                block:^(id object, NSError *error)
+    {
+        if (error)
+        {
+            NSLog(@"Error sending SMS");
+        }
+    }];
 }
 
 @end
