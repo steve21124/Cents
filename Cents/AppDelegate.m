@@ -52,13 +52,13 @@
 - (BOOL)userHasPhoneNumber
 {
 #warning check parse for phone num
-    return !NO;
+    return NO;
 }
 
 - (BOOL)userHasPaymentCard
 {
 #warning check parse for pay card
-    return !NO;
+    return NO;
 }
 
 @end
