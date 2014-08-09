@@ -121,7 +121,7 @@
     _randomNum = 1234;
     NSLog(@"%@",@(_randomNum).description);
 
-    [PFCloud callFunctionInBackground:@"inviteWithTwilio"
+    [PFCloud callFunctionInBackground:@"verifyNum"
                        withParameters:@{@"number" : number, @"message":@(_randomNum).description}
                                 block:^(id object, NSError *error)
     {

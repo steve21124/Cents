@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Cents": {
+            "applicationId": "P7UUztIv5Z2hZB6gY51Mu79CIoLIzoeaXVGzj8uX", 
+            "masterKey": "LOA6zDKLn3kplhGyKrc4JdDGGTu2a68HCdaYoZms"
+        }, 
+        "_default": {
+            "link": "Cents"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.19"
+    }
+}
