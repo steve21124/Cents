@@ -18,7 +18,7 @@
 #import "CardIO.h"
 @import AddressBook;
 
-@interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate, CardIOViewDelegate>
+@interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate>
 @property STPView *stripeView;
 @property STPCard *stripeCard;
 @property JSQFlatButton *save;
@@ -141,7 +141,6 @@
         _save.transform = CGAffineTransformMakeTranslation(0, _save.transform.ty+216);
     }];
     [self scanCard];
-//    [self scanCard2];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -150,29 +149,6 @@
 }
 
 #pragma mark - Card.io
-
-- (void)scanCard2
-{
-    [_stripeView.paymentView resignFirstResponder];
-    CardIOView *cardIOView = [[CardIOView alloc] initWithFrame:self.view.bounds];
-    cardIOView.appToken = kCardioToken;
-    cardIOView.delegate = self;
-    [self.view addSubview:cardIOView];
-}
-
-- (void)cardIOView:(CardIOView *)cardIOView didScanCard:(CardIOCreditCardInfo *)info
-{
-    if (info)
-    {
-        NSLog(@"Card info. Number: %@, expiry: %02i/%i, cvv: %@.", info.redactedCardNumber, info.expiryMonth, info.expiryYear, info.cvv);
-
-    }
-    else
-    {
-        NSLog(@"User cancelled payment info");
-    }
-    [cardIOView removeFromSuperview];
-}
 
 - (void)scanCard
 {

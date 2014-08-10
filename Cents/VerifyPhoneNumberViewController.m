@@ -115,21 +115,11 @@
     return UIStatusBarStyleLightContent;
 }
 
-- (void)sendSMSToNumber:(NSString *)number
+- (void)sendSMSToNumber:(NSString *)phoneNumber
 {
-//    _randomNum = arc4random_uniform(9999);
-    _randomNum = 1234;
-    NSLog(@"%@",@(_randomNum).description);
-
-    [PFCloud callFunctionInBackground:@"verifyNum"
-                       withParameters:@{@"number" : number, @"message":@(_randomNum).description}
-                                block:^(id object, NSError *error)
-    {
-        if (error)
-        {
-            NSLog(@"Error sending SMS");
-        }
-    }];
+    _randomNum = 1000 + arc4random_uniform(8999);
+    NSString *message = [NSString stringWithFormat:@"Cents Code: %@",@(_randomNum).description];
+    [PFCloud callFunction:@"verifyNum" withParameters:@{@"number" : phoneNumber, @"message":message}];
 }
 
 @end
