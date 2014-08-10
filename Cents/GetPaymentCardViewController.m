@@ -17,6 +17,7 @@
 #import "RootViewController.h"
 #import "CardIO.h"
 @import AddressBook;
+#import <Parse/Parse.h>
 
 @interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate>
 @property STPView *stripeView;
@@ -213,24 +214,10 @@
 
 - (void)handleToken:(STPToken *)token
 {
-    NSLog(@"Created Token");
-    
-#warning Send off token to your server = save token in parse and associate with phone number
+    NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
+    [PFCloud callFunction:@"createCustomer" withParameters:@{@"cardToken":token.tokenId, @"phoneNumber":phoneNumber}];
 
-//    NSLog(@"Received token %@", token.tokenId);
-//
-//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://example.com"]];
-//    request.HTTPMethod = @"POST";
-//    NSString *body     = [NSString stringWithFormat:@"stripeToken=%@", token.tokenId];
-//    request.HTTPBody   = [body dataUsingEncoding:NSUTF8StringEncoding];
-//
-//    [NSURLConnection sendAsynchronousRequest:request
-//                                       queue:[NSOperationQueue mainQueue]
-//                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-//                               if (error) {
-//                                   // Handle error
-//                               }
-//                           }];
+    #warning Send off token to your server = save token in parse and associate with phone number
 }
 
 @end
