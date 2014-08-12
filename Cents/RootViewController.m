@@ -15,14 +15,11 @@
 #import "UIColor+FlatUI.h"
 #import <MessageUI/MessageUI.h>
 #import <Parse/Parse.h>
-#import "TSCurrencyTextField.h"
-#import "JDFCurrencyTextField.h"
 @import AddressBook;
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
-@property TSCurrencyTextField *amountLabel;
+@property UITextField *amountLabel;
 @property UICollectionView *collectionView;
-@property CGFloat amount;
 @property BOOL actionIsSend;
 @property int recipientIndex;
 @property JSQFlatButton *request;
@@ -52,7 +49,7 @@
 {
     self.view.backgroundColor = [UIColor wisteriaColor];
 
-    _amountLabel = [[TSCurrencyTextField alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
+    _amountLabel = [[UITextField alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
     _amountLabel.textColor = [UIColor whiteColor];
     _amountLabel.textAlignment = NSTextAlignmentCenter;
     _amountLabel.keyboardAppearance = UIKeyboardAppearanceDark;
@@ -155,7 +152,16 @@
 
     if ([self userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
-#warning make a new charge using stripe
+        #warning get customer id and change amount to cents
+        [PFCloud callFunctionInBackground:@"createCharge"
+                           withParameters:@{@"customer":@"",
+                                            @"amount":@([_amountLabel.text floatValue]).description}
+                                    block:^(id object, NSError *error) {
+                                        if (error) {
+                                            NSLog(@"ERROR: %@",error.localizedDescription);
+                                        }
+                                    }];
+
 #warning show a confirmation
     }
     else
@@ -371,7 +377,7 @@
         }
 	}
     
-    NSLog(@"Contacts = %@",_contacts);
+//    NSLog(@"Contacts = %@",_contacts);
     [_collectionView reloadData];
 }
 

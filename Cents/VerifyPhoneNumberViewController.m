@@ -119,7 +119,7 @@
 {
     _randomNum = 1000 + arc4random_uniform(8999);
     NSString *message = [NSString stringWithFormat:@"Cents Code: %@",@(_randomNum).description];
-    [PFCloud callFunction:@"verifyNum" withParameters:@{@"number" : phoneNumber, @"message":message}];
+    [PFCloud callFunctionInBackground:@"verifyNum" withParameters:@{@"number" : phoneNumber, @"message":message} block:nil];
 }
 
 @end

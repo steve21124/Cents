@@ -22,6 +22,10 @@
                   clientKey:@"tJKQOiTU85yegajonqCwGuAy2JEqxL3mgsuiR6b5"];
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
 
+//    [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
+//                                                    UIRemoteNotificationTypeAlert|
+//                                                    UIRemoteNotificationTypeSound];
+
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = [self vcFromFlowOrder];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -51,14 +55,26 @@
 
 - (BOOL)userHasPhoneNumber
 {
-#warning check parse for phone num
+#warning check parse if has phone number
     return NO;
 }
 
 - (BOOL)userHasPaymentCard
 {
-#warning check parse for pay card
+#warning check parse if has pay card
     return NO;
 }
+
+//- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+//{
+//    // Store the deviceToken in the current installation and save it to Parse.
+//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+//    [currentInstallation setDeviceTokenFromData:deviceToken];
+//    [currentInstallation saveInBackground];
+//}
+//
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+//    [PFPush handlePush:userInfo];
+//}
 
 @end
