@@ -221,12 +221,13 @@
     {
         if (error)
         {
-            NSLog(@"Error: %@",error);
+            NSLog(@"Error in creating customer: %@",error);
+#warning tell parse still no card on file
         }
         else
         {
             [[NSUserDefaults standardUserDefaults] setObject:object forKey:@"customerId"];
-            NSLog(@"customerId: %@",[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"]);
+#warning tell parse that we have card on file
         }
     }];
 }

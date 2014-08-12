@@ -12,6 +12,7 @@
 #import "GetPhoneNumberViewController.h"
 #import "GetPaymentCardViewController.h"
 #import "GetContactsViewController.h"
+#import "ParseChecks.h"
 @import AddressBook;
 
 @implementation AppDelegate
@@ -35,11 +36,11 @@
 
 - (UIViewController *)vcFromFlowOrder
 {
-    if (![self userHasPhoneNumber])
+    if (![ParseChecks userHasPhoneNumber])
     {
         return [GetPhoneNumberViewController new];
     }
-    else if (![self userHasPaymentCard])
+    else if (![ParseChecks userHasPaymentCard])
     {
         return [GetPaymentCardViewController new];
     }
@@ -51,18 +52,6 @@
     {
         return [RootViewController new];
     }
-}
-
-- (BOOL)userHasPhoneNumber
-{
-#warning check parse if has phone number
-    return NO;
-}
-
-- (BOOL)userHasPaymentCard
-{
-#warning check parse if has pay card
-    return NO;
 }
 
 //- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken

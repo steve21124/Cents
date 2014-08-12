@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4A1A39A9BC824263B6EDC4D7 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F53920D10514BACA85462A0 /* libPods.a */; };
+		8E0DC3FC199ADCFE003D6A4D /* ParseChecks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E0DC3FB199ADCFE003D6A4D /* ParseChecks.m */; };
 		8E6F7B64198889FC00068ED7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */; };
 		8E6F7B6619888A0700068ED7 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6519888A0700068ED7 /* CFNetwork.framework */; };
 		8E6F7B6819888A1B00068ED7 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6719888A1B00068ED7 /* CoreLocation.framework */; };
@@ -51,6 +52,8 @@
 
 /* Begin PBXFileReference section */
 		2F53920D10514BACA85462A0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E0DC3FA199ADCFE003D6A4D /* ParseChecks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseChecks.h; sourceTree = "<group>"; };
+		8E0DC3FB199ADCFE003D6A4D /* ParseChecks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParseChecks.m; sourceTree = "<group>"; };
 		8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		8E6F7B6519888A0700068ED7 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		8E6F7B6719888A1B00068ED7 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -194,6 +197,8 @@
 				8E782738198566360030DB99 /* AppDelegate.m */,
 				8E782759198566E80030DB99 /* RootViewController.h */,
 				8E78275A198566E80030DB99 /* RootViewController.m */,
+				8E0DC3FA199ADCFE003D6A4D /* ParseChecks.h */,
+				8E0DC3FB199ADCFE003D6A4D /* ParseChecks.m */,
 				8E6F7B801988C7A400068ED7 /* Onboard */,
 				8E78273A198566360030DB99 /* Images.xcassets */,
 				8E78272F198566360030DB99 /* Supporting Files */,
@@ -365,6 +370,7 @@
 				8E6F7B7C1988A7B400068ED7 /* VerifyPhoneNumberViewController.m in Sources */,
 				8E6F7B7F1988A7CA00068ED7 /* GetPaymentCardViewController.m in Sources */,
 				8E782735198566360030DB99 /* main.m in Sources */,
+				8E0DC3FC199ADCFE003D6A4D /* ParseChecks.m in Sources */,
 				8E78275B198566E80030DB99 /* RootViewController.m in Sources */,
 				8E6F7B791988A7A700068ED7 /* GetPhoneNumberViewController.m in Sources */,
 				8E6F7B8C198D97B200068ED7 /* GetContactsViewController.m in Sources */,

@@ -15,6 +15,7 @@
 #import "UIColor+FlatUI.h"
 #import <MessageUI/MessageUI.h>
 #import <Parse/Parse.h>
+#import "ParseChecks.h"
 @import AddressBook;
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
@@ -125,10 +126,10 @@
 - (void)request:(JSQFlatButton *)sender
 {
     _actionIsSend = NO;
-
-    if ([self userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
+    
+    if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
-        [self createRequest];
+        [self askToRequest];
     }
     else
     {
@@ -140,9 +141,9 @@
 {
     _actionIsSend = YES;
 
-    if ([self userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
+    if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
-        [self createCharge];
+        [self askToCharge];
     }
     else
     {
@@ -168,10 +169,21 @@
     }
 }
 
+- (void)askToRequest
+{
+    [self createRequest];
+}
+
 - (void)createRequest
 {
 #warning send push notification and chat head bubble to recipient asking for money
 #warning create unique rootView screen with pre selected amount and person
+}
+
+- (void)askToCharge
+{
+#warning create ask views
+    [self createCharge];
 }
 
 - (void)createCharge
@@ -190,9 +202,26 @@
          else
          {
              NSLog(@"SUCCESS: %@",object);
-#warning show a confirmation
+             [self showChargeConfirmation];
          }
      }];
+}
+
+- (void)showChargeConfirmation
+{
+#warning create confirmation dialogue
+
+    [UIView animateWithDuration:.3 animations:^{
+
+#warning animate out ask screen
+#warning animate in confirmation
+
+    } completion:^(BOOL finished) {
+
+#warning pause for a bit with confirmation screen
+#warning bring back send/contact views
+
+    }];
 }
 
 - (void)slideOutButtons
@@ -209,12 +238,6 @@
         _send.transform = CGAffineTransformMakeTranslation(0, 0);
         _request.transform = CGAffineTransformMakeTranslation(0, 0);
     }];
-}
-
-- (BOOL)userIsInDataBase:(NSString *)number
-{
-#warning check phone number is in database
-    return !NO;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
