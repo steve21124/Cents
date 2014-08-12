@@ -225,8 +225,8 @@
         }
         else
         {
-            NSLog(@"customerId: %@",object);
             [[NSUserDefaults standardUserDefaults] setObject:object forKey:@"customerId"];
+            NSLog(@"customerId: %@",[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"]);
         }
     }];
 }
