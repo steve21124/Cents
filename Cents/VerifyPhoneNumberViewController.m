@@ -119,7 +119,16 @@
 {
     _randomNum = 1000 + arc4random_uniform(8999);
     NSString *message = [NSString stringWithFormat:@"Cents Code: %@",@(_randomNum).description];
-    [PFCloud callFunctionInBackground:@"verifyNum" withParameters:@{@"number" : phoneNumber, @"message":message} block:nil];
+    [PFCloud callFunctionInBackground:@"verifyNum"
+                       withParameters:@{@"number" : phoneNumber, @"message":message}
+                                block:^(id object, NSError *error)
+    {
+        if (error)
+        {
+            NSLog(@"ERROR: %@",error.localizedDescription);
+            NSLog(@"OBJECT: %@",object);
+        }
+    }];
 }
 
 @end

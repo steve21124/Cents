@@ -152,17 +152,21 @@
 
     if ([self userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
-        #warning get customer id and change amount to cents
         [PFCloud callFunctionInBackground:@"createCharge"
-                           withParameters:@{@"customer":@"",
+                           withParameters:@{@"customer":[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"],
                                             @"amount":@([_amountLabel.text floatValue]).description}
-                                    block:^(id object, NSError *error) {
-                                        if (error) {
-                                            NSLog(@"ERROR: %@",error.localizedDescription);
-                                        }
-                                    }];
-
-#warning show a confirmation
+                                    block:^(id object, NSError *error)
+        {
+            if (error)
+            {
+                NSLog(@"ERROR: %@",error.localizedDescription);
+                #warning show faliure
+            }
+            else
+            {
+                #warning show a confirmation
+            }
+        }];
     }
     else
     {

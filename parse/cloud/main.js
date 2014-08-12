@@ -20,39 +20,34 @@ Parse.Cloud.define("verifyNum", function(request, response) {
 var Stripe = require('stripe');
 Stripe.initialize('sk_test_4TyIk8adGJTfvHq9YDt4raCx');
 
+Parse.Cloud.define("createCustomer", function(request, response) {    
+  Stripe.Customers.create({
+    account_balance: 0,
+    description: request.params.phoneNumber,
+    card: request.params.token,
+  }, {
+    success: function(httpResponse) {
+        // response.success(customerId); // return customerId
+        response.success("Customer created!")
+    },
+    error: function(httpResponse) {
+        console.log(httpResponse);
+        response.error("Cannot create a new customer.");
+    }
+  });
+});
+
 Parse.Cloud.define("createCharge", function(request, response) {
   Stripe.Charges.create({
-    amount: 100 * request.params.amount, // $10 expressed in cents
+    amount: 100 * request.params.amount, // expressed in cents
     currency: "usd",
-    card: request.params.token
-    // customer: request.params.customerId //add comma to line before
+    customer: request.params.customerId
   }, {
     success: function(httpResponse) {
       response.success("Charges success!");
     },
     error: function(httpResponse) {
       response.error("Charges fail");
-    }
-  });
-});
-
-Parse.Cloud.define("createCustomer", function(request, response) {    
-  Stripe.Customers.create({
-    account_balance: 0,
-    email: request.params.email,
-    description: 'new stripe user',
-    metadata: {
-      name: request.params.name,
-      userId: request.params.objectId, // e.g PFUser object ID
-      createWithCard: false
-    }
-  }, {
-    success: function(httpResponse) {
-        response.success(customerId); // return customerId
-    },
-    error: function(httpResponse) {
-        console.log(httpResponse);
-        response.error("Cannot create a new customer.");
     }
   });
 });

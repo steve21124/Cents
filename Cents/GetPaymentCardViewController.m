@@ -214,25 +214,23 @@
 
 - (void)handleToken:(STPToken *)token
 {
-//    NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
-//    [PFCloud callFunctionInBackground:@"createCustomer"
-//                       withParameters:@{@"token":token.tokenId, @"phoneNumber":phoneNumber}
-//                                block:^(id object, NSError *error)
-//    {
-//        if (error)
-//        {
-//            NSLog(@"ERROR1: %@",error.localizedDescription);
-//            NSLog(@"ERROR2: %@",error.description);
-//            NSLog(@"ERROR3: %@",error.localizedFailureReason);
-//            NSLog(@"ERROR4: %@",object);
-//        }
-//        else
-//        {
-//            NSLog(@"SUCCESS: %@",object);
-//        }
-//    }];
+    NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
+    NSLog(@"%@",phoneNumber);
+    NSLog(@"%@",token.tokenId);
+
+    [PFCloud callFunctionInBackground:@"createCustomer"
+                       withParameters:@{@"token":token.tokenId, @"phoneNumber":phoneNumber}
+                                block:^(id object, NSError *error)
+    {
+        if (error)
+        {
+            NSLog(@"ERROR: %@",error.localizedDescription);
+        }
+        NSLog(@"OBJECT: %@",object);
+    }];
 
 #warning save customer id
 }
 
 @end
+
