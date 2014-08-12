@@ -128,21 +128,11 @@
 
     if ([self userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
-#warning send push notification and chat head bubble to recipient asking for money
-#warning create unique rootView screen with pre selected amount and person
+        [self createRequest];
     }
     else
     {
-        if([MFMessageComposeViewController canSendText])
-        {
-            [self slideOutButtons];
-            [self showSMS:_amountLabel.text];
-        }
-        else
-        {
-            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device doesn't support SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [warningAlert show];
-        }
+        [self handleRecepientNotOnService];
     }
 }
 
@@ -156,21 +146,37 @@
     }
     else
     {
-        if([MFMessageComposeViewController canSendText])
-        {
-            [self slideOutButtons];
-            [self showSMS:_amountLabel.text];
-        }
-        else
-        {
-            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device doesn't support SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [warningAlert show];
-        }
+        [self handleRecepientNotOnService];
     }
+}
+
+- (void)handleRecepientNotOnService
+{
+    if([MFMessageComposeViewController canSendText])
+    {
+        [self slideOutButtons];
+        [self showSMS:_amountLabel.text];
+    }
+    else
+    {
+        UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                               message:@"Your device doesn't support SMS!"
+                                                              delegate:nil
+                                                     cancelButtonTitle:@"OK"
+                                                     otherButtonTitles:nil];
+        [warningAlert show];
+    }
+}
+
+- (void)createRequest
+{
+#warning send push notification and chat head bubble to recipient asking for money
+#warning create unique rootView screen with pre selected amount and person
 }
 
 - (void)createCharge
 {
+#warning make this work
     [PFCloud callFunctionInBackground:@"createCharge"
                        withParameters:@{@"customer":[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"],
                                         @"amount":@([_amountLabel.text floatValue]).description}
@@ -317,12 +323,6 @@
     [messageController setBody:message];
     [self presentViewController:messageController animated:YES completion:nil];
 }
-
-- (void)chargeStripe
-{
-#warning chargeStripe
-}
-
 
 #pragma mark - Contacts
 

@@ -15,15 +15,11 @@ Parse.Cloud.define("verifyNum", function(request, response) {
   });
 });
 
-
 //Stripe
 var Stripe = require('stripe');
 Stripe.initialize('sk_test_4TyIk8adGJTfvHq9YDt4raCx');
 
 Parse.Cloud.define("createCustomer", function(request, response) {   
-
-  console.log(request.params.token);
-
   Stripe.Customers.create({
     account_balance: 0,
     description: request.params.phoneNumber,
@@ -45,11 +41,9 @@ Parse.Cloud.define("createCharge", function(request, response) {
     customer: request.params.customerId
   }, {
     success: function(httpResponse) {
-      console.log(httpResponse.message);
-      response.success("Charges success!");
+      response.success(httpResponse.message);
     },
     error: function(httpResponse) {
-      console.log(httpResponse.message);
       response.error(httpResponse.message);
     }
   });
