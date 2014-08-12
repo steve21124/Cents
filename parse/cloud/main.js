@@ -20,11 +20,14 @@ Parse.Cloud.define("verifyNum", function(request, response) {
 var Stripe = require('stripe');
 Stripe.initialize('sk_test_4TyIk8adGJTfvHq9YDt4raCx');
 
-Parse.Cloud.define("createCustomer", function(request, response) {    
+Parse.Cloud.define("createCustomer", function(request, response) {   
+
+  console.log(request.params.token);
+
   Stripe.Customers.create({
     account_balance: 0,
     description: request.params.phoneNumber,
-    card: request.params.token,
+    // card: request.params.token,
   }, {
     success: function(httpResponse) {
         // response.success(customerId); // return customerId
