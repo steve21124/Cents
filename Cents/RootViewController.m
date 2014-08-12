@@ -51,7 +51,7 @@
 
     _amountLabel = [[UITextField alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
     _amountLabel.textColor = [UIColor whiteColor];
-    _amountLabel.textAlignment = NSTextAlignmentCenter;
+    _amountLabel.textAlignment = NSTextAlignmentLeft;
     _amountLabel.keyboardAppearance = UIKeyboardAppearanceDark;
     _amountLabel.keyboardType = UIKeyboardTypeDecimalPad;
     _amountLabel.adjustsFontSizeToFitWidth = YES;
@@ -152,21 +152,7 @@
 
     if ([self userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
-        [PFCloud callFunctionInBackground:@"createCharge"
-                           withParameters:@{@"customer":[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"],
-                                            @"amount":@([_amountLabel.text floatValue]).description}
-                                    block:^(id object, NSError *error)
-        {
-            if (error)
-            {
-                NSLog(@"ERROR: %@",error.localizedDescription);
-                #warning show faliure
-            }
-            else
-            {
-                #warning show a confirmation
-            }
-        }];
+        [self createCharge];
     }
     else
     {
@@ -181,6 +167,26 @@
             [warningAlert show];
         }
     }
+}
+
+- (void)createCharge
+{
+    [PFCloud callFunctionInBackground:@"createCharge"
+                       withParameters:@{@"customer":[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"],
+                                        @"amount":@([_amountLabel.text floatValue]).description}
+                                block:^(id object, NSError *error)
+     {
+         if (error)
+         {
+             NSLog(@"ERROR: %@",error.localizedDescription);
+#warning show faliure
+         }
+         else
+         {
+             NSLog(@"SUCCESS: %@",object);
+#warning show a confirmation
+         }
+     }];
 }
 
 - (void)slideOutButtons
@@ -202,7 +208,7 @@
 - (BOOL)userIsInDataBase:(NSString *)number
 {
 #warning check phone number is in database
-    return NO;
+    return !NO;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle

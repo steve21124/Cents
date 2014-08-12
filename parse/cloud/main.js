@@ -27,30 +27,30 @@ Parse.Cloud.define("createCustomer", function(request, response) {
   Stripe.Customers.create({
     account_balance: 0,
     description: request.params.phoneNumber,
-    // card: request.params.token,
+    card: request.params.token
   }, {
     success: function(httpResponse) {
-        // response.success(customerId); // return customerId
-        response.success("Customer created!")
+      response.success(httpResponse.id);
     },
     error: function(httpResponse) {
-        console.log(httpResponse);
-        response.error("Cannot create a new customer.");
+      response.error(httpResponse.message);
     }
   });
 });
 
 Parse.Cloud.define("createCharge", function(request, response) {
   Stripe.Charges.create({
-    amount: 100 * request.params.amount, // expressed in cents
+    amount: 100 * request.params.amount,
     currency: "usd",
     customer: request.params.customerId
   }, {
     success: function(httpResponse) {
+      console.log(httpResponse.message);
       response.success("Charges success!");
     },
     error: function(httpResponse) {
-      response.error("Charges fail");
+      console.log(httpResponse.message);
+      response.error(httpResponse.message);
     }
   });
 });

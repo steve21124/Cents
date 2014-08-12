@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 SapanBhuta. All rights reserved.
 //
 
-#define kStripeKey @"pk_test_4SpEIGtYzfx4J0NZbNBxMfr8"
+#define kStripeKey @"pk_test_4TyI2woMDc4DSBu1r1bYQ6l9"
 #define kCardioToken @"6f029e310ea241408c0f67514801d637"
 
 #import "GetPaymentCardViewController.h"
@@ -214,21 +214,18 @@
 
 - (void)handleToken:(STPToken *)token
 {
-    NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
-    NSLog(@"%@",token.tokenId);
-
     [PFCloud callFunctionInBackground:@"createCustomer"
-                       withParameters:@{@"token":token.tokenId, @"phoneNumber":phoneNumber}
+                       withParameters:@{@"token":token.tokenId,
+                                        @"phoneNumber":[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]}
                                 block:^(id object, NSError *error)
     {
         if (error)
         {
-            NSLog(@"%@",token.tokenId);
-            NSLog(@"ERROR: %@",error.localizedDescription);
+            NSLog(@"Error: %@",error);
         }
         else
         {
-            NSLog(@"OBJECT: %@",object);
+            NSLog(@"customerId: %@",object);
             [[NSUserDefaults standardUserDefaults] setObject:object forKey:@"customerId"];
         }
     }];
