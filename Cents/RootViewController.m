@@ -375,32 +375,18 @@
 
 - (void)OK:(JSQFlatButton *)sender
 {
-    [UIView animateWithDuration:.3 animations:^{
-        _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
-        _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
-        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320, 0);
-        _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
-//        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
-        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320, 0);
-        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
-        _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
-        _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
-        _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320, 0);
-        _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx+320, 0);
-    } completion:^(BOOL finished) {
-        [UIView animateWithDuration:.3 animations:^{
-            _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
-            _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
-            _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320, 0);
-            _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
-            _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
-            _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320, 0);
-            _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
-            _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
-            _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
-            _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320, 0);
-            _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx+320, 0);
-        }];
+    [UIView animateWithDuration:.6 animations:^{
+        _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320*2, 0);
+        _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320*2, 0);
+        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320*2, 0);
+        _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320*2, 0);
+        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
+        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320*2, 0);
+        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320*2, 0);
+        _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320*2, 0);
+        _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320*2, 0);
+        _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320*2, 0);
+        _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx+320*2, 0);
     }];
 }
 

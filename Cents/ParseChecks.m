@@ -13,7 +13,7 @@
 + (BOOL)userIsInDataBase:(NSString *)phoneNumber
 {
 #warning check parse for a user in database with phoneNumber
-    return NO;
+    return !NO;
 }
 
 + (BOOL)userHasPhoneNumber
