@@ -386,7 +386,7 @@
         _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
         _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
         _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320, 0);
-        _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx-320, 0);
+        _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx+320, 0);
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:.3 animations:^{
             _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
@@ -399,7 +399,7 @@
             _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
             _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
             _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320, 0);
-            _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx-320, 0);
+            _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx+320, 0);
         }];
     }];
 }
