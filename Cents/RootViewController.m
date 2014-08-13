@@ -312,6 +312,8 @@
          else
          {
              NSLog(@"Card charged successfully with id: %@", object);
+#warning Execute refund to recepient account
+#warning Push notification to receipient
              [self showFaliure:NO];
          }
          _cancel.enabled = YES;
