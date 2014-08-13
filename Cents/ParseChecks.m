@@ -10,33 +10,30 @@
 
 @implementation ParseChecks
 
++ (BOOL)userIsInDataBase:(NSString *)phoneNumber
+{
+#warning check parse for a user in database with phoneNumber
+    return NO;
+}
+
 + (BOOL)userHasPhoneNumber
 {
-#warning check parse if has phone number
-    return NO;
+    return [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"] ? YES : NO;
 }
 
 + (BOOL)userHasPaymentCard
 {
-#warning check parse if has pay card
-    return NO;
+    return [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"] ? YES : NO;
 }
 
-+ (BOOL)userIsInDataBase:(NSString *)number
-{
-#warning check phone number is in database
-    return !NO;
-}
-
-+ (void)addCardOnFileIs:(BOOL)answer for:(NSString *)custId;
-{
-#warning tell parse card on file is answer for custId
-}
-
-+ (void)addUserToDataBase:(NSString *)custId
++ (void)addUserToDataBase
 {
     NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
-#warning add customer ID to Parse tied to phone number
+    NSString *customerId = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
+    NSDictionary *params = @{@"phoneNumber":phoneNumber, @"customerId":customerId};
+
+    NSLog(@"%@",params);
+#warning add User object to Parse with params
 }
 
 @end
