@@ -19,6 +19,7 @@
 @import AddressBook;
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
+@property UILabel *dollarSign;
 @property UITextField *amountField;
 @property CGRect frame;
 @property UICollectionView *collectionView;
@@ -34,6 +35,7 @@
 @property NSTimer *buttonCheckTimer;
 @property JSQFlatButton *OK;
 @property UILabel *statusText;
+@property BOOL hasDecimal;
 @end
 
 @implementation RootViewController
@@ -55,7 +57,15 @@
 {
     self.view.backgroundColor = [UIColor wisteriaColor];
 
-    _amountField = [[UITextField alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
+    _dollarSign = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 20, amountFont)];
+    _dollarSign.text = @"$";
+    _dollarSign.textColor = [UIColor whiteColor];
+    _dollarSign.adjustsFontSizeToFitWidth = YES;
+    _dollarSign.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
+    [self.view addSubview:_dollarSign];
+
+    _amountField = [[UITextField alloc] initWithFrame:CGRectMake(30, 30, 280, amountFont)];
+    _amountField.placeholder = @"Enter amount";
     _amountField.textColor = [UIColor whiteColor];
     _amountField.textAlignment = NSTextAlignmentLeft;
     _amountField.keyboardAppearance = UIKeyboardAppearanceDark;
@@ -64,6 +74,8 @@
     _amountField.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
     [self.view addSubview:_amountField];
     [_amountField becomeFirstResponder];
+
+    _hasDecimal = NO;
 }
 
 - (void)createContactsView
@@ -136,7 +148,7 @@
 
 - (void)createConfirmView
 {
-    _confirmText = [[UILabel alloc] initWithFrame:_amountField.bounds];
+    _confirmText = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
     _confirmText.text = [NSString stringWithFormat:@"%@ $%@ %@ %@?", _actionIsSend ? @"Send" : @"Request",@([_amountField.text floatValue]).description, _actionIsSend ? @"to" : @"from", _contacts[_recipientIndex][@"name"]];
     _confirmText.textColor = [UIColor whiteColor];
     _confirmText.textAlignment = NSTextAlignmentCenter;
@@ -158,7 +170,23 @@
 
 - (void)buttonCheck
 {
-    if (_recipientIndex == -1)
+    BOOL tempHasDecimal = ([_amountField.text rangeOfString:@"."].length == 1);
+
+    if (_hasDecimal != tempHasDecimal)
+    {
+        if (tempHasDecimal)
+        {
+            _amountField.keyboardType = UIKeyboardTypeNumberPad;
+        }
+        else
+        {
+            _amountField.keyboardType = UIKeyboardTypeDecimalPad;
+        }
+        [_amountField reloadInputViews];
+        _hasDecimal = !_hasDecimal;
+    }
+
+    if (_recipientIndex == -1 || [_amountField.text floatValue]<0.50)
     {
         _request.enabled = NO;
         _send.enabled = NO;
@@ -221,6 +249,7 @@
     [self createConfirmCancelButtons];
     [self createConfirmView];
     [UIView animateWithDuration:.3 animations:^{
+        _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx-320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
         _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx-320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
@@ -240,6 +269,7 @@
 - (void)cancel:(JSQFlatButton *)sender
 {
     [UIView animateWithDuration:.3 animations:^{
+        _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
         _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
@@ -267,6 +297,8 @@
 
 - (void)createCharge
 {
+    _cancel.enabled = NO;
+    _confirm.enabled = NO;
     [PFCloud callFunctionInBackground:@"createCharge"
                        withParameters:@{@"customer":[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"],
                                         @"amount":@([_amountField.text floatValue]).description}
@@ -282,12 +314,14 @@
              NSLog(@"Card charged successfully with id: %@", object);
              [self showFaliure:NO];
          }
+         _cancel.enabled = YES;
+         _confirm.enabled = YES;
      }];
 }
 
 - (void)createStatusText
 {
-    _statusText = [[UILabel alloc] initWithFrame:_amountField.bounds];
+    _statusText = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
     _statusText.text = @"";
     _statusText.textColor = [UIColor whiteColor];
     _statusText.textAlignment = NSTextAlignmentCenter;
@@ -323,6 +357,7 @@
     }
 
     [UIView animateWithDuration:.3 animations:^{
+        _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx-320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
         _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx-320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
@@ -339,16 +374,31 @@
 - (void)OK:(JSQFlatButton *)sender
 {
     [UIView animateWithDuration:.3 animations:^{
-        _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320*2, 0);
-        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320*2, 0);
-        _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320*2, 0);
-        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
-        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320*2, 0);
-        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320*2, 0);
-        _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320*2, 0);
-        _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320*2, 0);
-        _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320*2, 0);
-        _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx-320*2, 0);
+        _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
+        _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
+        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320, 0);
+        _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
+//        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
+        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320, 0);
+        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
+        _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
+        _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
+        _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320, 0);
+        _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx-320, 0);
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:.3 animations:^{
+            _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
+            _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
+            _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320, 0);
+            _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
+            _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
+            _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320, 0);
+            _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
+            _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
+            _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
+            _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320, 0);
+            _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx-320, 0);
+        }];
     }];
 }
 
