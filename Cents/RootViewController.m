@@ -19,7 +19,8 @@
 @import AddressBook;
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
-@property UITextField *amountLabel;
+@property UITextField *amountField;
+@property CGRect frame;
 @property UICollectionView *collectionView;
 @property BOOL actionIsSend;
 @property int recipientIndex;
@@ -28,6 +29,8 @@
 @property JSQFlatButton *cancel;
 @property JSQFlatButton *confirm;
 @property NSMutableArray *contacts;
+@property UILabel *confirmText;
+@property UIImageView *confirmPic;
 @property NSTimer *buttonCheckTimer;
 @end
 
@@ -50,33 +53,32 @@
 {
     self.view.backgroundColor = [UIColor wisteriaColor];
 
-    _amountLabel = [[UITextField alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
-    _amountLabel.textColor = [UIColor whiteColor];
-    _amountLabel.textAlignment = NSTextAlignmentLeft;
-    _amountLabel.keyboardAppearance = UIKeyboardAppearanceDark;
-    _amountLabel.keyboardType = UIKeyboardTypeDecimalPad;
-    _amountLabel.adjustsFontSizeToFitWidth = YES;
-    _amountLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
-    [self.view addSubview:_amountLabel];
-    [_amountLabel becomeFirstResponder];
+    _amountField = [[UITextField alloc] initWithFrame:CGRectMake(0, 30, 320, amountFont)];
+    _amountField.textColor = [UIColor whiteColor];
+    _amountField.textAlignment = NSTextAlignmentLeft;
+    _amountField.keyboardAppearance = UIKeyboardAppearanceDark;
+    _amountField.keyboardType = UIKeyboardTypeDecimalPad;
+    _amountField.adjustsFontSizeToFitWidth = YES;
+    _amountField.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
+    [self.view addSubview:_amountField];
+    [_amountField becomeFirstResponder];
 }
 
 - (void)createContactsView
 {
     UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
-    CGRect frame;
     if (self.view.frame.size.height <= 480)
     {
         flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        frame = CGRectMake(0, 30+amountFont, 320, 70);
+        _frame = CGRectMake(0, 30+amountFont, 320, 70);
     }
     else
     {
         flow.scrollDirection = UICollectionViewScrollDirectionVertical;
-        frame = CGRectMake(0, 30+amountFont, 320, self.view.frame.size.height - 30 - amountFont - 216 -54);
+        _frame = CGRectMake(0, 30+amountFont, 320, self.view.frame.size.height - 30 - amountFont - 216 -54);
     }
 
-    _collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:flow];
+    _collectionView = [[UICollectionView alloc] initWithFrame:_frame collectionViewLayout:flow];
     _collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
@@ -90,7 +92,7 @@
                                     backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
                                     foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                               title:@"Request"
-                                              image:nil];//[UIImage imageNamed:@"down"]];
+                                              image:nil];
     [_request addTarget:self action:@selector(request:) forControlEvents:UIControlEventTouchUpInside];
     _request.enabled = NO;
     _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
@@ -100,13 +102,56 @@
                                  backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
                                  foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                            title:@"Send"
-                                           image:nil];//[UIImage imageNamed:@"up"]];
+                                           image:nil];
     [_send addTarget:self action:@selector(send:) forControlEvents:UIControlEventTouchUpInside];
     _send.enabled = NO;
     _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
     [self.view addSubview:_send];
 
     [self slideInButtons];
+}
+
+- (void)createConfirmCancelButtons
+{
+    _cancel = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-216-54, 159.75, 54)
+                                   backgroundColor:[UIColor colorWithRed:1.00f green:1.00f blue:1.00f alpha:1.0f]
+                                   foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                             title:@"Cancel"
+                                             image:nil];
+    [_cancel addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
+    _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
+    [self.view addSubview:_cancel];
+
+    _confirm = [[JSQFlatButton alloc] initWithFrame:CGRectMake(160.25, self.view.frame.size.height-216-54, 159.75, 54)
+                                    backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
+                                    foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                              title:@"Confirm"
+                                              image:nil];
+    [_confirm addTarget:self action:@selector(confirm:) forControlEvents:UIControlEventTouchUpInside];
+    _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
+    [self.view addSubview:_confirm];
+}
+
+- (void)createConfirmView
+{
+    _confirmText = [[UILabel alloc] initWithFrame:_amountField.bounds];
+    _confirmText.text = [NSString stringWithFormat:@"Send $%@ to %@?",@([_amountField.text floatValue]).description, _contacts[_recipientIndex][@"name"]];
+    _confirmText.textColor = [UIColor whiteColor];
+    _confirmText.textAlignment = NSTextAlignmentCenter;
+    _confirmText.adjustsFontSizeToFitWidth = YES;
+    _confirmText.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
+    [self.view addSubview:_confirmText];
+    _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
+
+    _confirmPic = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width-_frame.size.height/2)/2,
+                                                                _frame.origin.y,
+                                                                _frame.size.height/2,
+                                                                _frame.size.height/2)];
+    _confirmPic.image = [UIImage imageWithData:_contacts[_recipientIndex][@"image"]];
+    _confirmPic.layer.masksToBounds = YES;
+    _confirmPic.layer.cornerRadius = _collectionView.bounds.size.height/4;
+    [self.view addSubview:_confirmPic];
+    _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
 }
 
 - (void)buttonCheck
@@ -156,7 +201,7 @@
     if([MFMessageComposeViewController canSendText])
     {
         [self slideOutButtons];
-        [self showSMS:_amountLabel.text];
+        [self showSMS:_amountField.text];
     }
     else
     {
@@ -182,15 +227,44 @@
 
 - (void)askToCharge
 {
-#warning create ask views
+    [self createConfirmCancelButtons];
+    [self createConfirmView];
+    [UIView animateWithDuration:.3 animations:^{
+        _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
+        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx-320, 0);
+        _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
+        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx-320, 0);
+        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
+        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx-320, 0);
+        _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx-320, 0);
+        _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx-320, 0);
+    }];
+}
+
+- (void)confirm:(JSQFlatButton *)sender
+{
     [self createCharge];
+}
+
+- (void)cancel:(JSQFlatButton *)sender
+{
+    [UIView animateWithDuration:.3 animations:^{
+        _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
+        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320, 0);
+        _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
+        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
+        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320, 0);
+        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
+        _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
+        _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
+    }];
 }
 
 - (void)createCharge
 {
     [PFCloud callFunctionInBackground:@"createCharge"
                        withParameters:@{@"customer":[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"],
-                                        @"amount":@([_amountLabel.text floatValue]).description}
+                                        @"amount":@([_amountField.text floatValue]).description}
                                 block:^(id object, NSError *error)
      {
          if (error)
@@ -327,7 +401,7 @@
 
     [self dismissViewControllerAnimated:YES completion:nil];
     [self slideInButtons];
-    [_amountLabel becomeFirstResponder];
+    [_amountField becomeFirstResponder];
 }
 
 - (void)showSMS:(NSString*)file

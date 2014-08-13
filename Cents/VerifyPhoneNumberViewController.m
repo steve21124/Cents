@@ -118,6 +118,7 @@
 - (void)sendSMSToNumber:(NSString *)phoneNumber
 {
     _randomNum = 1000 + arc4random_uniform(8999);
+    NSLog(@"Cents Code: %@",@(_randomNum).description);
     NSString *message = [NSString stringWithFormat:@"Cents Code: %@",@(_randomNum).description];
     [PFCloud callFunctionInBackground:@"verifyNum"
                        withParameters:@{@"number" : phoneNumber, @"message":message}
