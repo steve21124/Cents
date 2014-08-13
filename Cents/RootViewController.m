@@ -32,6 +32,7 @@
 @property UILabel *confirmText;
 @property UIImageView *confirmPic;
 @property NSTimer *buttonCheckTimer;
+@property JSQFlatButton *OK;
 @end
 
 @implementation RootViewController
@@ -135,7 +136,7 @@
 - (void)createConfirmView
 {
     _confirmText = [[UILabel alloc] initWithFrame:_amountField.bounds];
-    _confirmText.text = [NSString stringWithFormat:@"Send $%@ to %@?",@([_amountField.text floatValue]).description, _contacts[_recipientIndex][@"name"]];
+    _confirmText.text = [NSString stringWithFormat:@"%@ $%@ %@ %@?", _actionIsSend ? @"Send" : @"Request",@([_amountField.text floatValue]).description, _actionIsSend ? @"to" : @"from", _contacts[_recipientIndex][@"name"]];
     _confirmText.textColor = [UIColor whiteColor];
     _confirmText.textAlignment = NSTextAlignmentCenter;
     _confirmText.adjustsFontSizeToFitWidth = YES;
@@ -174,7 +175,7 @@
     
     if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
-        [self askToRequest];
+        [self ask];
     }
     else
     {
@@ -188,7 +189,7 @@
 
     if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
     {
-        [self askToCharge];
+        [self ask];
     }
     else
     {
@@ -214,18 +215,7 @@
     }
 }
 
-- (void)askToRequest
-{
-    [self createRequest];
-}
-
-- (void)createRequest
-{
-#warning send push notification and chat head bubble to recipient asking for money
-#warning create unique rootView screen with pre selected amount and person
-}
-
-- (void)askToCharge
+- (void)ask
 {
     [self createConfirmCancelButtons];
     [self createConfirmView];
@@ -243,7 +233,7 @@
 
 - (void)confirm:(JSQFlatButton *)sender
 {
-    [self createCharge];
+    _actionIsSend ? [self createCharge] : [self createRequest];
 }
 
 - (void)cancel:(JSQFlatButton *)sender
@@ -257,7 +247,21 @@
         _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
         _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320, 0);
         _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320, 0);
+    } completion:^(BOOL finished) {
+        [_OK removeFromSuperview];
     }];
+}
+
+- (void)createRequest
+{
+    [self showFaliure:![self sendRequest]];
+}
+
+- (BOOL)sendRequest
+{
+#warning on other person's phone send push notification and chat head bubble to recipient asking for money
+#warning on other person's phone create unique rootView screen with pre selected amount and person
+    return !YES;
 }
 
 - (void)createCharge
@@ -270,36 +274,34 @@
          if (error)
          {
              NSLog(@"Card charge failed with error: %@", error.localizedDescription);
-             [self showFaliure];
+             [self showFaliure:YES];
          }
          else
          {
              NSLog(@"Card charged successfully with id: %@", object);
-             [self showSuccess];
+             [self showFaliure:NO];
          }
      }];
 }
 
-- (void)showFaliure
+- (void)showFaliure:(BOOL)answer
 {
-#warning show faliure
-}
+    if (answer)
+    {
+        _confirmText.text = [NSString stringWithFormat:@"Sorry, but failed to %@", _actionIsSend ? @"send" : @"request"];
+    }
+    else
+    {
+        _confirmText.text = [NSString stringWithFormat:@"Success! %@ $%@", _actionIsSend ? @"Sent" : @"Requested", @([_amountField.text floatValue]).description];
+    }
 
-- (void)showSuccess
-{
-#warning create confirmation dialogue
-
-    [UIView animateWithDuration:.3 animations:^{
-
-#warning animate out ask screen
-#warning animate in confirmation
-
-    } completion:^(BOOL finished) {
-
-#warning pause for a bit with confirmation screen
-#warning bring back send/contact views
-
-    }];
+    _OK = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-216-54, self.view.frame.size.width, 54)
+                               backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
+                               foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                         title:@"OK"
+                                         image:nil];
+    [_OK addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_OK];
 }
 
 - (void)slideOutButtons
