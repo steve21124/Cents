@@ -125,8 +125,7 @@
     {
         if (error)
         {
-            NSLog(@"ERROR: %@",error.localizedDescription);
-            NSLog(@"OBJECT: %@",object);
+//            NSLog(@"ERROR: %@",error.localizedDescription);
         }
     }];
 }

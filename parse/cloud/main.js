@@ -7,10 +7,10 @@ Parse.Cloud.define("verifyNum", function(request, response) {
     	body: request.params.message
   },{
       success: function(httpResponse) {
-        response.success("sendSms success");
+        response.success(httpResponse.message);
       },
       error: function(httpResponse) {
-        response.error("sendSms error");
+        response.error(httpResponse.message);
       }
   });
 });
