@@ -18,6 +18,7 @@
 #import "CardIO.h"
 @import AddressBook;
 #import <Parse/Parse.h>
+#import "ParseChecks.h"
 
 @interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate>
 @property STPView *stripeView;
@@ -222,12 +223,13 @@
         if (error)
         {
             NSLog(@"Error in creating customer: %@",error);
-#warning tell parse still no card on file
+            [ParseChecks cardOnFileIs:NO];
         }
         else
         {
+            NSLog(@"Customer created successfully with id: %@", object);
             [[NSUserDefaults standardUserDefaults] setObject:object forKey:@"customerId"];
-#warning tell parse that we have card on file
+            [ParseChecks cardOnFileIs:YES];
         }
     }];
 }

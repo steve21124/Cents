@@ -28,4 +28,9 @@
     return !NO;
 }
 
++ (void)cardOnFileIs:(BOOL)answer
+{
+#warning tell parse card on file is answer
+}
+
 @end

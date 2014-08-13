@@ -188,7 +188,6 @@
 
 - (void)createCharge
 {
-#warning make this work
     [PFCloud callFunctionInBackground:@"createCharge"
                        withParameters:@{@"customer":[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"],
                                         @"amount":@([_amountLabel.text floatValue]).description}
@@ -196,18 +195,23 @@
      {
          if (error)
          {
-             NSLog(@"ERROR: %@",error.localizedDescription);
-#warning show faliure
+             NSLog(@"Card charge failed with error: %@", error.localizedDescription);
+             [self showFaliure];
          }
          else
          {
-             NSLog(@"SUCCESS: %@",object);
-             [self showChargeConfirmation];
+             NSLog(@"Card charged successfully with id: %@", object);
+             [self showSuccess];
          }
      }];
 }
 
-- (void)showChargeConfirmation
+- (void)showFaliure
+{
+#warning show faliure
+}
+
+- (void)showSuccess
 {
 #warning create confirmation dialogue
 

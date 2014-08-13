@@ -41,7 +41,7 @@ Parse.Cloud.define("createCharge", function(request, response) {
     customer: request.params.customer
   }, {
     success: function(httpResponse) {
-      response.success(httpResponse.message);
+      response.success(httpResponse.id);
     },
     error: function(httpResponse) {
       response.error(httpResponse.message);
