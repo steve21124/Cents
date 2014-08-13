@@ -33,6 +33,7 @@
 @property UIImageView *confirmPic;
 @property NSTimer *buttonCheckTimer;
 @property JSQFlatButton *OK;
+@property UILabel *statusText;
 @end
 
 @implementation RootViewController
@@ -284,24 +285,71 @@
      }];
 }
 
-- (void)showFaliure:(BOOL)answer
+- (void)createStatusText
 {
-    if (answer)
-    {
-        _confirmText.text = [NSString stringWithFormat:@"Sorry, but failed to %@", _actionIsSend ? @"send" : @"request"];
-    }
-    else
-    {
-        _confirmText.text = [NSString stringWithFormat:@"Success! %@ $%@", _actionIsSend ? @"Sent" : @"Requested", @([_amountField.text floatValue]).description];
-    }
+    _statusText = [[UILabel alloc] initWithFrame:_amountField.bounds];
+    _statusText.text = @"";
+    _statusText.textColor = [UIColor whiteColor];
+    _statusText.textAlignment = NSTextAlignmentCenter;
+    _statusText.adjustsFontSizeToFitWidth = YES;
+    _statusText.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
+    [self.view addSubview:_statusText];
+    _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320, 0);
+}
 
+- (void)createOKButton
+{
     _OK = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-216-54, self.view.frame.size.width, 54)
                                backgroundColor:[UIColor colorWithRed:0.18f green:0.67f blue:0.84f alpha:1.0f]
                                foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
                                          title:@"OK"
                                          image:nil];
-    [_OK addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
+    [_OK addTarget:self action:@selector(OK:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_OK];
+    _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx+320, 0);
+}
+
+- (void)showFaliure:(BOOL)answer
+{
+    [self createStatusText];
+    [self createOKButton];
+    if (answer)
+    {
+        _statusText.text = [NSString stringWithFormat:@"Sorry, but failed to %@", _actionIsSend ? @"send" : @"request"];
+    }
+    else
+    {
+        _statusText.text = [NSString stringWithFormat:@"Success! %@ $%@", _actionIsSend ? @"Sent" : @"Requested", @([_amountField.text floatValue]).description];
+    }
+
+    [UIView animateWithDuration:.3 animations:^{
+        _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
+        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx-320, 0);
+        _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
+//        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx-320, 0);
+        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
+        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx-320, 0);
+        _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx-320, 0);
+        _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx-320, 0);
+        _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx-320, 0);
+        _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx-320, 0);
+    }];
+}
+
+- (void)OK:(JSQFlatButton *)sender
+{
+    [UIView animateWithDuration:.3 animations:^{
+        _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320*2, 0);
+        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320*2, 0);
+        _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320*2, 0);
+        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
+        _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320*2, 0);
+        _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320*2, 0);
+        _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx+320*2, 0);
+        _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx+320*2, 0);
+        _statusText.transform = CGAffineTransformMakeTranslation(_statusText.transform.tx+320*2, 0);
+        _OK.transform = CGAffineTransformMakeTranslation(_OK.transform.tx-320*2, 0);
+    }];
 }
 
 - (void)slideOutButtons
