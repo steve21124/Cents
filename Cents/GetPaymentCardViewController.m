@@ -223,13 +223,14 @@
         if (error)
         {
             NSLog(@"Error in creating customer: %@",error);
-            [ParseChecks cardOnFileIs:NO];
+            [ParseChecks addCardOnFileIs:NO for:object];
         }
         else
         {
             NSLog(@"Customer created successfully with id: %@", object);
             [[NSUserDefaults standardUserDefaults] setObject:object forKey:@"customerId"];
-            [ParseChecks cardOnFileIs:YES];
+            [ParseChecks addCardOnFileIs:YES for:object];
+            [ParseChecks addUserToDataBase:object];
         }
     }];
 }

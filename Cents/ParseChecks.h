@@ -12,5 +12,6 @@
 + (BOOL)userHasPhoneNumber;
 + (BOOL)userHasPaymentCard;
 + (BOOL)userIsInDataBase:(NSString *)number;
-+ (void)cardOnFileIs:(BOOL)answer;
++ (void)addCardOnFileIs:(BOOL)answer for:(NSString *)custId;
++ (void)addUserToDataBase:(NSString *)custId;
 @end

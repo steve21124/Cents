@@ -28,9 +28,15 @@
     return !NO;
 }
 
-+ (void)cardOnFileIs:(BOOL)answer
++ (void)addCardOnFileIs:(BOOL)answer for:(NSString *)custId;
 {
-#warning tell parse card on file is answer
+#warning tell parse card on file is answer for custId
+}
+
++ (void)addUserToDataBase:(NSString *)custId
+{
+    NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
+#warning add customer ID to Parse tied to phone number
 }
 
 @end
