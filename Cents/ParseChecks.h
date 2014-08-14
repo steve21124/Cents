@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface ParseChecks : NSObject
-+ (BOOL)userIsInDataBase:(NSString *)phoneNumber;
 + (BOOL)userHasPhoneNumber;
 + (BOOL)userHasPaymentCard;
 + (void)addUserToDataBase;

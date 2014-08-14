@@ -11,24 +11,6 @@
 
 @implementation ParseChecks
 
-+ (BOOL)userIsInDataBase:(NSString *)phoneNumber
-{
-    PFQuery *query = [PFQuery queryWithClassName:@"User"];
-    [query whereKey:@"phoneNumber" equalTo:phoneNumber];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
-    {
-        if (error)
-        {
-            NSLog(@"Error: %@ %@", error, [error userInfo]);
-        }
-        else
-        {
-            NSLog(@"Successfully retrieved %d scores.", objects.count);
-        }
-    }];
-    return !NO;
-}
-
 + (BOOL)userHasPhoneNumber
 {
     return [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"] ? YES : NO;

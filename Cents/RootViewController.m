@@ -201,29 +201,31 @@
 - (void)request:(JSQFlatButton *)sender
 {
     _actionIsSend = NO;
-    
-    if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"phone"]])
-    {
-        [self ask];
-    }
-    else
-    {
-        [self handleRecepientNotOnService];
-    }
+    [self decideActionOnSaveOrRequest];
 }
 
 - (void)send:(JSQFlatButton *)sender
 {
     _actionIsSend = YES;
+    [self decideActionOnSaveOrRequest];
+}
 
-    if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"phone"]])
-    {
-        [self ask];
-    }
-    else
-    {
-        [self handleRecepientNotOnService];
-    }
+- (void)decideActionOnSaveOrRequest
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"User"];
+    [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+     {
+         if (error)
+         {
+             NSLog(@"Query failed: %@ %@", error, [error userInfo]);
+         }
+         else
+         {
+             NSLog(@"Query successful: %i", objects.count);
+             objects.count > 0 ? [self ask] : [self handleRecepientNotOnService];
+         }
+     }];
 }
 
 - (void)handleRecepientNotOnService
@@ -285,14 +287,13 @@
 
 - (void)createRequest
 {
-    [self showFaliure:![self sendRequest]];
+    [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
+    [self showFaliure:NO];
 }
 
-- (BOOL)sendRequest
+- (void)sendPushNotificationTo:(NSString *)phoneNumber
 {
-    [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
-#warning on other person's phone create unique rootView screen with pre selected amount and person
-    return !YES;
+#warning send push notification and show chat bubble image of person sending money
 }
 
 - (void)createCharge
@@ -356,11 +357,6 @@
          _cancel.enabled = YES;
          _confirm.enabled = YES;
      }];
-}
-
-- (void)sendPushNotificationTo:(NSString *)phoneNumber
-{
-#warning send push notification and show chat bubble image of person sending money
 }
 
 - (void)createStatusText
