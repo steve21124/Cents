@@ -12,7 +12,6 @@
 #import "GetPhoneNumberViewController.h"
 #import "GetPaymentCardViewController.h"
 #import "GetContactsViewController.h"
-#import "ParseChecks.h"
 @import AddressBook;
 
 @implementation AppDelegate
@@ -36,11 +35,11 @@
 
 - (UIViewController *)vcFromFlowOrder
 {
-    if (![ParseChecks userHasPhoneNumber])
+    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"])
     {
         return [GetPhoneNumberViewController new];
     }
-    else if (![ParseChecks userHasPaymentCard])
+    else if (![[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"])
     {
         return [GetPaymentCardViewController new];
     }

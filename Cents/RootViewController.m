@@ -15,7 +15,6 @@
 #import "UIColor+FlatUI.h"
 #import <MessageUI/MessageUI.h>
 #import <Parse/Parse.h>
-#import "ParseChecks.h"
 @import AddressBook;
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
@@ -300,10 +299,12 @@
 {
     _cancel.enabled = NO;
     _confirm.enabled = NO;
+    NSString *amount = @([_amountField.text floatValue]).description;
+    NSString *customerId = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
+
     [PFCloud callFunctionInBackground:@"createCharge"
-                       withParameters:@{@"customer":[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"],
-                                        @"amount":@([_amountField.text floatValue]).description}
-                                block:^(id object, NSError *error)
+                       withParameters:@{@"amount":amount, @"customer":customerId}
+                                block:^(id chargeId, NSError *error)
      {
          if (error)
          {
@@ -312,17 +313,19 @@
          }
          else
          {
-             NSLog(@"Card charged successfully with id: %@", object);
-             [self findRecipient];
+             NSLog(@"Card charged successfully with id: %@", chargeId);
+             [self findRecipientWithAmount:amount Customer:customerId Charge:chargeId];
          }
      }];
 }
 
-- (void)findRecipient
+- (void)findRecipientWithAmount:(NSString *)amount
+                       Customer:(NSString *)customerId
+                         Charge:(NSString *)chargeId
 {
     PFQuery *query = [PFQuery queryWithClassName:@"User"];
     [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *recepients, NSError *error) {
+    [query findObjectsInBackgroundWithBlock:^(NSArray *recipients, NSError *error) {
         if (error)
         {
             NSLog(@"Getting recipientId failed for transfer with error: %@ %@", error, [error userInfo]);
@@ -330,18 +333,21 @@
         }
         else
         {
-            NSLog(@"Got recipientId %@ and now creating transfer",recepients.firstObject[@"recipientId"]);
-            [self createTransfer:recepients.firstObject[@"recipientId"]];
+            NSString *recipientId = recipients.firstObject[@"recipientId"];
+            NSLog(@"Got recipientId %@ and now creating transfer", recipientId);
+            [self createTransferWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId];
         }
     }];
 }
 
-- (void)createTransfer:(NSString *)recipientId
+- (void)createTransferWithAmount:(NSString *)amount
+                        Customer:(NSString *)customerId
+                       Recipient:(NSString *)recipientId
+                          Charge:(NSString *)chargeId
 {
     [PFCloud callFunctionInBackground:@"createTransfer"
-                       withParameters:@{@"recipient":recipientId,
-                                        @"amount":@([_amountField.text floatValue]).description}
-                                block:^(id object, NSError *error)
+                       withParameters:@{@"amount":amount, @"recipient":recipientId}
+                                block:^(id transferId, NSError *error)
      {
          if (error)
          {
@@ -350,13 +356,30 @@
          }
          else
          {
-             NSLog(@"Transfer successful with id: %@", object);
-             [self showFaliure:NO];
-             [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
+             NSLog(@"Transfer successful with id: %@", transferId);
+             [self recordTransactionWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId Transfer:transferId];
          }
          _cancel.enabled = YES;
          _confirm.enabled = YES;
      }];
+}
+
+- (void)recordTransactionWithAmount:(NSString *)amount
+                           Customer:(NSString *)customerId
+                          Recipient:(NSString *)recipientId
+                             Charge:(NSString *)chargeId
+                           Transfer:(NSString *)transferId
+{
+    PFObject *transaction = [PFObject objectWithClassName:@"Transaction"];
+    transaction[@"amount"] = @([_amountField.text floatValue]).description;
+    transaction[@"customerId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
+    transaction[@"recipientId"] = recipientId;
+    transaction[@"chargeId"] = chargeId;
+    transaction[@"transferId"] = transferId;
+    [transaction saveInBackground];
+
+    [self showFaliure:NO];
+    [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
 }
 
 - (void)createStatusText

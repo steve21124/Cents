@@ -18,7 +18,6 @@
 #import "CardIO.h"
 @import AddressBook;
 #import <Parse/Parse.h>
-#import "ParseChecks.h"
 
 @interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate>
 @property STPView *stripeView;
@@ -247,13 +246,21 @@
                  {
                      NSLog(@"Recipient created successfully with id: %@", recipient);
                      [[NSUserDefaults standardUserDefaults] setObject:recipient forKey:@"recipientId"];
-                     [ParseChecks addUserToDataBase];
+                     [self addUserToDataBase];
                      [self showNextVC];
                  }
              }];
         }
     }];
+}
 
+- (void)addUserToDataBase
+{
+    PFObject *user = [PFObject objectWithClassName:@"User"];
+    user[@"phoneNumber"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
+    user[@"customerId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
+    user[@"recipientId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"];
+    [user saveInBackground];
 }
 
 - (void)showNextVC
