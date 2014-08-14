@@ -218,7 +218,7 @@
     [PFCloud callFunctionInBackground:@"createCustomer"
                        withParameters:@{@"token":token.tokenId,
                                         @"phoneNumber":[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]}
-                                block:^(id object, NSError *error)
+                                block:^(id customer, NSError *error)
     {
         if (error)
         {
@@ -226,11 +226,27 @@
         }
         else
         {
-            NSLog(@"Customer created successfully with id: %@", object);
-            [[NSUserDefaults standardUserDefaults] setObject:object forKey:@"customerId"];
-            [ParseChecks addUserToDataBase];
+            NSLog(@"Customer created successfully with id: %@", customer);
+            [[NSUserDefaults standardUserDefaults] setObject:customer forKey:@"customerId"];
+
+            [PFCloud callFunctionInBackground:@"createRecipient"
+                               withParameters:@{@"name" : @"", @"token":token.tokenId}
+                                        block:^(id recipient, NSError *error)
+             {
+                 if (error)
+                 {
+                     NSLog(@"Error in creating recipient: %@",error);
+                 }
+                 else
+                 {
+                     NSLog(@"Recipient created successfully with id: %@", recipient);
+                     [[NSUserDefaults standardUserDefaults] setObject:recipient forKey:@"recipientId"];
+                     [ParseChecks addUserToDataBase];
+                 }
+             }];
         }
     }];
+
 }
 
 @end

@@ -48,3 +48,33 @@ Parse.Cloud.define("createCharge", function(request, response) {
     }
   });
 });
+
+Parse.Cloud.define("createRecipient", function(request, response) {
+  Stripe.Recipients.create({
+    name: "John Doe",
+    type: "individual",
+    card: request.params.token
+  }, {
+    success: function(httpResponse) {
+      response.success(httpResponse.id);
+    },
+    error: function(httpResponse) {
+      response.error(httpResponse.message);
+    }
+  });
+});
+
+Parse.Cloud.define("createTransfer", function(request, response) {
+  Stripe.Transfers.create({
+    amount: 100 * request.params.amount,
+    currency: "usd",
+    recipient: request.params.recipient
+  }, {
+    success: function(httpResponse) {
+      response.success(httpResponse.id);
+    },
+    error: function(httpResponse) {
+      response.error(httpResponse.message);
+    }
+  });
+});

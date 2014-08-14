@@ -30,7 +30,9 @@
 {
     NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
     NSString *customerId = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
-    NSDictionary *params = @{@"phoneNumber":phoneNumber, @"customerId":customerId};
+    NSString *recipientId = [[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"];
+
+    NSDictionary *params = @{@"phoneNumber":phoneNumber, @"customerId":customerId, @"recipientId":recipientId};
 
     NSLog(@"%@",params);
 #warning add User object to Parse with params
