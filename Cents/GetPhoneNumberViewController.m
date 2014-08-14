@@ -11,6 +11,7 @@
 #import "UIColor+FlatUI.h"
 #import "VerifyPhoneNumberViewController.h"
 #import "LTPhoneNumberField.h"
+#import "CleanPhoneNumber.h"
 
 @interface GetPhoneNumberViewController ()
 @property LTPhoneNumberField *phoneEntry;
@@ -63,7 +64,8 @@
 
 - (void)verify:(UIButton *)sender
 {
-    [[NSUserDefaults standardUserDefaults] setObject:_phoneEntry.text forKey:@"phoneNumber"];
+    NSLog(@"Clean number: %@",[CleanPhoneNumber clean:_phoneEntry.text]);
+    [[NSUserDefaults standardUserDefaults] setObject:[CleanPhoneNumber clean:_phoneEntry.text] forKey:@"phoneNumber"];
     VerifyPhoneNumberViewController *vc = [VerifyPhoneNumberViewController new];
     [self presentViewController:vc animated:NO completion:nil];
 }

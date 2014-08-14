@@ -15,6 +15,7 @@
 #import "UIColor+FlatUI.h"
 #import <MessageUI/MessageUI.h>
 #import <Parse/Parse.h>
+#import "CleanPhoneNumber.h"
 @import AddressBook;
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
@@ -221,7 +222,7 @@
          }
          else
          {
-             NSLog(@"Query successful: %i", objects.count);
+             NSLog(@"Query successful: %lu", (unsigned long)objects.count);
              objects.count > 0 ? [self ask] : [self handleRecepientNotOnService];
          }
      }];
@@ -358,6 +359,8 @@
          {
              NSLog(@"Transfer successful with id: %@", transferId);
              [self recordTransactionWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId Transfer:transferId];
+             [self showFaliure:NO];
+             [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
          }
          _cancel.enabled = YES;
          _confirm.enabled = YES;
@@ -377,9 +380,6 @@
     transaction[@"chargeId"] = chargeId;
     transaction[@"transferId"] = transferId;
     [transaction saveInBackground];
-
-    [self showFaliure:NO];
-    [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
 }
 
 - (void)createStatusText
@@ -560,11 +560,11 @@
     NSString *message;
     if (_actionIsSend)
     {
-        message = [NSString stringWithFormat:@"Here's %@. Download this app to get it: appstore.com/cents", file];
+        message = [NSString stringWithFormat:@"Here's $%@. Download this app to get it: appstore.com/cents", file];
     }
     else
     {
-        message = [NSString stringWithFormat:@"Please send me %@ on this app: appstore.com/cents", file];
+        message = [NSString stringWithFormat:@"Please send me $%@ on this app: appstore.com/cents", file];
     }
 
     MFMessageComposeViewController *messageController = [[MFMessageComposeViewController alloc] init];
@@ -616,11 +616,11 @@
 			mobileLabel = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(phones, i);
 			if([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel])
 			{
-				[dOfPerson setObject:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i) forKey:@"phone"];
+				[dOfPerson setObject:[CleanPhoneNumber clean:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i)] forKey:@"phone"];
 			}
 			else if ([mobileLabel isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel])
 			{
-				[dOfPerson setObject:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i) forKey:@"phone"];
+				[dOfPerson setObject:[CleanPhoneNumber clean:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i)] forKey:@"phone"];
 				break;
 			}
         }
