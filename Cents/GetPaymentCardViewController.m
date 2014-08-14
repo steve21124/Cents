@@ -205,6 +205,7 @@
 
 - (void)handleError:(NSError *)error
 {
+#warning handle error for real
     NSLog(@"Error");
     UIAlertView *message = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error")
                                                       message:[error localizedDescription]
@@ -224,9 +225,12 @@
         if (error)
         {
             NSLog(@"Error in creating customer: %@",error);
+#warning restart this VC
         }
         else
         {
+#warning check that card is debit or restart VC
+
             NSLog(@"Customer created successfully with id: %@", customer);
             [[NSUserDefaults standardUserDefaults] setObject:customer forKey:@"customerId"];
  
@@ -237,6 +241,7 @@
                  if (error)
                  {
                      NSLog(@"Error in creating recipient: %@",error);
+#warning restart this VC
                  }
                  else
                  {

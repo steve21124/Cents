@@ -36,6 +36,8 @@
 
 - (UIViewController *)vcFromFlowOrder
 {
+#warning on other person's phone create unique rootView screen with pre selected amount and person
+
     if (![ParseChecks userHasPhoneNumber])
     {
         return [GetPhoneNumberViewController new];

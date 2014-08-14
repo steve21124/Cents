@@ -290,7 +290,7 @@
 
 - (BOOL)sendRequest
 {
-#warning on other person's phone send push notification and chat head bubble to recipient asking for money
+    [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
 #warning on other person's phone create unique rootView screen with pre selected amount and person
     return !YES;
 }
@@ -312,42 +312,55 @@
          else
          {
              NSLog(@"Card charged successfully with id: %@", object);
-
-             PFQuery *query = [PFQuery queryWithClassName:@"User"];
-             [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
-             [query findObjectsInBackgroundWithBlock:^(NSArray *recepients, NSError *error) {
-                 if (error)
-                 {
-                     NSLog(@"Getting recepientId failed for transfer with error: %@ %@", error, [error userInfo]);
-                     [self showFaliure:YES];
-                 }
-                 else
-                 {
-                     [PFCloud callFunctionInBackground:@"createTransfer"
-                                        withParameters:@{@"recipient":recepients.firstObject,
-                                                         @"amount":@([_amountField.text floatValue]).description}
-                                                 block:^(id object, NSError *error)
-                      {
-                          if (error)
-                          {
-                              NSLog(@"Transfer failed with error: %@", error.localizedDescription);
-                              [self showFaliure:YES];
-                          }
-                          else
-                          {
-                              NSLog(@"Transfer successful with id: %@", object);
-#warning Send Push notification to receipient
-                              [self showFaliure:NO];
-
-                          }
-                          _cancel.enabled = YES;
-                          _confirm.enabled = YES;
-                      }];
-
-                 }
-             }];
+             [self findRecipient];
          }
      }];
+}
+
+- (void)findRecipient
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"User"];
+    [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *recepients, NSError *error) {
+        if (error)
+        {
+            NSLog(@"Getting recipientId failed for transfer with error: %@ %@", error, [error userInfo]);
+            [self showFaliure:YES];
+        }
+        else
+        {
+            NSLog(@"Got recipientId %@ and now creating transfer",recepients.firstObject[@"recipientId"]);
+            [self createTransfer:recepients.firstObject[@"recipientId"]];
+        }
+    }];
+}
+
+- (void)createTransfer:(NSString *)recipientId
+{
+    [PFCloud callFunctionInBackground:@"createTransfer"
+                       withParameters:@{@"recipient":recipientId,
+                                        @"amount":@([_amountField.text floatValue]).description}
+                                block:^(id object, NSError *error)
+     {
+         if (error)
+         {
+             NSLog(@"Transfer failed with error: %@", error.localizedDescription);
+             [self showFaliure:YES];
+         }
+         else
+         {
+             NSLog(@"Transfer successful with id: %@", object);
+             [self showFaliure:NO];
+             [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
+         }
+         _cancel.enabled = YES;
+         _confirm.enabled = YES;
+     }];
+}
+
+- (void)sendPushNotificationTo:(NSString *)phoneNumber
+{
+#warning send push notification and show chat bubble image of person sending money
 }
 
 - (void)createStatusText

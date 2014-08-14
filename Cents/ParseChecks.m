@@ -7,12 +7,25 @@
 //
 
 #import "ParseChecks.h"
+#import <Parse/Parse.h>
 
 @implementation ParseChecks
 
 + (BOOL)userIsInDataBase:(NSString *)phoneNumber
 {
-#warning check parse for a user in database with phoneNumber
+    PFQuery *query = [PFQuery queryWithClassName:@"User"];
+    [query whereKey:@"phoneNumber" equalTo:phoneNumber];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+    {
+        if (error)
+        {
+            NSLog(@"Error: %@ %@", error, [error userInfo]);
+        }
+        else
+        {
+            NSLog(@"Successfully retrieved %d scores.", objects.count);
+        }
+    }];
     return !NO;
 }
 
@@ -28,14 +41,11 @@
 
 + (void)addUserToDataBase
 {
-    NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
-    NSString *customerId = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
-    NSString *recipientId = [[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"];
-
-    NSDictionary *params = @{@"phoneNumber":phoneNumber, @"customerId":customerId, @"recipientId":recipientId};
-
-    NSLog(@"%@",params);
-#warning add User object to Parse with params
+    PFObject *user = [PFObject objectWithClassName:@"User"];
+    user[@"phoneNumber"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
+    user[@"customerId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
+    user[@"recipientId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"];
+    [user saveInBackground];
 }
 
 @end
