@@ -26,6 +26,7 @@
 @property JSQFlatButton *save;
 @property JSQFlatButton *camera;
 @property UIButton *cameraIcon;
+@property UITextField *nameField;
 @end
 
 @implementation GetPaymentCardViewController
@@ -33,7 +34,18 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self createTitle];
+    [self createName];
+    [self createStripeViewDefault];
 
+    self.view.backgroundColor = [UIColor wisteriaColor];
+
+    [self createSaveButton];
+    [self createCameraButton];
+}
+
+- (void)createTitle
+{
     UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, self.view.frame.size.width-2*10, 50)];
     title.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
     title.textColor = [UIColor whiteColor];
@@ -41,13 +53,18 @@
     title.adjustsFontSizeToFitWidth = YES;
     title.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:title];
+}
 
-    [self createStripeViewDefault];
-
-    self.view.backgroundColor = [UIColor wisteriaColor];
-
-    [self createSaveButton];
-    [self createCameraButton];
+- (void)createName
+{
+    _nameField = [[UITextField alloc] initWithFrame:CGRectMake(68, 150, self.view.frame.size.width-100, 30)];
+    _nameField.font = [UIFont systemFontOfSize:20];
+    _nameField.textColor = [UIColor blackColor];
+    _nameField.placeholder = @"name on card";
+    _nameField.textAlignment = NSTextAlignmentLeft;
+    _nameField.keyboardAppearance = UIKeyboardAppearanceDark;
+    _nameField.keyboardType = UIKeyboardTypeDefault;
+//    [self.view addSubview:_nameField];
 }
 
 - (void)createSaveButton
@@ -87,7 +104,7 @@
              }
              else
              {
-                 [self success:token];
+                 [self handleToken:token];
              }
          }];
     }
@@ -102,27 +119,11 @@
              }
              else
              {
-                 [self success:token];
+                 [self handleToken:token];
              }
          }];
         [_stripeView.paymentView becomeFirstResponder];
     }
-}
-
-- (void)success:(STPToken *)token
-{
-    [self handleToken:token];
-
-    UIViewController *vc;
-    if (ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusNotDetermined)
-    {
-        vc = [RootViewController new];
-    }
-    else
-    {
-        vc = [GetContactsViewController new];
-    }
-    [self presentViewController:vc animated:NO completion:nil];
 }
 
 - (void)createCameraButton
@@ -228,9 +229,9 @@
         {
             NSLog(@"Customer created successfully with id: %@", customer);
             [[NSUserDefaults standardUserDefaults] setObject:customer forKey:@"customerId"];
-
+ 
             [PFCloud callFunctionInBackground:@"createRecipient"
-                               withParameters:@{@"name" : @"", @"token":token.tokenId}
+                               withParameters:@{@"name": @"Sapan Bhuta", @"token":token.tokenId}
                                         block:^(id recipient, NSError *error)
              {
                  if (error)
@@ -242,11 +243,26 @@
                      NSLog(@"Recipient created successfully with id: %@", recipient);
                      [[NSUserDefaults standardUserDefaults] setObject:recipient forKey:@"recipientId"];
                      [ParseChecks addUserToDataBase];
+                     [self showNextVC];
                  }
              }];
         }
     }];
 
+}
+
+- (void)showNextVC
+{
+    UIViewController *vc;
+    if (ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusNotDetermined)
+    {
+        vc = [RootViewController new];
+    }
+    else
+    {
+        vc = [GetContactsViewController new];
+    }
+    [self presentViewController:vc animated:NO completion:nil];
 }
 
 @end

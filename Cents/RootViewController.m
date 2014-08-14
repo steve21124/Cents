@@ -202,7 +202,7 @@
 {
     _actionIsSend = NO;
     
-    if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
+    if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"phone"]])
     {
         [self ask];
     }
@@ -216,7 +216,7 @@
 {
     _actionIsSend = YES;
 
-    if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"Phone"]])
+    if ([ParseChecks userIsInDataBase:_contacts[_recipientIndex][@"phone"]])
     {
         [self ask];
     }
@@ -312,12 +312,41 @@
          else
          {
              NSLog(@"Card charged successfully with id: %@", object);
-#warning Execute refund to recepient account
-#warning Push notification to receipient
-             [self showFaliure:NO];
+
+             PFQuery *query = [PFQuery queryWithClassName:@"User"];
+             [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
+             [query findObjectsInBackgroundWithBlock:^(NSArray *recepients, NSError *error) {
+                 if (error)
+                 {
+                     NSLog(@"Getting recepientId failed for transfer with error: %@ %@", error, [error userInfo]);
+                     [self showFaliure:YES];
+                 }
+                 else
+                 {
+                     [PFCloud callFunctionInBackground:@"createTransfer"
+                                        withParameters:@{@"recipient":recepients.firstObject,
+                                                         @"amount":@([_amountField.text floatValue]).description}
+                                                 block:^(id object, NSError *error)
+                      {
+                          if (error)
+                          {
+                              NSLog(@"Transfer failed with error: %@", error.localizedDescription);
+                              [self showFaliure:YES];
+                          }
+                          else
+                          {
+                              NSLog(@"Transfer successful with id: %@", object);
+#warning Send Push notification to receipient
+                              [self showFaliure:NO];
+
+                          }
+                          _cancel.enabled = YES;
+                          _confirm.enabled = YES;
+                      }];
+
+                 }
+             }];
          }
-         _cancel.enabled = YES;
-         _confirm.enabled = YES;
      }];
 }
 
@@ -495,7 +524,7 @@
 - (void)showSMS:(NSString*)file
 {
 //    NSArray *recipients = @[@"12345678", @"72345524"];
-    NSArray *recipients = @[_contacts[_recipientIndex][@"Phone"]];
+    NSArray *recipients = @[_contacts[_recipientIndex][@"phone"]];
     NSString *message;
     if (_actionIsSend)
     {
@@ -555,11 +584,11 @@
 			mobileLabel = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(phones, i);
 			if([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel])
 			{
-				[dOfPerson setObject:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i) forKey:@"Phone"];
+				[dOfPerson setObject:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i) forKey:@"phone"];
 			}
 			else if ([mobileLabel isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel])
 			{
-				[dOfPerson setObject:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i) forKey:@"Phone"];
+				[dOfPerson setObject:(__bridge NSString*)ABMultiValueCopyValueAtIndex(phones, i) forKey:@"phone"];
 				break;
 			}
         }
@@ -570,7 +599,7 @@
             [dOfPerson setObject:contactImageData forKey:@"image"];
         }
         
-        if (dOfPerson[@"Phone"] && dOfPerson[@"image"])
+        if (dOfPerson[@"phone"] && dOfPerson[@"image"])
         {
             [_contacts addObject:dOfPerson];
         }

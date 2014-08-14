@@ -51,7 +51,7 @@ Parse.Cloud.define("createCharge", function(request, response) {
 
 Parse.Cloud.define("createRecipient", function(request, response) {
   Stripe.Recipients.create({
-    name: "John Doe",
+    name: request.params.name,
     type: "individual",
     card: request.params.token
   }, {
