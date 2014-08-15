@@ -294,6 +294,20 @@
 - (void)sendPushNotificationTo:(NSString *)phoneNumber
 {
 #warning send push notification and show chat bubble image of person sending money
+    // Create our Installation query
+    PFQuery *pushQuery = [PFInstallation query];
+    [pushQuery whereKey:@"deviceType" equalTo:@"ios"];
+
+    // Send push notification to query
+    [PFPush sendPushMessageToQueryInBackground:pushQuery
+                                   withMessage:@"Hello World!"];
+}
+
+- (void)handlePush:(NSNotification *)notification
+{
+#warning bubble head animation that creates table view with buttons
+    NSDictionary *details = notification.object;
+    
 }
 
 - (void)createCharge
@@ -374,8 +388,9 @@
                            Transfer:(NSString *)transferId
 {
     PFObject *transaction = [PFObject objectWithClassName:@"Transaction"];
+    transaction[@"date"] = [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
     transaction[@"amount"] = @([_amountField.text floatValue]).description;
-    transaction[@"customerId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
+    transaction[@"customerId"] = customerId;
     transaction[@"recipientId"] = recipientId;
     transaction[@"chargeId"] = chargeId;
     transaction[@"transferId"] = transferId;

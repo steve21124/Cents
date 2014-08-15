@@ -61,7 +61,10 @@
     [currentInstallation saveInBackground];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+#warning handle UI of push: if received money then show bouncing head, else show send modal view for request
+//    [[NSNotificationCenter defaultCenter] postNotificationName:@"push" object:userInfo];
     [PFPush handlePush:userInfo];
 }
 

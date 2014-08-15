@@ -9,5 +9,17 @@
 #import "CleanPhoneNumber.h"
 
 @implementation CleanPhoneNumber
-
++ (NSString *)clean:(NSString *)phoneNumber
+{
+    NSArray *symbols = @[@"+", @"(",@")", @" ", @"-", @"*", @"#", @",", @";"];
+    for (NSString *symbol in symbols)
+    {
+        phoneNumber = [phoneNumber stringByReplacingOccurrencesOfString:symbol withString:@""];
+    }
+    if (phoneNumber.length == 9)
+    {
+        phoneNumber = [@"1" stringByAppendingString:phoneNumber];
+    }
+    return phoneNumber;
+}
 @end

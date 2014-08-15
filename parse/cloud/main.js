@@ -78,3 +78,22 @@ Parse.Cloud.define("createTransfer", function(request, response) {
     }
   });
 });
+
+Parse.Cloud.define("Notify", function(request, response) { 
+  var pushQuery = new Parse.Query(Parse.Installation);
+  pushQuery.equalTo('deviceType', 'ios');
+    
+  Parse.Push.send({
+    where: pushQuery,
+    data: {
+      alert: request.params.message
+    }
+  }, {
+    success: function() {
+      // Push was successful
+    },
+    error: function(error) {
+      throw "Got an error " + error.code + " : " + error.message;
+    }
+  });
+});

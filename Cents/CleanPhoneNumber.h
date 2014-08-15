@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @interface CleanPhoneNumber : NSObject
-
++ (NSString *)clean:(NSString *)phoneNumber;
 @end
