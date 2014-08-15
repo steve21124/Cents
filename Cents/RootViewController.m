@@ -219,6 +219,8 @@
          if (error)
          {
              NSLog(@"Query failed: %@ %@", error, [error userInfo]);
+             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error: No Network Connection" message:@"Please connect to a network and retry" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
+             [alert show];
          }
          else
          {
@@ -396,7 +398,7 @@
 
              NSString *name = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
              NSString *phoneNumber = _contacts[_recipientIndex][@"phone"];
-             NSString *message = [NSString stringWithFormat:@"%@ requests $%@", name, amount];
+             NSString *message = [NSString stringWithFormat:@"%@ sent you $%@", name, amount];
 
              [self sendPushNotificationTo:phoneNumber With:message Of:@"send" With:amount With:name];
 

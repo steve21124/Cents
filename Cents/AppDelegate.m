@@ -30,6 +30,9 @@
     self.window.rootViewController = [self vcFromFlowOrder];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+
+    [self handlePushNotification:launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]];
+
     return YES;
 }
 
@@ -57,15 +60,29 @@
 {
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
+//    currentInstallation[@"user"] = [PFUser currentUser];
     currentInstallation.channels = @[@"global"];
     [currentInstallation saveInBackground];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-#warning handle UI of push: if received money then show bouncing head, else show send modal view for request
-//    [[NSNotificationCenter defaultCenter] postNotificationName:@"push" object:userInfo];
+#warning handle UI of push: if received money then show bouncing head
+    NSLog(@"userinfo: %@",userInfo);
     [PFPush handlePush:userInfo];
+    [self handlePushNotification:userInfo];
+}
+
+- (void)handlePushNotification:(NSDictionary *)data
+{
+    NSString *alert = data[@"alert"];
+    NSString *badge = data[@"badge"];
+    NSString *phoneNumber = data[@"phoneNumber"];
+    NSString *type = data[@"type"];
+    NSString *amount = data[@"amount"];
+    NSString *name = data[@"name"];
+
+//    [[NSNotificationCenter defaultCenter] postNotificationName:@"push" object:userInfo];
 }
 
 @end
