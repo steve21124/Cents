@@ -287,23 +287,42 @@
 
 - (void)createRequest
 {
-    [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
+    NSString *name = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
+    NSString *phoneNumber = _contacts[_recipientIndex][@"phone"];
+    NSString *amount = @([_amountField.text floatValue]).description;
+    NSString *message = [NSString stringWithFormat:@"%@ has requested $%@", name, amount];
+
+    [self sendPushNotificationTo:phoneNumber With:message Of:@"request" With:amount With:name];
     [self showFaliure:NO];
 }
 
 - (void)sendPushNotificationTo:(NSString *)phoneNumber
+                          With:(NSString *)message
+                            Of:(NSString *)type
+                          With:(NSString *)amount
+                          With:(NSString *)name
 {
-#warning send push notification and show chat bubble image of person sending money
-    // Create our Installation query
+    PFQuery *userQuery = [PFUser query];
+    [userQuery whereKey:@"phoneNumber" equalTo:phoneNumber];
+
     PFQuery *pushQuery = [PFInstallation query];
     [pushQuery whereKey:@"deviceType" equalTo:@"ios"];
+    [pushQuery whereKey:@"user" matchesQuery:userQuery];
 
-    // Send push notification to query
-    [PFPush sendPushMessageToQueryInBackground:pushQuery
-                                   withMessage:@"Hello World!"];
+    NSDictionary *data = @{@"alert":message,
+                           @"badge":@"Increment",
+                           @"phoneNumber":phoneNumber,
+                           @"type":type,
+                           @"amount":amount,
+                           @"name":name};
+
+    PFPush *push = [[PFPush alloc] init];
+    [push setQuery:pushQuery];
+    [push setData:data];
+    [push sendPushInBackground];
 }
 
-- (void)handlePush:(NSNotification *)notification
+- (void)handleIncomingPush:(NSNotification *)notification
 {
 #warning bubble head animation that creates table view with buttons
     NSDictionary *details = notification.object;
@@ -374,7 +393,13 @@
              NSLog(@"Transfer successful with id: %@", transferId);
              [self recordTransactionWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId Transfer:transferId];
              [self showFaliure:NO];
-             [self sendPushNotificationTo:_contacts[_recipientIndex][@"phone"]];
+
+             NSString *name = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
+             NSString *phoneNumber = _contacts[_recipientIndex][@"phone"];
+             NSString *message = [NSString stringWithFormat:@"%@ requests $%@", name, amount];
+
+             [self sendPushNotificationTo:phoneNumber With:message Of:@"send" With:amount With:name];
+
          }
          _cancel.enabled = YES;
          _confirm.enabled = YES;

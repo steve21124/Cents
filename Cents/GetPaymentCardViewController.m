@@ -83,6 +83,8 @@
 
 - (void)save:(UIButton *)sender
 {
+    [[NSUserDefaults standardUserDefaults] setObject:_nameField.text forKey:@"name"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     _save.enabled = NO;
 
     if (_stripeCard && [_stripeCard validateCardReturningError:nil])
@@ -103,7 +105,7 @@
              }
              else
              {
-                 [self handleToken:token];
+                 [self createCustomer:token];
              }
          }];
     }
@@ -118,7 +120,7 @@
              }
              else
              {
-                 [self handleToken:token];
+                 [self createCustomer:token];
              }
          }];
         [_stripeView.paymentView becomeFirstResponder];
@@ -214,7 +216,7 @@
     [message show];
 }
 
-- (void)handleToken:(STPToken *)token
+- (void)createCustomer:(STPToken *)token
 {
     [PFCloud callFunctionInBackground:@"createCustomer"
                        withParameters:@{@"token":token.tokenId,
@@ -232,26 +234,32 @@
 
             NSLog(@"Customer created successfully with id: %@", customer);
             [[NSUserDefaults standardUserDefaults] setObject:customer forKey:@"customerId"];
- 
-            [PFCloud callFunctionInBackground:@"createRecipient"
-                               withParameters:@{@"name": @"Sapan Bhuta", @"token":token.tokenId}
-                                        block:^(id recipient, NSError *error)
-             {
-                 if (error)
-                 {
-                     NSLog(@"Error in creating recipient: %@",error);
-#warning restart this VC
-                 }
-                 else
-                 {
-                     NSLog(@"Recipient created successfully with id: %@", recipient);
-                     [[NSUserDefaults standardUserDefaults] setObject:recipient forKey:@"recipientId"];
-                     [self addUserToDataBase];
-                     [self showNextVC];
-                 }
-             }];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            [self createRecipient:token];
         }
     }];
+}
+
+- (void)createRecipient:(STPToken *)token
+{
+    [PFCloud callFunctionInBackground:@"createRecipient"
+                       withParameters:@{@"name": @"Sapan Bhuta", @"token":token.tokenId}
+                                block:^(id recipient, NSError *error)
+     {
+         if (error)
+         {
+             NSLog(@"Error in creating recipient: %@",error);
+#warning restart this VC
+         }
+         else
+         {
+             NSLog(@"Recipient created successfully with id: %@", recipient);
+             [[NSUserDefaults standardUserDefaults] setObject:recipient forKey:@"recipientId"];
+             [[NSUserDefaults standardUserDefaults] synchronize];
+             [self addUserToDataBase];
+             [self showNextVC];
+         }
+     }];
 }
 
 - (void)addUserToDataBase
@@ -260,6 +268,7 @@
     user[@"phoneNumber"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
     user[@"customerId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
     user[@"recipientId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"];
+    user[@"name"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
     [user saveInBackground];
 }
 

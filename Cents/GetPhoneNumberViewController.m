@@ -66,6 +66,7 @@
 {
     NSLog(@"Clean number: %@",[CleanPhoneNumber clean:_phoneEntry.text]);
     [[NSUserDefaults standardUserDefaults] setObject:[CleanPhoneNumber clean:_phoneEntry.text] forKey:@"phoneNumber"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     VerifyPhoneNumberViewController *vc = [VerifyPhoneNumberViewController new];
     [self presentViewController:vc animated:NO completion:nil];
 }
