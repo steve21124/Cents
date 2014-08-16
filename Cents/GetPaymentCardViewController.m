@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 SapanBhuta. All rights reserved.
 //
 
-#define kStripeKey @"pk_test_4TyI2woMDc4DSBu1r1bYQ6l9"
+#define kStripePublishableKey @"pk_test_4TyI2woMDc4DSBu1r1bYQ6l9"
+#define kStripeSecretKey @"sk_test_4TyIk8adGJTfvHq9YDt4raCx"
 #define kCardioToken @"6f029e310ea241408c0f67514801d637"
 
 #import "GetPaymentCardViewController.h"
@@ -89,7 +90,7 @@
 
     if (_stripeCard && [_stripeCard validateCardReturningError:nil])
     {
-        [Stripe createTokenWithCard:_stripeCard publishableKey:kStripeKey completion:^(STPToken *token, NSError *error)
+        [Stripe createTokenWithCard:_stripeCard publishableKey:kStripePublishableKey completion:^(STPToken *token, NSError *error)
          {
              if (error)
              {
@@ -194,7 +195,7 @@
 
 - (void)createStripeViewDefault
 {
-    self.stripeView = [[STPView alloc] initWithFrame:CGRectMake(15,127.5,290,55) andKey:kStripeKey];
+    self.stripeView = [[STPView alloc] initWithFrame:CGRectMake(15,127.5,290,55) andKey:kStripePublishableKey];
     self.stripeView.delegate = self;
     [self.view addSubview:self.stripeView];
 }
@@ -235,7 +236,9 @@
             NSLog(@"Customer created successfully with id: %@", customer);
             [[NSUserDefaults standardUserDefaults] setObject:customer forKey:@"customerId"];
             [[NSUserDefaults standardUserDefaults] synchronize];
-            [self createRecipient:token];
+//            [self createRecipient:token];
+            [self createRecipientREST:token];
+#warning TESTING REST
         }
     }];
 }
@@ -260,6 +263,30 @@
              [self showNextVC];
          }
      }];
+}
+
+- (void)createRecipientREST:(STPToken *)token
+{
+    NSString *name = @"Sapan Bhuta";
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://api.stripe.com/v1/recipients"]];
+    NSString *params = [NSString stringWithFormat:@"%@:&name=%@&type=individual&card=%@",kStripeSecretKey,name,token.tokenId];
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
+//    [request addValue: @"application/json;charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    {
+        if (error)
+        {
+            NSLog(@"ERROR: %@",error);
+        }
+        else
+        {
+            NSLog(@"SUCCESS: %@", response);
+        }
+    }];
 }
 
 - (void)addUserToDataBase

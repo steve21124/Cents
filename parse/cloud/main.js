@@ -1,4 +1,3 @@
-//Twilio
 Parse.Cloud.define("verifyNum", function(request, response) {
   var twilio = require('twilio')('AC908eebcf092ee13d9db6fa67d71b38dc', '63ebb7a9828cd15dce79a6658092def4');
 	twilio.sendSms({
@@ -15,7 +14,7 @@ Parse.Cloud.define("verifyNum", function(request, response) {
   });
 });
 
-//Stripe
+
 var Stripe = require('stripe');
 Stripe.initialize('sk_test_4TyIk8adGJTfvHq9YDt4raCx');
 

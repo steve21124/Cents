@@ -42,7 +42,7 @@
     {
         return [GetPhoneNumberViewController new];
     }
-    else if (![[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"])
+    else if (![[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"]) //recipientId
     {
         return [GetPaymentCardViewController new];
     }
@@ -67,7 +67,6 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-#warning handle UI of push: if received money then show bouncing head
     NSLog(@"userinfo: %@",userInfo);
     [PFPush handlePush:userInfo];
     [self handlePushNotification:userInfo];
@@ -75,6 +74,9 @@
 
 - (void)handlePushNotification:(NSDictionary *)data
 {
+#warning save notification to be checked in rootVC
+#warning send NSNotification to handle saved notifications, if rootVC is up it will handle, else ignore
+
     NSString *alert = data[@"alert"];
     NSString *badge = data[@"badge"];
     NSString *phoneNumber = data[@"phoneNumber"];
