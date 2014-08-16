@@ -78,21 +78,23 @@ Parse.Cloud.define("createTransfer", function(request, response) {
   });
 });
 
-Parse.Cloud.define("Notify", function(request, response) { 
-  var pushQuery = new Parse.Query(Parse.Installation);
-  pushQuery.equalTo('deviceType', 'ios');
-    
-  Parse.Push.send({
-    where: pushQuery,
-    data: {
-      alert: request.params.message
-    }
-  }, {
-    success: function() {
-      // Push was successful
+
+
+
+
+
+Parse.Cloud.define("customCreateRecipient", function(request, response) {
+  Parse.Cloud.httpRequest({
+    method:"POST",
+    url: "https://" + 'sk_test_4TyIk8adGJTfvHq9YDt4raCx' + ':@' + 'api.stripe.com/v1/recipients',
+    body: "card="+request.params.token+"&"+"name="+request.params.name+"&"+"type=individual",
+    success: function(httpResponse) 
+    {
+      response.success(httpResponse.text);
     },
-    error: function(error) {
-      throw "Got an error " + error.code + " : " + error.message;
+    error: function(httpResponse) 
+    {
+      response.error('Request failed with response code ' + httpResponse.status);
     }
   });
 });
