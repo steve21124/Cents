@@ -38,6 +38,10 @@
 		8E7827581985664B0030DB99 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 8E7827571985664B0030DB99 /* Podfile */; };
 		8E78275B198566E80030DB99 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E78275A198566E80030DB99 /* RootViewController.m */; };
 		8E82FA8E19A0DEA000B79431 /* VCFlow.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E82FA8D19A0DEA000B79431 /* VCFlow.m */; };
+		8E82FA9119A1061200B79431 /* facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E82FA9019A1061200B79431 /* facebook.png */; };
+		8E82FA9319A1085300B79431 /* batman.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E82FA9219A1085300B79431 /* batman.png */; };
+		8E82FA9519A1086B00B79431 /* derp.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E82FA9419A1086B00B79431 /* derp.png */; };
+		8E82FA9719A1088600B79431 /* bond.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E82FA9619A1088600B79431 /* bond.png */; };
 		8EE3184519858DDD00266CF0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EE3184419858DDD00266CF0 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -94,6 +98,10 @@
 		8E78275A198566E80030DB99 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		8E82FA8C19A0DEA000B79431 /* VCFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCFlow.h; sourceTree = "<group>"; };
 		8E82FA8D19A0DEA000B79431 /* VCFlow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VCFlow.m; sourceTree = "<group>"; };
+		8E82FA9019A1061200B79431 /* facebook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = facebook.png; sourceTree = "<group>"; };
+		8E82FA9219A1085300B79431 /* batman.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = batman.png; sourceTree = "<group>"; };
+		8E82FA9419A1086B00B79431 /* derp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = derp.png; sourceTree = "<group>"; };
+		8E82FA9619A1088600B79431 /* bond.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bond.png; sourceTree = "<group>"; };
 		8EE3184419858DDD00266CF0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A7875B9E2B5341C4BE16ABD5 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -202,6 +210,7 @@
 				8E78275A198566E80030DB99 /* RootViewController.m */,
 				8E82FA8F19A0E37600B79431 /* Helper */,
 				8E6F7B801988C7A400068ED7 /* Onboard */,
+				8E82FA9819A1088900B79431 /* Profiles */,
 				8E78273A198566360030DB99 /* Images.xcassets */,
 				8E78272F198566360030DB99 /* Supporting Files */,
 			);
@@ -246,6 +255,17 @@
 				8E82FA8D19A0DEA000B79431 /* VCFlow.m */,
 			);
 			name = Helper;
+			sourceTree = "<group>";
+		};
+		8E82FA9819A1088900B79431 /* Profiles */ = {
+			isa = PBXGroup;
+			children = (
+				8E82FA9019A1061200B79431 /* facebook.png */,
+				8E82FA9219A1085300B79431 /* batman.png */,
+				8E82FA9619A1088600B79431 /* bond.png */,
+				8E82FA9419A1086B00B79431 /* derp.png */,
+			);
+			name = Profiles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -325,8 +345,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E82FA9719A1088600B79431 /* bond.png in Resources */,
 				8E7827581985664B0030DB99 /* Podfile in Resources */,
+				8E82FA9119A1061200B79431 /* facebook.png in Resources */,
+				8E82FA9519A1086B00B79431 /* derp.png in Resources */,
 				8E782733198566360030DB99 /* InfoPlist.strings in Resources */,
+				8E82FA9319A1085300B79431 /* batman.png in Resources */,
 				8E78273B198566360030DB99 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

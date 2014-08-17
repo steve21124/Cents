@@ -27,7 +27,7 @@
         PFQuery *query = [PFQuery queryWithClassName:@"User"];
         [query whereKey:@"phoneNumber" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
         NSArray *objects = [query findObjects];
-
+#warning handle error connecting/finding
         if (objects.count == 0)
         {
             return [GetPaymentCardViewController new];
@@ -50,7 +50,7 @@
         }
         else
         {
-#warning handle error remove all users with that number and get number again
+#warning remove all users with that number and get number again
             return [GetPaymentCardViewController new];
         }
     }

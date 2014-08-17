@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
 #import "VCFlow.h"
+#import "RootViewController.h"
 
 @implementation AppDelegate
 
@@ -27,7 +28,7 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
 
-    [self handlePushNotification:launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]];
+//    [self handlePushNotification:launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]];
 
     return YES;
 }
@@ -43,17 +44,12 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    NSLog(@"userinfo: %@",userInfo);
-    [PFPush handlePush:userInfo];
-    [self handlePushNotification:userInfo];
+    [self handlePushNotification];
 }
 
-- (void)handlePushNotification:(NSDictionary *)data
+- (void)handlePushNotification
 {
-#warning save notification to be checked in rootVC
-#warning send NSNotification to handle saved notifications, if rootVC is up it will handle, else ignore
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"push" object:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"push" object:nil];
 }
 
 @end

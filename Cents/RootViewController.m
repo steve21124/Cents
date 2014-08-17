@@ -39,6 +39,7 @@
 @property JSQFlatButton *OK;
 @property UILabel *statusText;
 @property BOOL hasDecimal;
+@property NSMutableArray *notifications;
 @end
 
 @implementation RootViewController
@@ -52,8 +53,91 @@
     [self createAmountLabel];
     [self createSendRequestButtons];
     [self createContactsView];
-
+    _notifications = [NSMutableArray new];
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pingParseForNotifications) name:@"push" object:nil];
+    [self pingParseForNotifications];
+}
+
+- (void)pingParseForNotifications
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"Notification"];
+    [query whereKey:@"phoneNumber" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+     {
+         if (error)
+         {
+#warning handle error
+         }
+         else if (objects.count == 0)
+         {
+             //do nothing
+         }
+         else
+         {
+             [self animate:objects];
+         }
+     }];
+}
+
+- (void)sendPushNotificationTo:(NSString *)phoneNumber
+                          With:(NSString *)message
+                            Of:(NSString *)type
+                          With:(NSString *)amount
+                          With:(NSString *)name
+{
+    PFQuery *pushQuery = [PFInstallation query];
+    [pushQuery whereKey:@"deviceType" equalTo:@"ios"];
+    [pushQuery whereKey:@"phoneNumber" equalTo:phoneNumber];
+
+    PFPush *push = [[PFPush alloc] init];
+    [push setQuery:pushQuery];
+    [push setMessage:message];
+    [push sendPushInBackground];
+
+    PFObject *notification = [PFObject objectWithClassName:@"Notification"];
+    notification[@"phoneNumber"] = phoneNumber;
+    notification[@"message"] = message;
+    notification[@"type"] = type;
+    notification[@"amount"] = amount;
+    notification[@"name"] = name;
+    [notification saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
+    {
+        if (error)
+        {
+#warning handle error
+        }
+    }];
+}
+
+#warning bubble head animation with message with cancel/confirm buttons if type is send or request
+#warning if request then set confirm action to send and take to confirm screen, else dismiss notification after 5secs
+- (void)animate:(NSArray *)notifications
+{
+    for (NSDictionary *notification in notifications)
+    {
+
+
+
+
+        for (NSDictionary *contact in _contacts)
+        {
+            if ([notification[@"phoneNumber"] isEqualToString:contact[@"phone"]])
+            {
+
+            }
+        }
+
+
+
+
+
+
+    }
 }
 
 - (void)createAmountLabel
@@ -322,46 +406,6 @@
     [self showFaliure:NO];
 }
 
-- (void)sendPushNotificationTo:(NSString *)phoneNumber
-                          With:(NSString *)message
-                            Of:(NSString *)type
-                          With:(NSString *)amount
-                          With:(NSString *)name
-{
-    PFQuery *pushQuery = [PFInstallation query];
-    [pushQuery whereKey:@"deviceType" equalTo:@"ios"];
-    [pushQuery whereKey:@"phoneNumber" equalTo:phoneNumber];
-
-    NSDictionary *data = @{@"alert":message,
-                           @"badge":@"Increment",
-                           @"phoneNumber":phoneNumber,
-                           @"type":type,
-                           @"amount":amount,
-                           @"name":name};
-
-    PFPush *push = [[PFPush alloc] init];
-    [push setQuery:pushQuery];
-    [push setData:data];
-    [push sendPushInBackground];
-}
-
-- (void)handleIncomingPush:(NSNotification *)notification
-{
-#warning bubble head animation that creates table view with buttons
-#warning if request then set action to send and take to confirm screen, else dismiss notification after 5secs
-#warning remove annoying default alert view from app
-    
-    NSDictionary *data = notification.object;
-    NSString *alert = data[@"alert"];
-    NSString *badge = data[@"badge"];
-    NSString *phoneNumber = data[@"phoneNumber"];
-    NSString *type = data[@"type"];
-    NSString *amount = data[@"amount"];
-    NSString *name = data[@"name"];
-
-    NSLog(@"%@ %@ %@ %@ %@ %@",alert,badge,phoneNumber,type,amount,name);
-}
-
 - (void)createCharge
 {
     _cancel.enabled = NO;
@@ -410,7 +454,6 @@
          else
          {
              NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-             NSLog(@"SUCCESS: %@", output);
 
              if (!output[@"id"])
              {
@@ -666,6 +709,8 @@
 
 - (void)getContactsWithAddressBook:(ABAddressBookRef)addressBook
 {
+    NSData *facebookImageData = UIImagePNGRepresentation([UIImage imageNamed:@"bond"]);
+
     _contacts = [NSMutableArray new];
     CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
 	CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
@@ -701,6 +746,10 @@
         {
             NSData *contactImageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
             [dOfPerson setObject:contactImageData forKey:@"image"];
+        }
+        else
+        {
+            [dOfPerson setObject:facebookImageData forKey:@"image"];
         }
         
         if (dOfPerson[@"phone"] && dOfPerson[@"image"])
