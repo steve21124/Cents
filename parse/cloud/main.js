@@ -25,7 +25,7 @@ Parse.Cloud.define("createCustomer", function(request, response) {
     card: request.params.token
   }, {
     success: function(httpResponse) {
-      response.success(httpResponse.id);
+      response.success(httpResponse);
     },
     error: function(httpResponse) {
       response.error(httpResponse.message);
@@ -48,49 +48,45 @@ Parse.Cloud.define("createCharge", function(request, response) {
   });
 });
 
-Parse.Cloud.define("createRecipient", function(request, response) {
-  Stripe.Recipients.create({
-    name: request.params.name,
-    type: "individual",
-    card: request.params.token
-  }, {
-    success: function(httpResponse) {
-      response.success(httpResponse.id);
-    },
-    error: function(httpResponse) {
-      response.error(httpResponse.message);
-    }
-  });
-});
+// Parse.Cloud.define("createRecipient", function(request, response) {
+//   Stripe.Recipients.create({
+//     name: request.params.name,
+//     type: "individual",
+//     card: request.params.token
+//   }, {
+//     success: function(httpResponse) {
+//       response.success(httpResponse.id);
+//     },
+//     error: function(httpResponse) {
+//       response.error(httpResponse.message);
+//     }
+//   });
+// });
 
-Parse.Cloud.define("createTransfer", function(request, response) {
-  Stripe.Transfers.create({
-    amount: 100 * request.params.amount,
-    currency: "usd",
-    recipient: request.params.recipient
-  }, {
-    success: function(httpResponse) {
-      response.success(httpResponse.id);
-    },
-    error: function(httpResponse) {
-      response.error(httpResponse.message);
-    }
-  });
-});
-
-
+// Parse.Cloud.define("createTransfer", function(request, response) {
+//   Stripe.Transfers.create({
+//     amount: 100 * request.params.amount,
+//     currency: "usd",
+//     recipient: request.params.recipient
+//   }, {
+//     success: function(httpResponse) {
+//       response.success(httpResponse.id);
+//     },
+//     error: function(httpResponse) {
+//       response.error(httpResponse.message);
+//     }
+//   });
+// });
 
 
-
-
-Parse.Cloud.define("customCreateRecipient", function(request, response) {
+Parse.Cloud.define("customRecipient", function(request, response) {
   Parse.Cloud.httpRequest({
     method:"POST",
-    url: "https://" + 'sk_test_4TyIk8adGJTfvHq9YDt4raCx' + ':@' + 'api.stripe.com/v1/recipients',
+    url: "https://sk_test_4TyIk8adGJTfvHq9YDt4raCx:@api.stripe.com/v1/recipients",
     body: "card="+request.params.token+"&"+"name="+request.params.name+"&"+"type=individual",
     success: function(httpResponse) 
     {
-      response.success(httpResponse.text);
+      response.success(httpResponse.message);//.text
     },
     error: function(httpResponse) 
     {

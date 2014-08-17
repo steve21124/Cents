@@ -16,7 +16,7 @@
     {
         phoneNumber = [phoneNumber stringByReplacingOccurrencesOfString:symbol withString:@""];
     }
-    if (phoneNumber.length == 9)
+    if (phoneNumber.length == 10)
     {
         phoneNumber = [@"1" stringByAppendingString:phoneNumber];
     }

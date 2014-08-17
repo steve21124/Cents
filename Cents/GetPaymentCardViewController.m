@@ -57,14 +57,14 @@
 
 - (void)createName
 {
-    _nameField = [[UITextField alloc] initWithFrame:CGRectMake(68, 150, self.view.frame.size.width-100, 30)];
+    _nameField = [[UITextField alloc] initWithFrame:CGRectMake(68, 100, self.view.frame.size.width-100, 30)];
     _nameField.font = [UIFont systemFontOfSize:20];
     _nameField.textColor = [UIColor blackColor];
     _nameField.placeholder = @"name on card";
     _nameField.textAlignment = NSTextAlignmentLeft;
     _nameField.keyboardAppearance = UIKeyboardAppearanceDark;
     _nameField.keyboardType = UIKeyboardTypeDefault;
-//    [self.view addSubview:_nameField];
+    [self.view addSubview:_nameField];
 }
 
 - (void)createSaveButton
@@ -95,8 +95,7 @@
              if (error)
              {
                  _save.enabled = YES;
-                 [self handleError:error];
-
+#warning handle error
                  _stripeView.hidden = NO;
                  _cameraIcon.hidden = NO;
                  [_stripeView.paymentView becomeFirstResponder];
@@ -117,7 +116,7 @@
              if (error)
              {
                  _save.enabled = YES;
-                 [self handleError:error];
+#warning handle error
              }
              else
              {
@@ -205,18 +204,6 @@
     _save.enabled = valid;
 }
 
-- (void)handleError:(NSError *)error
-{
-#warning handle error for real
-    NSLog(@"Error");
-    UIAlertView *message = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error")
-                                                      message:[error localizedDescription]
-                                                     delegate:nil
-                                            cancelButtonTitle:NSLocalizedString(@"OK", @"OK")
-                                            otherButtonTitles:nil];
-    [message show];
-}
-
 - (void)createCustomer:(STPToken *)token
 {
     [PFCloud callFunctionInBackground:@"createCustomer"
@@ -232,47 +219,41 @@
         else
         {
 #warning check that card is debit or restart VC
+            if (YES)
+            {
+                NSLog(@"Customer created successfully with id: %@", customer);
+                [[NSUserDefaults standardUserDefaults] setObject:customer[@"id"] forKey:@"customerId"];
+                [[NSUserDefaults standardUserDefaults] synchronize];
 
-            NSLog(@"Customer created successfully with id: %@", customer);
-            [[NSUserDefaults standardUserDefaults] setObject:customer forKey:@"customerId"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-//            [self createRecipient:token];
-            [self createRecipientREST:token];
-#warning TESTING REST
+
+                [self.stripeView createToken:^(STPToken *token, NSError *error)
+                 {
+                     if (error)
+                     {
+#warning handle error
+                     }
+                     else
+                     {
+                         [self createRecipient:token];
+                     }
+                 }];
+            }
+            else
+            {
+#warning handle non debit card error
+            }
         }
     }];
 }
 
 - (void)createRecipient:(STPToken *)token
 {
-    [PFCloud callFunctionInBackground:@"createRecipient"
-                       withParameters:@{@"name": @"Sapan Bhuta", @"token":token.tokenId}
-                                block:^(id recipient, NSError *error)
-     {
-         if (error)
-         {
-             NSLog(@"Error in creating recipient: %@",error);
-#warning restart this VC
-         }
-         else
-         {
-             NSLog(@"Recipient created successfully with id: %@", recipient);
-             [[NSUserDefaults standardUserDefaults] setObject:recipient forKey:@"recipientId"];
-             [[NSUserDefaults standardUserDefaults] synchronize];
-             [self addUserToDataBase];
-             [self showNextVC];
-         }
-     }];
-}
-
-- (void)createRecipientREST:(STPToken *)token
-{
     NSString *name = @"Sapan Bhuta";
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://api.stripe.com/v1/recipients"]];
-    NSString *params = [NSString stringWithFormat:@"%@:&name=%@&type=individual&card=%@",kStripeSecretKey,name,token.tokenId];
+    NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/recipients",kStripeSecretKey];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
+    NSString *params = [NSString stringWithFormat:@"name=%@&type=individual&card=%@",name,token.tokenId];
     request.HTTPMethod = @"POST";
     request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
-//    [request addValue: @"application/json;charset=utf-8" forHTTPHeaderField:@"Content-Type"];
 
     [NSURLConnection sendAsynchronousRequest:request
                                        queue:[NSOperationQueue mainQueue]
@@ -281,10 +262,23 @@
         if (error)
         {
             NSLog(@"ERROR: %@",error);
+#warning handle error
         }
         else
         {
-            NSLog(@"SUCCESS: %@", response);
+            NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+            NSLog(@"SUCCESS: %@", output);
+
+            if (output[@"id"])
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:output[@"id"] forKey:@"recipientId"];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                [self addUserToDataBase];
+            }
+            else
+            {
+#warning handle error
+            }
         }
     }];
 }
@@ -296,7 +290,16 @@
     user[@"customerId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
     user[@"recipientId"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"];
     user[@"name"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
-    [user saveInBackground];
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded)
+        {
+            [self showNextVC];
+        }
+        else
+        {
+#warning handle error
+        }
+    }];
 }
 
 - (void)showNextVC

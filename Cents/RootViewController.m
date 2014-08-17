@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 SapanBhuta. All rights reserved.
 //
 
+#define kStripeSecretKey @"sk_test_4TyIk8adGJTfvHq9YDt4raCx"
+
 #define amountFont 100
 #define buttonSize 75
 #define gap 75
@@ -383,27 +385,43 @@
                        Recipient:(NSString *)recipientId
                           Charge:(NSString *)chargeId
 {
-    [PFCloud callFunctionInBackground:@"createTransfer"
-                       withParameters:@{@"amount":amount, @"recipient":recipientId}
-                                block:^(id transferId, NSError *error)
+    NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/transfers",kStripeSecretKey];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
+    NSString *params = [NSString stringWithFormat:@"amount=%@&recipient=%@",amount,recipientId];
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
+
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error)
          {
-             NSLog(@"Transfer failed with error: %@", error.localizedDescription);
-             [self showFaliure:YES];
+             NSLog(@"ERROR: %@",error);
+#warning handle error
          }
          else
          {
-             NSLog(@"Transfer successful with id: %@", transferId);
-             [self recordTransactionWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId Transfer:transferId];
-             [self showFaliure:NO];
+             NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+             NSLog(@"SUCCESS: %@", output);
 
-             NSString *name = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
-             NSString *phoneNumber = _contacts[_recipientIndex][@"phone"];
-             NSString *message = [NSString stringWithFormat:@"%@ sent you $%@", name, amount];
+             if (!output[@"id"])
+             {
+                 NSLog(@"Transfer failed with error: %@", error.localizedDescription);
+                 [self showFaliure:YES];
+             }
+             else
+             {
+                 NSString *transferId = output[@"id"];
+                 NSLog(@"Transfer successful with id: %@", transferId);
+                 [self recordTransactionWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId Transfer:transferId];
+                 [self showFaliure:NO];
 
-             [self sendPushNotificationTo:phoneNumber With:message Of:@"send" With:amount With:name];
-
+                 NSString *name = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
+                 NSString *phoneNumber = _contacts[_recipientIndex][@"phone"];
+                 NSString *message = [NSString stringWithFormat:@"%@ sent you $%@", name, amount];
+                 [self sendPushNotificationTo:phoneNumber With:message Of:@"send" With:amount With:name];
+             }
          }
          _cancel.enabled = YES;
          _confirm.enabled = YES;
