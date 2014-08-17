@@ -21,6 +21,7 @@
 @interface VerifyPhoneNumberViewController ()
 @property UITextField *codeEntry;
 @property NSTimer *buttonCheckTimer;
+@property JSQFlatButton *resend;
 @property JSQFlatButton *enter;
 @property int randomNum;
 @end
@@ -30,9 +31,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
     self.view.backgroundColor = [UIColor wisteriaColor];
+    [self createTitle];
+    [self createEntryField];
+    [self createButtons];
+}
 
+- (void)createTitle
+{
     UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, self.view.frame.size.width-2*10, 50)];
     title.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:50];
     title.textColor = [UIColor whiteColor];
@@ -40,7 +46,10 @@
     title.adjustsFontSizeToFitWidth = YES;
     title.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:title];
+}
 
+- (void)createEntryField
+{
     _codeEntry = [[UITextField alloc] initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-2*20, 100)];
     _codeEntry.placeholder = @"enter code";
     _codeEntry.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40];
@@ -51,18 +60,20 @@
     _codeEntry.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_codeEntry];
     [_codeEntry becomeFirstResponder];
+}
 
-    JSQFlatButton *resend = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0,
-                                                                           self.view.frame.size.height-216-54,
-                                                                           self.view.frame.size.width/2-.25,
-                                                                           54)
-                                                backgroundColor:[UIColor colorWithRed:1.00f green:1.00f blue:1.00f alpha:1.0f]
-                                                foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
-                                                          title:@"resend"
-                                                          image:nil];
-    [resend addTarget:self action:@selector(resend) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:resend];
-
+- (void)createButtons
+{
+    _resend = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0,
+                                                              self.view.frame.size.height-216-54,
+                                                              self.view.frame.size.width/2-.25,
+                                                              54)
+                                   backgroundColor:[UIColor colorWithRed:1.00f green:1.00f blue:1.00f alpha:1.0f]
+                                   foregroundColor:[UIColor colorWithRed:0.35f green:0.35f blue:0.81f alpha:1.0f]
+                                             title:@"resend"
+                                             image:nil];
+    [_resend addTarget:self action:@selector(resend:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_resend];
 
     _enter = [[JSQFlatButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2+.25,
                                                              self.view.frame.size.height-216-54,
@@ -85,13 +96,13 @@
     [self sendSMSToNumber:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
 }
 
-- (void)resend
+- (void)resend:(JSQFlatButton *)sender
 {
     _codeEntry.text = @"";
     [self sendSMSToNumber:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
 }
 
-- (void)enter:(UIButton *)sender
+- (void)enter:(JSQFlatButton *)sender
 {
     [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:@"verifiedPhoneNumber"];
     [self presentViewController:[VCFlow nextVC] animated:NO completion:nil];
@@ -132,7 +143,7 @@
     {
         if (error)
         {
-//            NSLog(@"ERROR: %@",error.localizedDescription);
+#warning handle error
         }
     }];
 }

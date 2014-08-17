@@ -703,10 +703,10 @@
         }
 	}
 
-    for (NSDictionary *contact in _contacts)
-    {
-        NSLog(@"Name: %@, Number: %@",contact[@"name"],contact[@"phone"]);
-    }
+//    for (NSDictionary *contact in _contacts)
+//    {
+//        NSLog(@"Name: %@, Number: %@",contact[@"name"],contact[@"phone"]);
+//    }
     [_collectionView reloadData];
 }
 

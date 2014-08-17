@@ -34,12 +34,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor wisteriaColor];
     [self createTitle];
     [self createName];
     [self createStripeViewDefault];
-
-    self.view.backgroundColor = [UIColor wisteriaColor];
-
     [self createSaveButton];
     [self createCameraButton];
 }

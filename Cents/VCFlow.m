@@ -34,6 +34,11 @@
         }
         else if (objects.count == 1)
         {
+            [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"phoneNumber"] forKey:@"phoneNumber"];
+            [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"customerId"] forKey:@"customerId"];
+            [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"recipientId"] forKey:@"recipientId"];
+            [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"name"] forKey:@"name"];
+
             if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
             {
                 return [GetPaymentCardViewController new];
