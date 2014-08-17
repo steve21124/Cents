@@ -214,8 +214,10 @@
 
 - (void)decideActionOnSaveOrRequest
 {
+    NSLog(@"%@",_contacts[_recipientIndex][@"phone"]);
+
     PFQuery *query = [PFQuery queryWithClassName:@"User"];
-    [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
+    [query whereKey:@"phoneNumber" equalTo:@"16144670857"];//_contacts[_recipientIndex][@"phone"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
      {
          if (error)
@@ -339,7 +341,7 @@
 {
     _cancel.enabled = NO;
     _confirm.enabled = NO;
-    NSString *amount = @([_amountField.text floatValue]).description;
+    NSString *amount = @([_amountField.text floatValue]*100).description;
     NSString *customerId = [[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"];
 
     [PFCloud callFunctionInBackground:@"createCharge"
@@ -364,7 +366,7 @@
                          Charge:(NSString *)chargeId
 {
     PFQuery *query = [PFQuery queryWithClassName:@"User"];
-    [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
+    [query whereKey:@"phoneNumber" equalTo:@"16144670857"];//_contacts[_recipientIndex][@"phone"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *recipients, NSError *error) {
         if (error)
         {
@@ -387,7 +389,7 @@
 {
     NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/transfers",kStripeSecretKey];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
-    NSString *params = [NSString stringWithFormat:@"amount=%@&recipient=%@",amount,recipientId];
+    NSString *params = [NSString stringWithFormat:@"amount=%@&currency=usd&recipient=%@",amount,recipientId];
     request.HTTPMethod = @"POST";
     request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -699,7 +701,7 @@
         }
 	}
     
-//    NSLog(@"Contacts = %@",_contacts);
+    NSLog(@"Contacts = %@",_contacts);
     [_collectionView reloadData];
 }
 
