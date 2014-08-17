@@ -105,6 +105,7 @@
 - (void)enter:(JSQFlatButton *)sender
 {
     [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:@"verifiedPhoneNumber"];
+    [PFInstallation currentInstallation][@"phoneNumber"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
     [self presentViewController:[VCFlow nextVC] animated:NO completion:nil];
 }
 

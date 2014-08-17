@@ -36,7 +36,7 @@
 {
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
-//    currentInstallation[@"user"] = [PFUser currentUser];
+//    currentInstallation[@"phoneNumber"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
     currentInstallation.channels = @[@"global"];
     [currentInstallation saveInBackground];
 }
@@ -53,14 +53,7 @@
 #warning save notification to be checked in rootVC
 #warning send NSNotification to handle saved notifications, if rootVC is up it will handle, else ignore
 
-//    NSString *alert = data[@"alert"];
-//    NSString *badge = data[@"badge"];
-//    NSString *phoneNumber = data[@"phoneNumber"];
-//    NSString *type = data[@"type"];
-//    NSString *amount = data[@"amount"];
-//    NSString *name = data[@"name"];
-
-//    [[NSNotificationCenter defaultCenter] postNotificationName:@"push" object:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"push" object:userInfo];
 }
 
 @end

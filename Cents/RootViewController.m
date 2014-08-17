@@ -328,12 +328,9 @@
                           With:(NSString *)amount
                           With:(NSString *)name
 {
-    PFQuery *userQuery = [PFUser query];
-    [userQuery whereKey:@"phoneNumber" equalTo:phoneNumber];
-
     PFQuery *pushQuery = [PFInstallation query];
     [pushQuery whereKey:@"deviceType" equalTo:@"ios"];
-    [pushQuery whereKey:@"user" matchesQuery:userQuery];
+    [pushQuery whereKey:@"phoneNumber" equalTo:phoneNumber];
 
     NSDictionary *data = @{@"alert":message,
                            @"badge":@"Increment",
@@ -353,8 +350,16 @@
 #warning bubble head animation that creates table view with buttons
 #warning if request then set action to send and take to confirm screen, else dismiss notification after 5secs
 #warning remove annoying default alert view from app
-//    NSDictionary *details = notification.object;
+    
+    NSDictionary *data = notification.object;
+    NSString *alert = data[@"alert"];
+    NSString *badge = data[@"badge"];
+    NSString *phoneNumber = data[@"phoneNumber"];
+    NSString *type = data[@"type"];
+    NSString *amount = data[@"amount"];
+    NSString *name = data[@"name"];
 
+    NSLog(@"%@ %@ %@ %@ %@ %@",alert,badge,phoneNumber,type,amount,name);
 }
 
 - (void)createCharge
