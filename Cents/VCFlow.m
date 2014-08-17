@@ -50,7 +50,7 @@
         }
         else
         {
-#warning remove all users with that number and get number again
+#warning handle error remove all users with that number and get number again
             return [GetPaymentCardViewController new];
         }
     }

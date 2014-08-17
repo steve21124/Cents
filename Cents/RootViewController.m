@@ -245,7 +245,7 @@
              }
              else
              {
-#warning handle multiple user with same number error
+#warning handle error multiple user with same number
              }
          }
      }];
@@ -353,8 +353,8 @@
 #warning bubble head animation that creates table view with buttons
 #warning if request then set action to send and take to confirm screen, else dismiss notification after 5secs
 #warning remove annoying default alert view from app
-    NSDictionary *details = notification.object;
-    
+//    NSDictionary *details = notification.object;
+
 }
 
 - (void)createCharge
@@ -400,6 +400,7 @@
          {
              NSLog(@"ERROR: %@",error);
 #warning handle error
+             [self showFaliure:YES];
          }
          else
          {

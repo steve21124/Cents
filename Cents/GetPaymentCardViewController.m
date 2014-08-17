@@ -212,11 +212,11 @@
         if (error)
         {
             NSLog(@"Error in creating customer: %@",error);
-#warning restart this VC
+#warning handle error restart this VC
         }
         else
         {
-#warning check that card is debit or restart VC
+#warning handle error check that card is debit or restart VC
             if (YES)
             {
                 NSLog(@"Customer created successfully with id: %@", customer);
@@ -238,7 +238,7 @@
             }
             else
             {
-#warning handle non debit card error
+#warning handle error that card funding is not debit
             }
         }
     }];
