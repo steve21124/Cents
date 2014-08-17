@@ -11,7 +11,7 @@
 @implementation CleanPhoneNumber
 + (NSString *)clean:(NSString *)phoneNumber
 {
-    NSArray *symbols = @[@"+", @"(",@")", @" ", @"-", @"*", @"#", @",", @";"];
+    NSArray *symbols = @[@"+", @"(",@")", @" ", @"-", @"*", @"#", @",", @";",@" "];
     for (NSString *symbol in symbols)
     {
         phoneNumber = [phoneNumber stringByReplacingOccurrencesOfString:symbol withString:@""];

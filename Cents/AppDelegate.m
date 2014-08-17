@@ -7,12 +7,8 @@
 //
 
 #import "AppDelegate.h"
-#import "RootViewController.h"
 #import <Parse/Parse.h>
-#import "GetPhoneNumberViewController.h"
-#import "GetPaymentCardViewController.h"
-#import "GetContactsViewController.h"
-@import AddressBook;
+#import "VCFlow.h"
 
 @implementation AppDelegate
 
@@ -27,34 +23,13 @@
                                                     UIRemoteNotificationTypeSound];
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = [self vcFromFlowOrder];
+    self.window.rootViewController = [VCFlow nextVC];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
 
     [self handlePushNotification:launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]];
 
     return YES;
-}
-
-- (UIViewController *)vcFromFlowOrder
-{
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"])
-    {
-        return [GetPhoneNumberViewController new];
-    }
-#warning check parse for number in database and if has associated card ids
-    else if (![[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"]) //recipientId
-    {
-        return [GetPaymentCardViewController new];
-    }
-    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-    {
-        return [GetContactsViewController new];
-    }
-    else
-    {
-        return [RootViewController new];
-    }
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -78,12 +53,12 @@
 #warning save notification to be checked in rootVC
 #warning send NSNotification to handle saved notifications, if rootVC is up it will handle, else ignore
 
-    NSString *alert = data[@"alert"];
-    NSString *badge = data[@"badge"];
-    NSString *phoneNumber = data[@"phoneNumber"];
-    NSString *type = data[@"type"];
-    NSString *amount = data[@"amount"];
-    NSString *name = data[@"name"];
+//    NSString *alert = data[@"alert"];
+//    NSString *badge = data[@"badge"];
+//    NSString *phoneNumber = data[@"phoneNumber"];
+//    NSString *type = data[@"type"];
+//    NSString *amount = data[@"amount"];
+//    NSString *name = data[@"name"];
 
 //    [[NSNotificationCenter defaultCenter] postNotificationName:@"push" object:userInfo];
 }

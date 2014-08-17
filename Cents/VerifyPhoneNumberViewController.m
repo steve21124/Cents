@@ -11,6 +11,12 @@
 #import "UIColor+FlatUI.h"
 #import "GetPaymentCardViewController.h"
 #import <Parse/Parse.h>
+#import "RootViewController.h"
+#import "GetPhoneNumberViewController.h"
+#import "GetPaymentCardViewController.h"
+#import "GetContactsViewController.h"
+@import AddressBook;
+#import "VCFlow.h"
 
 @interface VerifyPhoneNumberViewController ()
 @property UITextField *codeEntry;
@@ -87,8 +93,8 @@
 
 - (void)enter:(UIButton *)sender
 {
-    GetPaymentCardViewController *vc = [GetPaymentCardViewController new];
-    [self presentViewController:vc animated:NO completion:nil];
+    [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:@"verifiedPhoneNumber"];
+    [self presentViewController:[VCFlow nextVC] animated:NO completion:nil];
 }
 
 - (BOOL)codeIsValid

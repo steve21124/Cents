@@ -203,12 +203,16 @@
 
 - (void)request:(JSQFlatButton *)sender
 {
+    _request.enabled = NO;
+    _send.enabled = NO;
     _actionIsSend = NO;
     [self decideActionOnSaveOrRequest];
 }
 
 - (void)send:(JSQFlatButton *)sender
 {
+    _request.enabled = NO;
+    _send.enabled = NO;
     _actionIsSend = YES;
     [self decideActionOnSaveOrRequest];
 }
@@ -218,7 +222,7 @@
     NSLog(@"%@",_contacts[_recipientIndex][@"phone"]);
 
     PFQuery *query = [PFQuery queryWithClassName:@"User"];
-    [query whereKey:@"phoneNumber" equalTo:@"16144670857"];//_contacts[_recipientIndex][@"phone"]];
+    [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
      {
          if (error)
@@ -279,6 +283,9 @@
         _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx-320, 0);
         _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx-320, 0);
         _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx-320, 0);
+    } completion:^(BOOL finished) {
+        _request.enabled = YES;
+        _send.enabled = YES;
     }];
 }
 
@@ -512,6 +519,9 @@
     [UIView animateWithDuration:.3 animations:^{
         _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
+    } completion:^(BOOL finished) {
+        _request.enabled = YES;
+        _send.enabled = YES;
     }];
 }
 
@@ -692,8 +702,11 @@
             [_contacts addObject:dOfPerson];
         }
 	}
-    
-    NSLog(@"Contacts = %@",_contacts);
+
+    for (NSDictionary *contact in _contacts)
+    {
+        NSLog(@"Name: %@, Number: %@",contact[@"name"],contact[@"phone"]);
+    }
     [_collectionView reloadData];
 }
 
