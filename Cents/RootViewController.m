@@ -27,6 +27,7 @@
 @property UICollectionView *collectionView;
 @property BOOL actionIsSend;
 @property int recipientIndex;
+@property NSString *recipientId;
 @property JSQFlatButton *request;
 @property JSQFlatButton *send;
 @property JSQFlatButton *cancel;
@@ -229,7 +230,19 @@
          else
          {
              NSLog(@"Query successful: %lu", (unsigned long)objects.count);
-             objects.count > 0 ? [self ask] : [self handleRecepientNotOnService];
+             if (objects.count == 0)
+             {
+                 [self handleRecepientNotOnService];
+             }
+             else if (objects.count == 1)
+             {
+                 _recipientId = objects.firstObject[@"recipientId"];
+                 [self ask];
+             }
+             else
+             {
+#warning handle multiple user with same number error
+             }
          }
      }];
 }
@@ -356,30 +369,9 @@
          else
          {
              NSLog(@"Card charged successfully with id: %@", chargeId);
-             [self findRecipientWithAmount:amount Customer:customerId Charge:chargeId];
+             [self createTransferWithAmount:amount Customer:customerId Recipient:_recipientId Charge:chargeId];
          }
      }];
-}
-
-- (void)findRecipientWithAmount:(NSString *)amount
-                       Customer:(NSString *)customerId
-                         Charge:(NSString *)chargeId
-{
-    PFQuery *query = [PFQuery queryWithClassName:@"User"];
-    [query whereKey:@"phoneNumber" equalTo:@"16144670857"];//_contacts[_recipientIndex][@"phone"]];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *recipients, NSError *error) {
-        if (error)
-        {
-            NSLog(@"Getting recipientId failed for transfer with error: %@ %@", error, [error userInfo]);
-            [self showFaliure:YES];
-        }
-        else
-        {
-            NSString *recipientId = recipients.firstObject[@"recipientId"];
-            NSLog(@"Got recipientId %@ and now creating transfer", recipientId);
-            [self createTransferWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId];
-        }
-    }];
 }
 
 - (void)createTransferWithAmount:(NSString *)amount

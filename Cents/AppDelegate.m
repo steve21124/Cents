@@ -42,6 +42,7 @@
     {
         return [GetPhoneNumberViewController new];
     }
+#warning check parse for number in database and if has associated card ids
     else if (![[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"]) //recipientId
     {
         return [GetPaymentCardViewController new];
