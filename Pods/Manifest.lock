@@ -10,12 +10,12 @@ PODS:
   - libPhoneNumber-iOS (0.7.3)
   - LTPhoneNumberField (0.5.0):
     - libPhoneNumber-iOS (~> 0.7.2)
+  - MCSwipeTableViewCell (2.1.0)
   - Parse (1.2.20):
     - Facebook-iOS-SDK (~> 3.11)
   - PaymentKit (1.0.5)
   - Stripe (1.1.4):
     - PaymentKit (~> 1.0.4)
-  - SWTableViewCell (0.3.0)
   - TSCurrencyTextField (0.1.0):
     - TSCurrencyTextField/Core
   - TSCurrencyTextField/Core (0.1.0)
@@ -27,9 +27,9 @@ DEPENDENCIES:
   - JDFCurrencyTextField
   - JSQFlatButton
   - LTPhoneNumberField
+  - MCSwipeTableViewCell
   - Parse
   - Stripe
-  - SWTableViewCell
   - TSCurrencyTextField (~> 0.1.0)
 
 SPEC CHECKSUMS:
@@ -42,10 +42,10 @@ SPEC CHECKSUMS:
   JSQFlatButton: e8a11ba46496e7db757ddc24469774c254365ece
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
   LTPhoneNumberField: 5c7357f959e8175d297132c4dd09cf262922fe35
+  MCSwipeTableViewCell: 713086e29ce3c2171a0102fc594bf583fa7dd323
   Parse: 28c0dc54f30201a369d29a2f76c09fa43b2add16
   PaymentKit: 14b54835f57ae9e2bf5628140fcd67001740cba2
   Stripe: a0ed1c0675a3c36f6e8d575820cfec1dc9335f53
-  SWTableViewCell: 1725f7607ce4c154264c18aeb78e4636b11b0b29
   TSCurrencyTextField: d63c385890f2d41200ecdd2268f01fd5968405cc
 
 COCOAPODS: 0.33.1

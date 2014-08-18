@@ -54,6 +54,12 @@
 #define COCOAPODS_VERSION_MINOR_LTPhoneNumberField 5
 #define COCOAPODS_VERSION_PATCH_LTPhoneNumberField 0
 
+// MCSwipeTableViewCell
+#define COCOAPODS_POD_AVAILABLE_MCSwipeTableViewCell
+#define COCOAPODS_VERSION_MAJOR_MCSwipeTableViewCell 2
+#define COCOAPODS_VERSION_MINOR_MCSwipeTableViewCell 1
+#define COCOAPODS_VERSION_PATCH_MCSwipeTableViewCell 0
+
 // Parse
 #define COCOAPODS_POD_AVAILABLE_Parse
 #define COCOAPODS_VERSION_MAJOR_Parse 1
@@ -65,12 +71,6 @@
 #define COCOAPODS_VERSION_MAJOR_PaymentKit 1
 #define COCOAPODS_VERSION_MINOR_PaymentKit 0
 #define COCOAPODS_VERSION_PATCH_PaymentKit 5
-
-// SWTableViewCell
-#define COCOAPODS_POD_AVAILABLE_SWTableViewCell
-#define COCOAPODS_VERSION_MAJOR_SWTableViewCell 0
-#define COCOAPODS_VERSION_MINOR_SWTableViewCell 3
-#define COCOAPODS_VERSION_PATCH_SWTableViewCell 0
 
 // Stripe
 #define COCOAPODS_POD_AVAILABLE_Stripe
