@@ -27,6 +27,7 @@
 #import "CleanPhoneNumber.h"
 @import AddressBook;
 #import "FXBlurView.h"
+#import "MCSwipeTableViewCell.h"
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate>
 @property UILabel *dollarSign;
@@ -104,7 +105,7 @@
 //             NSLog(@"notifications %@",objects);
              _notifications = [objects mutableCopy];
              [_notificationsTableView reloadData];
-             [self animateNotifications];
+             [self showNotifications];
          }
      }];
 }
@@ -141,7 +142,7 @@
 
 #warning bubble head animation with message with cancel/confirm buttons if type is send or request
 #warning if request then set confirm action to send and take to confirm screen, else dismiss notification after 5secs
-- (void)animateNotifications
+- (void)showNotifications
 {
     if (!_showingNotifications)
     {
@@ -153,12 +154,24 @@
     }
 }
 
+- (void)hideNotifications
+{
+    if (_showingNotifications)
+    {
+        _showingNotifications = false;
+        [UIView animateWithDuration:.3 animations:^{
+            _blurView.transform = CGAffineTransformMakeTranslation(0, -(self.view.frame.size.height-216));
+            _notificationsTableView.transform = CGAffineTransformMakeTranslation(0,-(self.view.frame.size.height-216));
+        }];
+    }
+}
+
 - (void)createBlurView
 {
     _blurView = [[FXBlurView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-216)];
     _blurView.alpha = .9;
     [self.view addSubview:_blurView];
-    _blurView.transform = CGAffineTransformMakeTranslation(0, _blurView.transform.ty-(self.view.frame.size.height-216));
+    _blurView.transform = CGAffineTransformMakeTranslation(0, -(self.view.frame.size.height-216));
 }
 
 - (void)createNotificationsView
@@ -173,7 +186,7 @@
     _notificationsTableView.allowsSelection = NO;
     _notificationsTableView.alwaysBounceVertical = NO;
     [self.view addSubview:_notificationsTableView];
-    _notificationsTableView.transform = CGAffineTransformMakeTranslation(0, _notificationsTableView.transform.ty - (self.view.frame.size.height-216));
+    _notificationsTableView.transform = CGAffineTransformMakeTranslation(0, -(self.view.frame.size.height-216));
 }
 
 - (void)createHistoryView
@@ -730,19 +743,65 @@
     }
     else
     {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
+        MCSwipeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
         if (!cell)
         {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
-            cell.backgroundColor = [UIColor clearColor];
-            cell.textLabel.textColor = [UIColor whiteColor];
+            cell = [[MCSwipeTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
+            [cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+            cell.contentView.backgroundColor = [UIColor whiteColor];
+//            cell.backgroundColor = [UIColor clearColor];
+//            cell.textLabel.textColor = [UIColor whiteColor];
         }
-
+        [self configureCell:cell forRowAtIndexPath:indexPath];
         NSDictionary *notification = _notifications[indexPath.item];
         cell.textLabel.text = notification[@"message"];
-
         return cell;
     }
+}
+
+- (void)configureCell:(MCSwipeTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Configuring the views and colors.
+    UIView *checkView = [self viewWithImageName:@"check"];
+    UIColor *greenColor = [UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0];
+
+    UIView *crossView = [self viewWithImageName:@"cross"];
+    UIColor *redColor = [UIColor colorWithRed:232.0 / 255.0 green:61.0 / 255.0 blue:14.0 / 255.0 alpha:1.0];
+
+    [cell setDefaultColor:_notificationsTableView.backgroundView.backgroundColor];
+
+    [cell setSwipeGestureWithView:checkView color:greenColor mode:MCSwipeTableViewCellModeExit state:MCSwipeTableViewCellState1 completionBlock:^(MCSwipeTableViewCell *cell, MCSwipeTableViewCellState state, MCSwipeTableViewCellMode mode)
+    {
+        [self deleteCell:cell];
+    }];
+
+    [cell setSwipeGestureWithView:crossView color:redColor mode:MCSwipeTableViewCellModeExit state:MCSwipeTableViewCellState2 completionBlock:^(MCSwipeTableViewCell *cell, MCSwipeTableViewCellState state, MCSwipeTableViewCellMode mode)
+    {
+        [self deleteCell:cell];
+    }];
+}
+
+- (void)deleteCell:(MCSwipeTableViewCell *)cell
+{
+    NSParameterAssert(cell);
+    NSIndexPath *indexPath = [_notificationsTableView indexPathForCell:cell];
+    [_notifications removeObjectAtIndex:indexPath.row];
+    [_notificationsTableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+
+    if (_notifications.count == 0)
+    {
+        [self hideNotifications];
+    }
+
+#warning delete from Parse servers
+}
+
+- (UIView *)viewWithImageName:(NSString *)imageName
+{
+    UIImage *image = [UIImage imageNamed:imageName];
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+    imageView.contentMode = UIViewContentModeCenter;
+    return imageView;
 }
 
 #pragma mark - UICollectionView DataSource/Delegate Methods
