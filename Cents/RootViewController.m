@@ -14,7 +14,7 @@
 
 #define kContactsCollectionView 0
 #define kScenesCollectionView 1
-#define kNotificationsCollectionView 2
+#define kNotificationsTableView 2
 #define kHistoryTableView 3
 
 #define includeBlankContacts NO
@@ -48,6 +48,7 @@
 @property UILabel *statusText;
 @property BOOL hasDecimal;
 @property NSMutableArray *notifications;
+@property UITableView *notificationsTableView;
 @property BOOL showingNotifications;
 @property FXBlurView *blurView;
 @property BOOL takingAction;
@@ -71,6 +72,8 @@
     [self createScenesView];
     [self createContactsView];
     [self createHistoryView];
+    [self createBlurView];
+    [self createNotificationsView];
     _showingNotifications = false;
     _notifications = [NSMutableArray new];
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
@@ -98,7 +101,10 @@
          }
          else if (!_showingNotifications)
          {
-//             [self animate:objects];
+//             NSLog(@"notifications %@",objects);
+             _notifications = [objects mutableCopy];
+             [_notificationsTableView reloadData];
+             [self animateNotifications];
          }
      }];
 }
@@ -135,44 +141,39 @@
 
 #warning bubble head animation with message with cancel/confirm buttons if type is send or request
 #warning if request then set confirm action to send and take to confirm screen, else dismiss notification after 5secs
-- (void)animate:(NSArray *)notifications
+- (void)animateNotifications
 {
     if (!_showingNotifications)
     {
         _showingNotifications = true;
-        FXBlurView *blurView = [[FXBlurView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-216-54)];
-        [self.view addSubview:blurView];
-        blurView.transform = CGAffineTransformMakeTranslation(0, blurView.transform.ty-(self.view.frame.size.height-216-54));
-        blurView.alpha = .9;
         [UIView animateWithDuration:.3 animations:^{
-            blurView.transform = CGAffineTransformMakeTranslation(0, 0);
+            _blurView.transform = CGAffineTransformMakeTranslation(0, 0);
+            _notificationsTableView.transform = CGAffineTransformMakeTranslation(0, 0);
         }];
     }
 }
 
-- (void)createAmountLabel
+- (void)createBlurView
 {
-    self.view.backgroundColor = [UIColor wisteriaColor];
+    _blurView = [[FXBlurView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-216)];
+    _blurView.alpha = .9;
+    [self.view addSubview:_blurView];
+    _blurView.transform = CGAffineTransformMakeTranslation(0, _blurView.transform.ty-(self.view.frame.size.height-216));
+}
 
-    _dollarSign = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 20, amountFont)];
-    _dollarSign.text = @"$";
-    _dollarSign.textColor = [UIColor whiteColor];
-    _dollarSign.adjustsFontSizeToFitWidth = YES;
-    _dollarSign.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
-    [self.view addSubview:_dollarSign];
-
-    _amountField = [[UITextField alloc] initWithFrame:CGRectMake(30, 30, 280-50, amountFont)];
-    _amountField.placeholder = @"enter amount";
-    _amountField.textColor = [UIColor whiteColor];
-    _amountField.textAlignment = NSTextAlignmentLeft;
-    _amountField.keyboardAppearance = UIKeyboardAppearanceDark;
-    _amountField.keyboardType = UIKeyboardTypeDecimalPad;
-    _amountField.adjustsFontSizeToFitWidth = YES;
-    _amountField.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
-    [self.view addSubview:_amountField];
-    [_amountField becomeFirstResponder];
-
-    _hasDecimal = NO;
+- (void)createNotificationsView
+{
+    _notificationsTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 30, self.view.frame.size.width, self.view.frame.size.height-216-30)
+                                                           style:UITableViewStylePlain];
+    _notificationsTableView.delegate = self;
+    _notificationsTableView.dataSource = self;
+    _notificationsTableView.backgroundColor = [UIColor clearColor];
+    _notificationsTableView.separatorColor = [UIColor clearColor];
+    _notificationsTableView.tag = kNotificationsTableView;
+    _notificationsTableView.allowsSelection = NO;
+    _notificationsTableView.alwaysBounceVertical = NO;
+    [self.view addSubview:_notificationsTableView];
+    _notificationsTableView.transform = CGAffineTransformMakeTranslation(0, _notificationsTableView.transform.ty - (self.view.frame.size.height-216));
 }
 
 - (void)createHistoryView
@@ -290,6 +291,31 @@
     [self.view addSubview:_send];
 
     [self slideInButtons];
+}
+
+- (void)createAmountLabel
+{
+    self.view.backgroundColor = [UIColor wisteriaColor];
+
+    _dollarSign = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 20, amountFont)];
+    _dollarSign.text = @"$";
+    _dollarSign.textColor = [UIColor whiteColor];
+    _dollarSign.adjustsFontSizeToFitWidth = YES;
+    _dollarSign.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
+    [self.view addSubview:_dollarSign];
+
+    _amountField = [[UITextField alloc] initWithFrame:CGRectMake(30, 30, 280-50, amountFont)];
+    _amountField.placeholder = @"enter amount";
+    _amountField.textColor = [UIColor whiteColor];
+    _amountField.textAlignment = NSTextAlignmentLeft;
+    _amountField.keyboardAppearance = UIKeyboardAppearanceDark;
+    _amountField.keyboardType = UIKeyboardTypeDecimalPad;
+    _amountField.adjustsFontSizeToFitWidth = YES;
+    _amountField.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
+    [self.view addSubview:_amountField];
+    [_amountField becomeFirstResponder];
+
+    _hasDecimal = NO;
 }
 
 - (void)createConfirmCancelButtons
@@ -667,31 +693,56 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return _transactions.count;
+    if (tableView.tag == kHistoryTableView)
+    {
+        return _transactions.count;
+    }
+    else
+    {
+        return _notifications.count;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"historyCell"];
-    if (!cell)
+    if (tableView.tag == kHistoryTableView)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
-        cell.backgroundColor = [UIColor clearColor];
-        cell.textLabel.textColor = [UIColor whiteColor];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"historyCell"];
+        if (!cell)
+        {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
+            cell.backgroundColor = [UIColor clearColor];
+            cell.textLabel.textColor = [UIColor whiteColor];
+        }
+
+        NSDictionary *transaction = _transactions[indexPath.item];
+        cell.textLabel.text = transaction[@"amount"];
+        //    if (![transaction[@"customerId"] isEqualToString:[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"]])
+        //    {
+        //        cell.textLabel.textAlignment = NSTextAlignmentRight;
+        //    }
+        //    else
+        //    {
+        //        cell.textLabel.textAlignment = NSTextAlignmentLeft;
+        //    }
+        
+        return cell;
     }
+    else
+    {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
+        if (!cell)
+        {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
+            cell.backgroundColor = [UIColor clearColor];
+            cell.textLabel.textColor = [UIColor whiteColor];
+        }
 
-    NSDictionary *transaction = _transactions[indexPath.item];
-    cell.textLabel.text = transaction[@"amount"];
-//    if (![transaction[@"customerId"] isEqualToString:[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"]])
-//    {
-//        cell.textLabel.textAlignment = NSTextAlignmentRight;
-//    }
-//    else
-//    {
-//        cell.textLabel.textAlignment = NSTextAlignmentLeft;
-//    }
+        NSDictionary *notification = _notifications[indexPath.item];
+        cell.textLabel.text = notification[@"message"];
 
-    return cell;
+        return cell;
+    }
 }
 
 #pragma mark - UICollectionView DataSource/Delegate Methods

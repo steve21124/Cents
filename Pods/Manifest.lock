@@ -15,6 +15,7 @@ PODS:
   - PaymentKit (1.0.5)
   - Stripe (1.1.4):
     - PaymentKit (~> 1.0.4)
+  - SWTableViewCell (0.3.0)
   - TSCurrencyTextField (0.1.0):
     - TSCurrencyTextField/Core
   - TSCurrencyTextField/Core (0.1.0)
@@ -28,6 +29,7 @@ DEPENDENCIES:
   - LTPhoneNumberField
   - Parse
   - Stripe
+  - SWTableViewCell
   - TSCurrencyTextField (~> 0.1.0)
 
 SPEC CHECKSUMS:
@@ -43,6 +45,7 @@ SPEC CHECKSUMS:
   Parse: 28c0dc54f30201a369d29a2f76c09fa43b2add16
   PaymentKit: 14b54835f57ae9e2bf5628140fcd67001740cba2
   Stripe: a0ed1c0675a3c36f6e8d575820cfec1dc9335f53
+  SWTableViewCell: 1725f7607ce4c154264c18aeb78e4636b11b0b29
   TSCurrencyTextField: d63c385890f2d41200ecdd2268f01fd5968405cc
 
 COCOAPODS: 0.33.1
