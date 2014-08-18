@@ -1,9 +1,10 @@
 PODS:
-  - Bolts (1.1.0)
+  - Bolts (1.1.1)
   - CardIO (3.8.3)
-  - Facebook-iOS-SDK (3.16.2):
+  - Facebook-iOS-SDK (3.17.0):
     - Bolts
   - FlatUIKit (1.4)
+  - FXBlurView (1.6.2)
   - JDFCurrencyTextField (2.1)
   - JSQFlatButton (2.0.0)
   - libPhoneNumber-iOS (0.7.3)
@@ -21,6 +22,7 @@ PODS:
 DEPENDENCIES:
   - CardIO
   - FlatUIKit
+  - FXBlurView
   - JDFCurrencyTextField
   - JSQFlatButton
   - LTPhoneNumberField
@@ -29,10 +31,11 @@ DEPENDENCIES:
   - TSCurrencyTextField (~> 0.1.0)
 
 SPEC CHECKSUMS:
-  Bolts: 91c2af8eae1d44e1dd75946a5b0ae04a43ea43e4
+  Bolts: 0ca796081c3e7c139bd86d6903c27f1b83036a5d
   CardIO: de8d02da5003619533f52e4a5c44d84496ddb25c
-  Facebook-iOS-SDK: 34eef640c2cc4c8618ba0f574ad2b290e07f1b4e
+  Facebook-iOS-SDK: f20274d809f112ba540842e2b6cbe50128d51b7b
   FlatUIKit: edc1ed0c130687dc64a10e45851cc58925f6893d
+  FXBlurView: 47496afc9160097fa34af35fc4b310bd85d65dca
   JDFCurrencyTextField: 0bd2c46d59f69594fdfb2ace6a53908ded02ea28
   JSQFlatButton: e8a11ba46496e7db757ddc24469774c254365ece
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e

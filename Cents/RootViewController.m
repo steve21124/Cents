@@ -19,12 +19,13 @@
 #import <Parse/Parse.h>
 #import "CleanPhoneNumber.h"
 @import AddressBook;
+#import "FXBlurView.h"
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
 @property UILabel *dollarSign;
 @property UITextField *amountField;
 @property CGRect frame;
-@property UICollectionView *collectionView;
+@property UICollectionView *contactsCollectionView;
 @property BOOL actionIsSend;
 @property int recipientIndex;
 @property NSString *recipientId;
@@ -40,6 +41,9 @@
 @property UILabel *statusText;
 @property BOOL hasDecimal;
 @property NSMutableArray *notifications;
+@property BOOL showingNotifications;
+@property FXBlurView *blurView;
+@property BOOL takingAction;
 @end
 
 @implementation RootViewController
@@ -53,6 +57,7 @@
     [self createAmountLabel];
     [self createSendRequestButtons];
     [self createContactsView];
+    _showingNotifications = false;
     _notifications = [NSMutableArray new];
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
 }
@@ -77,9 +82,9 @@
          {
              //do nothing
          }
-         else
+         else if (!_showingNotifications)
          {
-             [self animate:objects];
+//             [self animate:objects];
          }
      }];
 }
@@ -118,26 +123,51 @@
 #warning if request then set confirm action to send and take to confirm screen, else dismiss notification after 5secs
 - (void)animate:(NSArray *)notifications
 {
-    for (NSDictionary *notification in notifications)
+    if (!_showingNotifications)
     {
-
-
-
-
-        for (NSDictionary *contact in _contacts)
-        {
-            if ([notification[@"phoneNumber"] isEqualToString:contact[@"phone"]])
-            {
-
-            }
-        }
-
-
-
-
-
-
+        _showingNotifications = true;
+        FXBlurView *blurView = [[FXBlurView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-216-54)];
+        [self.view addSubview:blurView];
+        blurView.transform = CGAffineTransformMakeTranslation(0, blurView.transform.ty-(self.view.frame.size.height-216-54));
+        blurView.alpha = .9;
+        [UIView animateWithDuration:.3 animations:^{
+            blurView.transform = CGAffineTransformMakeTranslation(0, 0);
+        }];
     }
+
+//    if (notifications.count > 0)
+//    {
+//        NSDictionary *notification = notifications.firstObject;
+//
+//        UIImage *image;
+//        for (NSDictionary *contact in _contacts)
+//        {
+//            if ([notification[@"phoneNumber"] isEqualToString:contact[@"phone"]])
+//            {
+//                image = [UIImage imageWithData:contact[@"image"]];
+//                break;
+//            }
+//        }
+//        NSString *message = notification[@"message"];
+//
+//        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 20, 60, 60)];
+//        imageView.image = image;
+//        imageView.layer.masksToBounds = YES;
+//        imageView.layer.cornerRadius = imageView.frame.size.width/2;
+//        [self.view addSubview:imageView];
+//
+//        UIView *blackBox = [[UIView alloc] initWithFrame:CGRectMake(40, 30, self.view.frame.size.width-10*2-40, 40)];
+//        blackBox.backgroundColor = [UIColor blackColor];
+//        [self.view insertSubview:blackBox belowSubview:imageView];
+//
+//        UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 30, self.view.frame.size.width-10*2-80, 40)];
+//        messageLabel.text = message;
+//        messageLabel.textColor = [UIColor whiteColor];
+//        [self.view addSubview:messageLabel];
+//
+//        //remove self
+//        //recursive call
+//    }
 }
 
 - (void)createAmountLabel
@@ -151,8 +181,8 @@
     _dollarSign.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:amountFont];
     [self.view addSubview:_dollarSign];
 
-    _amountField = [[UITextField alloc] initWithFrame:CGRectMake(30, 30, 280, amountFont)];
-    _amountField.placeholder = @"Enter amount";
+    _amountField = [[UITextField alloc] initWithFrame:CGRectMake(30, 30, 280-50, amountFont)];
+    _amountField.placeholder = @"enter amount";
     _amountField.textColor = [UIColor whiteColor];
     _amountField.textAlignment = NSTextAlignmentLeft;
     _amountField.keyboardAppearance = UIKeyboardAppearanceDark;
@@ -179,12 +209,12 @@
         _frame = CGRectMake(0, 30+amountFont, 320, self.view.frame.size.height - 30 - amountFont - 216 -54);
     }
 
-    _collectionView = [[UICollectionView alloc] initWithFrame:_frame collectionViewLayout:flow];
-    _collectionView.backgroundColor = [UIColor clearColor];
-    _collectionView.delegate = self;
-    _collectionView.dataSource = self;
-    [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
-    [self.view addSubview:_collectionView];
+    _contactsCollectionView = [[UICollectionView alloc] initWithFrame:_frame collectionViewLayout:flow];
+    _contactsCollectionView.backgroundColor = [UIColor clearColor];
+    _contactsCollectionView.delegate = self;
+    _contactsCollectionView.dataSource = self;
+    [_contactsCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
+    [self.view addSubview:_contactsCollectionView];
 }
 
 - (void)createSendRequestButtons
@@ -250,7 +280,7 @@
                                                                 _frame.size.height/2)];
     _confirmPic.image = [UIImage imageWithData:_contacts[_recipientIndex][@"image"]];
     _confirmPic.layer.masksToBounds = YES;
-    _confirmPic.layer.cornerRadius = _collectionView.bounds.size.height/4;
+    _confirmPic.layer.cornerRadius = _contactsCollectionView.bounds.size.height/4;
     [self.view addSubview:_confirmPic];
     _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
 }
@@ -273,7 +303,7 @@
         _hasDecimal = !_hasDecimal;
     }
 
-    if (_recipientIndex == -1 || [_amountField.text floatValue]<0.50)
+    if (_recipientIndex == -1 || [_amountField.text floatValue]<0.50 || _takingAction)
     {
         _request.enabled = NO;
         _send.enabled = NO;
@@ -287,22 +317,20 @@
 
 - (void)request:(JSQFlatButton *)sender
 {
-    _request.enabled = NO;
-    _send.enabled = NO;
     _actionIsSend = NO;
     [self decideActionOnSaveOrRequest];
 }
 
 - (void)send:(JSQFlatButton *)sender
 {
-    _request.enabled = NO;
-    _send.enabled = NO;
     _actionIsSend = YES;
     [self decideActionOnSaveOrRequest];
 }
 
 - (void)decideActionOnSaveOrRequest
 {
+    _takingAction = YES;
+
     NSLog(@"%@",_contacts[_recipientIndex][@"phone"]);
 
     PFQuery *query = [PFQuery queryWithClassName:@"User"];
@@ -360,7 +388,7 @@
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx-320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
-        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx-320, 0);
+        _contactsCollectionView.transform = CGAffineTransformMakeTranslation(_contactsCollectionView.transform.tx-320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
         _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx-320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
@@ -368,8 +396,7 @@
         _cancel.transform = CGAffineTransformMakeTranslation(_cancel.transform.tx-320, 0);
         _confirm.transform = CGAffineTransformMakeTranslation(_confirm.transform.tx-320, 0);
     } completion:^(BOOL finished) {
-        _request.enabled = YES;
-        _send.enabled = YES;
+        _takingAction = NO;
     }];
 }
 
@@ -383,7 +410,7 @@
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
-        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320, 0);
+        _contactsCollectionView.transform = CGAffineTransformMakeTranslation(_contactsCollectionView.transform.tx+320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
         _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320, 0);
@@ -534,7 +561,7 @@
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx-320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
-        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx-320, 0);
+        _contactsCollectionView.transform = CGAffineTransformMakeTranslation(_contactsCollectionView.transform.tx-320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
 //        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx-320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
@@ -551,7 +578,7 @@
     [UIView animateWithDuration:.6 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320*2, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320*2, 0);
-        _collectionView.transform = CGAffineTransformMakeTranslation(_collectionView.transform.tx+320*2, 0);
+        _contactsCollectionView.transform = CGAffineTransformMakeTranslation(_contactsCollectionView.transform.tx+320*2, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320*2, 0);
         _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320*2, 0);
@@ -569,8 +596,7 @@
         _send.transform = CGAffineTransformMakeTranslation(_send.transform.tx+320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
     } completion:^(BOOL finished) {
-        _request.enabled = YES;
-        _send.enabled = YES;
+        _takingAction = NO;
     }];
 }
 
@@ -762,7 +788,7 @@
 //    {
 //        NSLog(@"Name: %@, Number: %@",contact[@"name"],contact[@"phone"]);
 //    }
-    [_collectionView reloadData];
+    [_contactsCollectionView reloadData];
 }
 
 @end
