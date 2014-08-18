@@ -12,6 +12,13 @@
 #define buttonSize 75
 #define gap 75
 
+#define kContactsCollectionView 0
+#define kScenesCollectionView 1
+#define kNotificationsCollectionView 2
+#define kHistoryTableView 3
+
+#define includeBlankContacts NO
+
 #import "RootViewController.h"
 #import "JSQFlatButton.h"
 #import "UIColor+FlatUI.h"
@@ -21,7 +28,7 @@
 @import AddressBook;
 #import "FXBlurView.h"
 
-@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate>
+@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate>
 @property UILabel *dollarSign;
 @property UITextField *amountField;
 @property CGRect frame;
@@ -44,6 +51,10 @@
 @property BOOL showingNotifications;
 @property FXBlurView *blurView;
 @property BOOL takingAction;
+@property UICollectionView *scenesCollectionView;
+@property NSMutableArray *scenes;
+@property NSArray *transactions;
+@property UITableView *historyTableView;
 @end
 
 @implementation RootViewController
@@ -56,7 +67,10 @@
     [self fetchContacts];
     [self createAmountLabel];
     [self createSendRequestButtons];
+    _scenes = [NSMutableArray new];
+    [self createScenesView];
     [self createContactsView];
+    [self createHistoryView];
     _showingNotifications = false;
     _notifications = [NSMutableArray new];
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
@@ -134,40 +148,6 @@
             blurView.transform = CGAffineTransformMakeTranslation(0, 0);
         }];
     }
-
-//    if (notifications.count > 0)
-//    {
-//        NSDictionary *notification = notifications.firstObject;
-//
-//        UIImage *image;
-//        for (NSDictionary *contact in _contacts)
-//        {
-//            if ([notification[@"phoneNumber"] isEqualToString:contact[@"phone"]])
-//            {
-//                image = [UIImage imageWithData:contact[@"image"]];
-//                break;
-//            }
-//        }
-//        NSString *message = notification[@"message"];
-//
-//        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 20, 60, 60)];
-//        imageView.image = image;
-//        imageView.layer.masksToBounds = YES;
-//        imageView.layer.cornerRadius = imageView.frame.size.width/2;
-//        [self.view addSubview:imageView];
-//
-//        UIView *blackBox = [[UIView alloc] initWithFrame:CGRectMake(40, 30, self.view.frame.size.width-10*2-40, 40)];
-//        blackBox.backgroundColor = [UIColor blackColor];
-//        [self.view insertSubview:blackBox belowSubview:imageView];
-//
-//        UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 30, self.view.frame.size.width-10*2-80, 40)];
-//        messageLabel.text = message;
-//        messageLabel.textColor = [UIColor whiteColor];
-//        [self.view addSubview:messageLabel];
-//
-//        //remove self
-//        //recursive call
-//    }
 }
 
 - (void)createAmountLabel
@@ -195,9 +175,78 @@
     _hasDecimal = NO;
 }
 
+- (void)createHistoryView
+{
+    _historyTableView = [[UITableView alloc] initWithFrame:_scenesCollectionView.bounds style:UITableViewStylePlain];
+    _historyTableView.delegate = self;
+    _historyTableView.dataSource = self;
+    _historyTableView.backgroundColor = [UIColor clearColor];
+    _historyTableView.tag = kHistoryTableView;
+    _historyTableView.separatorColor = [UIColor clearColor];
+    _historyTableView.allowsSelection = NO;
+    [_scenes addObject:_historyTableView];
+    [_scenesCollectionView reloadData];
+
+    [self updateHistoryView];
+}
+
+- (void)updateHistoryView
+{
+    PFQuery *customerId = [PFQuery queryWithClassName:@"Transaction"];
+    [customerId whereKey:@"customerId" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"]];
+    PFQuery *recipientId = [PFQuery queryWithClassName:@"Transaction"];
+    [recipientId whereKey:@"recipientId" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"recipientId"]];
+    PFQuery *query = [PFQuery orQueryWithSubqueries:@[customerId,recipientId]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+     {
+         if (error)
+         {
+#warning handle error
+         }
+         else
+         {
+             _transactions = objects;
+             [_historyTableView reloadData];
+             [_historyTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:_transactions.count-1 inSection:0]
+                                      atScrollPosition: UITableViewScrollPositionTop
+                                              animated: YES];
+         }
+     }];
+}
+
 - (void)createContactsView
 {
-    UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
+    UICollectionViewFlowLayout *flow = [UICollectionViewFlowLayout new];
+    CGRect frame;
+    if (self.view.frame.size.height <= 480)
+    {
+        flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+//        frame = CGRectMake(0, 30+amountFont, 320, 70);
+        frame = _scenesCollectionView.bounds;
+    }
+    else
+    {
+        flow.scrollDirection = UICollectionViewScrollDirectionVertical;
+//        frame = CGRectMake(0, 30+amountFont, 320, self.view.frame.size.height - 30 - amountFont - 216 -54);
+        frame = _scenesCollectionView.bounds;
+    }
+
+    _contactsCollectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:flow];
+    _contactsCollectionView.backgroundColor = [UIColor clearColor];
+    _contactsCollectionView.delegate = self;
+    _contactsCollectionView.dataSource = self;
+    [_contactsCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"ContactsCell"];
+    _contactsCollectionView.tag = kContactsCollectionView;
+//    [self.view addSubview:_contactsCollectionView];
+    [_scenes addObject:_contactsCollectionView];
+    [_scenesCollectionView reloadData];
+}
+
+- (void)createScenesView
+{
+    UICollectionViewFlowLayout *flow = [UICollectionViewFlowLayout new];
+    flow.minimumLineSpacing = 0;
+
     if (self.view.frame.size.height <= 480)
     {
         flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
@@ -205,16 +254,17 @@
     }
     else
     {
-        flow.scrollDirection = UICollectionViewScrollDirectionVertical;
+        flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         _frame = CGRectMake(0, 30+amountFont, 320, self.view.frame.size.height - 30 - amountFont - 216 -54);
     }
-
-    _contactsCollectionView = [[UICollectionView alloc] initWithFrame:_frame collectionViewLayout:flow];
-    _contactsCollectionView.backgroundColor = [UIColor clearColor];
-    _contactsCollectionView.delegate = self;
-    _contactsCollectionView.dataSource = self;
-    [_contactsCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
-    [self.view addSubview:_contactsCollectionView];
+    _scenesCollectionView = [[UICollectionView alloc] initWithFrame:_frame collectionViewLayout:flow];
+    _scenesCollectionView.backgroundColor = [UIColor clearColor];
+    _scenesCollectionView.delegate = self;
+    _scenesCollectionView.dataSource = self;
+    _scenesCollectionView.pagingEnabled = YES;
+    [_scenesCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"ScenesCell"];
+    _scenesCollectionView.tag = kScenesCollectionView;
+    [self.view addSubview:_scenesCollectionView];
 }
 
 - (void)createSendRequestButtons
@@ -388,7 +438,7 @@
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx-320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
-        _contactsCollectionView.transform = CGAffineTransformMakeTranslation(_contactsCollectionView.transform.tx-320, 0);
+        _scenesCollectionView.transform = CGAffineTransformMakeTranslation(_scenesCollectionView.transform.tx-320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
         _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx-320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
@@ -410,7 +460,7 @@
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
-        _contactsCollectionView.transform = CGAffineTransformMakeTranslation(_contactsCollectionView.transform.tx+320, 0);
+        _scenesCollectionView.transform = CGAffineTransformMakeTranslation(_scenesCollectionView.transform.tx+320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
         _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320, 0);
@@ -451,7 +501,7 @@
          }
          else
          {
-             NSLog(@"Card charged successfully with id: %@", chargeId);
+             NSLog(@"Card charge successful with id: %@", chargeId);
              [self createTransferWithAmount:amount Customer:customerId Recipient:_recipientId Charge:chargeId];
          }
      }];
@@ -561,7 +611,7 @@
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx-320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
-        _contactsCollectionView.transform = CGAffineTransformMakeTranslation(_contactsCollectionView.transform.tx-320, 0);
+        _scenesCollectionView.transform = CGAffineTransformMakeTranslation(_scenesCollectionView.transform.tx-320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
 //        _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx-320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx-320, 0);
@@ -578,7 +628,7 @@
     [UIView animateWithDuration:.6 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320*2, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320*2, 0);
-        _contactsCollectionView.transform = CGAffineTransformMakeTranslation(_contactsCollectionView.transform.tx+320*2, 0);
+        _scenesCollectionView.transform = CGAffineTransformMakeTranslation(_scenesCollectionView.transform.tx+320*2, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320*2, 0);
         _confirmPic.transform = CGAffineTransformMakeTranslation(_confirmPic.transform.tx+320, 0);
         _request.transform = CGAffineTransformMakeTranslation(_request.transform.tx+320*2, 0);
@@ -613,54 +663,170 @@
     return UIStatusBarStyleLightContent;
 }
 
+#pragma mark - UITableView DataSource/Delegate Methods
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return _transactions.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"historyCell"];
+    if (!cell)
+    {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
+        cell.backgroundColor = [UIColor clearColor];
+        cell.textLabel.textColor = [UIColor whiteColor];
+    }
+
+    NSDictionary *transaction = _transactions[indexPath.item];
+    cell.textLabel.text = transaction[@"amount"];
+//    if (![transaction[@"customerId"] isEqualToString:[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"]])
+//    {
+//        cell.textLabel.textAlignment = NSTextAlignmentRight;
+//    }
+//    else
+//    {
+//        cell.textLabel.textAlignment = NSTextAlignmentLeft;
+//    }
+
+    return cell;
+}
+
 #pragma mark - UICollectionView DataSource/Delegate Methods
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (_recipientIndex == (int)indexPath.item)
+    if (collectionView.tag == kContactsCollectionView)
     {
-        _recipientIndex = -1;
+        if (_recipientIndex == (int)indexPath.item)
+        {
+            _recipientIndex = -1;
+        }
+        else
+        {
+            _recipientIndex = (int)indexPath.item;
+        }
+        [collectionView reloadData];
+    }
+    else if (collectionView.tag == kScenesCollectionView)
+    {
+#warning complete
     }
     else
     {
-        _recipientIndex = (int)indexPath.item;
+#warning complete
     }
-    [collectionView reloadData];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return _contacts.count;
+    if (collectionView.tag == kContactsCollectionView)
+    {
+        return _contacts.count;
+    }
+    else if (collectionView.tag == kScenesCollectionView)
+    {
+        return _scenes.count;
+    }
+    else
+    {
+        return _notifications.count;
+    }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-
-    if (_recipientIndex == (int)indexPath.item)
+    if (collectionView.tag == kContactsCollectionView)
     {
-        UIImageView *check = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"check"]];
-        check.layer.masksToBounds = YES;
-        check.layer.cornerRadius = 48/2;
-        cell.backgroundView = check;
+        UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ContactsCell" forIndexPath:indexPath];
+
+        if (_recipientIndex == (int)indexPath.item)
+        {
+            UIImageView *check = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"check"]];
+            check.layer.masksToBounds = YES;
+            check.layer.cornerRadius = 48/2;
+            cell.backgroundView = check;
+        }
+        else
+        {
+            NSData *imageData = _contacts[indexPath.item][@"image"];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageData]];
+            imageView.layer.masksToBounds = YES;
+            imageView.layer.cornerRadius = 48/2;
+            cell.backgroundView = imageView;
+        }
+        
+        return cell;
+    }
+    else if (collectionView.tag == kScenesCollectionView)
+    {
+        UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ScenesCell" forIndexPath:indexPath];
+
+        for (UIView *view in cell.subviews)
+        {
+            [view removeFromSuperview];
+        }
+        [cell addSubview:_scenes[indexPath.item]];
+
+        if (indexPath.item == 1 && _transactions.count > 0)
+        {
+            [self updateHistoryView];
+        }
+
+        return cell;
     }
     else
     {
-        NSData *imageData = _contacts[indexPath.item][@"image"];
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageData]];
-        imageView.layer.masksToBounds = YES;
-        imageView.layer.cornerRadius = 48/2;
-        cell.backgroundView = imageView;
+        return nil;
+#warning complete
+//        NSDictionary *notification = _notifications[indexPath.item];
+//
+//        UIImage *image;
+//        for (NSDictionary *contact in _contacts)
+//        {
+//            if ([notification[@"phoneNumber"] isEqualToString:contact[@"phone"]])
+//            {
+//                image = [UIImage imageWithData:contact[@"image"]];
+//                break;
+//            }
+//        }
+//        NSString *message = notification[@"message"];
+//
+//        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 20, 60, 60)];
+//        imageView.image = image;
+//        imageView.layer.masksToBounds = YES;
+//        imageView.layer.cornerRadius = imageView.frame.size.width/2;
+//        [self.view addSubview:imageView];
+//
+//        UIView *blackBox = [[UIView alloc] initWithFrame:CGRectMake(40, 30, self.view.frame.size.width-10*2-40, 40)];
+//        blackBox.backgroundColor = [UIColor blackColor];
+//        [self.view insertSubview:blackBox belowSubview:imageView];
+//
+//        UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 30, self.view.frame.size.width-10*2-80, 40)];
+//        messageLabel.text = message;
+//        messageLabel.textColor = [UIColor whiteColor];
+//        [self.view addSubview:messageLabel];
     }
-
-    return cell;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView
                   layout:(UICollectionViewLayout*)collectionViewLayout
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return CGSizeMake(48,48);
+    if (collectionView.tag == kContactsCollectionView)
+    {
+        return CGSizeMake(48,48);
+    }
+    else if (collectionView.tag == kScenesCollectionView)
+    {
+        return CGSizeMake(self.view.frame.size.width, _scenesCollectionView.frame.size.height);
+    }
+    else
+    {
+        return CGSizeMake(self.view.frame.size.width, 44);
+    }
 }
 
 #pragma mark - SMS Messaging
@@ -773,7 +939,7 @@
             NSData *contactImageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
             [dOfPerson setObject:contactImageData forKey:@"image"];
         }
-        else
+        else if (includeBlankContacts)
         {
             [dOfPerson setObject:facebookImageData forKey:@"image"];
         }
@@ -783,7 +949,7 @@
             [_contacts addObject:dOfPerson];
         }
 	}
-
+    [_contacts sortUsingDescriptors:[NSArray arrayWithObjects:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES], nil]];
 //    for (NSDictionary *contact in _contacts)
 //    {
 //        NSLog(@"Name: %@, Number: %@",contact[@"name"],contact[@"phone"]);
