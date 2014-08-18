@@ -7,7 +7,6 @@
 //
 
 #define kStripePublishableKey @"pk_test_4TyI2woMDc4DSBu1r1bYQ6l9"
-#define kStripeSecretKey @"sk_test_4TyIk8adGJTfvHq9YDt4raCx"
 #define kCardioToken @"6f029e310ea241408c0f67514801d637"
 
 #import "GetPaymentCardViewController.h"
@@ -246,16 +245,12 @@
 
 - (void)createRecipient:(STPToken *)token
 {
-    NSString *name = @"Sapan Bhuta";
-    NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/recipients",kStripeSecretKey];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
-    NSString *params = [NSString stringWithFormat:@"name=%@&type=individual&card=%@",name,token.tokenId];
-    request.HTTPMethod = @"POST";
-    request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
+    NSLog(@"token: %@",token.tokenId);
 
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    NSString *name = @"Sapan Bhuta";
+    [PFCloud callFunctionInBackground:@"createRecipient"
+                       withParameters:@{@"token":token.tokenId, @"name":name}
+                                block:^(id object, NSError *error)
     {
         if (error)
         {
@@ -264,21 +259,53 @@
         }
         else
         {
-            NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"SUCCESS: %@", output);
+            NSLog(@"SUCCESS: %@", object);
 
-            if (output[@"id"])
-            {
-                [[NSUserDefaults standardUserDefaults] setObject:output[@"id"] forKey:@"recipientId"];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-                [self addUserToDataBase];
-            }
-            else
+            if (!object[@"id"])
             {
 #warning handle error
             }
+            else
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:object[@"id"] forKey:@"recipientId"];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                [self addUserToDataBase];
+            }
         }
     }];
+
+//    NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/recipients",kStripeSecretKey];
+//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
+//    NSString *params = [NSString stringWithFormat:@"name=%@&type=individual&card=%@",name,token.tokenId];
+//    request.HTTPMethod = @"POST";
+//    request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
+//
+//    [NSURLConnection sendAsynchronousRequest:request
+//                                       queue:[NSOperationQueue mainQueue]
+//                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+//    {
+//        if (error)
+//        {
+//            NSLog(@"ERROR: %@",error);
+//#warning handle error
+//        }
+//        else
+//        {
+//            NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+//            NSLog(@"SUCCESS: %@", output);
+//
+//            if (output[@"id"])
+//            {
+//                [[NSUserDefaults standardUserDefaults] setObject:output[@"id"] forKey:@"recipientId"];
+//                [[NSUserDefaults standardUserDefaults] synchronize];
+//                [self addUserToDataBase];
+//            }
+//            else
+//            {
+//#warning handle error
+//            }
+//        }
+//    }];
 }
 
 - (void)addUserToDataBase

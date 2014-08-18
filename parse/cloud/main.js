@@ -48,49 +48,33 @@ Parse.Cloud.define("createCharge", function(request, response) {
   });
 });
 
-// Parse.Cloud.define("createRecipient", function(request, response) {
-//   Stripe.Recipients.create({
-//     name: request.params.name,
-//     type: "individual",
-//     card: request.params.token
-//   }, {
-//     success: function(httpResponse) {
-//       response.success(httpResponse.id);
-//     },
-//     error: function(httpResponse) {
-//       response.error(httpResponse.message);
-//     }
-//   });
-// });
-
-// Parse.Cloud.define("createTransfer", function(request, response) {
-//   Stripe.Transfers.create({
-//     amount: 100 * request.params.amount,
-//     currency: "usd",
-//     recipient: request.params.recipient
-//   }, {
-//     success: function(httpResponse) {
-//       response.success(httpResponse.id);
-//     },
-//     error: function(httpResponse) {
-//       response.error(httpResponse.message);
-//     }
-//   });
-// });
-
-
-Parse.Cloud.define("customRecipient", function(request, response) {
+Parse.Cloud.define("createRecipient", function(request, response) {
   Parse.Cloud.httpRequest({
     method:"POST",
     url: "https://sk_test_4TyIk8adGJTfvHq9YDt4raCx:@api.stripe.com/v1/recipients",
     body: "card="+request.params.token+"&"+"name="+request.params.name+"&"+"type=individual",
-    success: function(httpResponse) 
-    {
-      response.success(httpResponse.message);//.text
+    success: function(httpResponse) {
+      response.success(httpResponse.data);
     },
-    error: function(httpResponse) 
-    {
-      response.error('Request failed with response code ' + httpResponse.status);
+    error: function(httpResponse) {
+      response.error(httpResponse);
     }
   });
+});
+
+Parse.Cloud.define("createTransfer", function(request, response) {
+  Parse.Cloud.httpRequest({
+    method:"POST",
+    url: "https://sk_test_4TyIk8adGJTfvHq9YDt4raCx:@api.stripe.com/v1/transfers",
+    body: "amount="+request.params.amount+"&"+"recipient="+request.params.recipient+"&"+"currency=usd",
+    success: function(httpResponse) {
+      response.success(httpResponse.data);
+    },
+    error: function(httpResponse) {
+      response.error(httpResponse);
+    }
+  });
+});
+
+Parse.Cloud.define("customRecipient", function(request, response) {
 });

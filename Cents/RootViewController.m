@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 SapanBhuta. All rights reserved.
 //
 
-#define kStripeSecretKey @"sk_test_4TyIk8adGJTfvHq9YDt4raCx"
-
 #define amountFont 100
 #define buttonSize 75
 #define gap 75
@@ -18,6 +16,7 @@
 #define kHistoryTableView 3
 
 #define includeBlankContacts NO
+#define enableNotifications NO
 
 #import "RootViewController.h"
 #import "JSQFlatButton.h"
@@ -105,7 +104,10 @@
 //             NSLog(@"notifications %@",objects);
              _notifications = [objects mutableCopy];
              [_notificationsTableView reloadData];
-             [self showNotifications];
+             if (enableNotifications)
+             {
+                 [self showNotifications];
+             }
          }
      }];
 }
@@ -221,9 +223,13 @@
          {
              _transactions = objects;
              [_historyTableView reloadData];
-             [_historyTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:_transactions.count-1 inSection:0]
-                                      atScrollPosition: UITableViewScrollPositionTop
-                                              animated: YES];
+
+             if (_transactions.count > 0)
+             {
+                 [_historyTableView scrollToRowAtIndexPath: [NSIndexPath indexPathForRow:_transactions.count-1 inSection:0]
+                                          atScrollPosition: UITableViewScrollPositionTop
+                                                  animated: YES];
+             }
          }
      }];
 }
@@ -551,16 +557,10 @@
                        Recipient:(NSString *)recipientId
                           Charge:(NSString *)chargeId
 {
-    NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/transfers",kStripeSecretKey];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
-    NSString *params = [NSString stringWithFormat:@"amount=%@&currency=usd&recipient=%@",amount,recipientId];
-    request.HTTPMethod = @"POST";
-    request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
-
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-     {
+    [PFCloud callFunctionInBackground:@"createTransfer"
+                       withParameters:@{@"amount":amount,@"recipient":recipientId}
+                                block:^(id object, NSError *error)
+    {
          if (error)
          {
              NSLog(@"ERROR: %@",error);
@@ -569,16 +569,16 @@
          }
          else
          {
-             NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+             NSLog(@"%@",object);
 
-             if (!output[@"id"])
+             if (!object[@"id"])
              {
                  NSLog(@"Transfer failed with error: %@", error.localizedDescription);
                  [self showFaliure:YES];
              }
              else
              {
-                 NSString *transferId = output[@"id"];
+                 NSString *transferId = object[@"id"];
                  NSLog(@"Transfer successful with id: %@", transferId);
                  [self recordTransactionWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId Transfer:transferId];
                  [self showFaliure:NO];
@@ -591,7 +591,49 @@
          }
          _cancel.enabled = YES;
          _confirm.enabled = YES;
-     }];
+    }];
+
+//    NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/transfers",kStripeSecretKey];
+//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
+//    NSString *params = [NSString stringWithFormat:@"amount=%@&currency=usd&recipient=%@",amount,recipientId];
+//    request.HTTPMethod = @"POST";
+//    request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
+//
+//    [NSURLConnection sendAsynchronousRequest:request
+//                                       queue:[NSOperationQueue mainQueue]
+//                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+//     {
+//         if (error)
+//         {
+//             NSLog(@"ERROR: %@",error);
+//#warning handle error
+//             [self showFaliure:YES];
+//         }
+//         else
+//         {
+//             NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+//
+//             if (!output[@"id"])
+//             {
+//                 NSLog(@"Transfer failed with error: %@", error.localizedDescription);
+//                 [self showFaliure:YES];
+//             }
+//             else
+//             {
+//                 NSString *transferId = output[@"id"];
+//                 NSLog(@"Transfer successful with id: %@", transferId);
+//                 [self recordTransactionWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId Transfer:transferId];
+//                 [self showFaliure:NO];
+//
+//                 NSString *name = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
+//                 NSString *phoneNumber = _contacts[_recipientIndex][@"phone"];
+//                 NSString *message = [NSString stringWithFormat:@"%@ sent you $%@", name, amount];
+//                 [self sendPushNotificationTo:phoneNumber With:message Of:@"send" With:amount With:name];
+//             }
+//         }
+//         _cancel.enabled = YES;
+//         _confirm.enabled = YES;
+//     }];
 }
 
 - (void)recordTransactionWithAmount:(NSString *)amount
@@ -880,7 +922,7 @@
         }
         [cell addSubview:_scenes[indexPath.item]];
 
-        if (indexPath.item == 1 && _transactions.count > 0)
+        if (indexPath.item == 1)
         {
             [self updateHistoryView];
         }
