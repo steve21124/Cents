@@ -16,7 +16,7 @@
 #define kHistoryTableView 3
 
 #define includeBlankContacts NO
-#define enableNotifications NO
+#define enableNotifications !NO
 
 #import "RootViewController.h"
 #import "JSQFlatButton.h"
@@ -142,8 +142,6 @@
     }];
 }
 
-#warning bubble head animation with message with cancel/confirm buttons if type is send or request
-#warning if request then set confirm action to send and take to confirm screen, else dismiss notification after 5secs
 - (void)showNotifications
 {
     if (!_showingNotifications)
@@ -178,7 +176,7 @@
 
 - (void)createNotificationsView
 {
-    _notificationsTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 30, self.view.frame.size.width, self.view.frame.size.height-216-30)
+    _notificationsTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 30, self.view.frame.size.width-20*2, self.view.frame.size.height-216-30)
                                                            style:UITableViewStylePlain];
     _notificationsTableView.delegate = self;
     _notificationsTableView.dataSource = self;
@@ -748,13 +746,17 @@
         {
             cell = [[MCSwipeTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
             [cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-            cell.contentView.backgroundColor = [UIColor whiteColor];
-//            cell.backgroundColor = [UIColor clearColor];
-//            cell.textLabel.textColor = [UIColor whiteColor];
+//            cell.contentView.backgroundColor = [UIColor whiteColor];
+            cell.backgroundColor = [UIColor clearColor];
+            cell.textLabel.textColor = [UIColor whiteColor];
         }
         [self configureCell:cell forRowAtIndexPath:indexPath];
         NSDictionary *notification = _notifications[indexPath.item];
         cell.textLabel.text = notification[@"message"];
+        cell.textLabel.font = [UIFont systemFontOfSize:10];
+        cell.imageView.image = [UIImage imageWithData:_contacts[indexPath.item][@"image"]];
+        cell.imageView.layer.masksToBounds = YES;
+        cell.imageView.layer.cornerRadius = cell.imageView.frame.size.width/2;
         return cell;
     }
 }
@@ -768,7 +770,7 @@
     UIView *crossView = [self viewWithImageName:@"cross"];
     UIColor *redColor = [UIColor colorWithRed:232.0 / 255.0 green:61.0 / 255.0 blue:14.0 / 255.0 alpha:1.0];
 
-    [cell setDefaultColor:_notificationsTableView.backgroundView.backgroundColor];
+//    [cell setDefaultColor:_notificationsTableView.backgroundView.backgroundColor];
 
     [cell setSwipeGestureWithView:checkView color:greenColor mode:MCSwipeTableViewCellModeExit state:MCSwipeTableViewCellState1 completionBlock:^(MCSwipeTableViewCell *cell, MCSwipeTableViewCellState state, MCSwipeTableViewCellMode mode)
     {
