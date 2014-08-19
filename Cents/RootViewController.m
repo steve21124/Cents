@@ -592,48 +592,6 @@
          _cancel.enabled = YES;
          _confirm.enabled = YES;
     }];
-
-//    NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/transfers",kStripeSecretKey];
-//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
-//    NSString *params = [NSString stringWithFormat:@"amount=%@&currency=usd&recipient=%@",amount,recipientId];
-//    request.HTTPMethod = @"POST";
-//    request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
-//
-//    [NSURLConnection sendAsynchronousRequest:request
-//                                       queue:[NSOperationQueue mainQueue]
-//                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-//     {
-//         if (error)
-//         {
-//             NSLog(@"ERROR: %@",error);
-//#warning handle error
-//             [self showFaliure:YES];
-//         }
-//         else
-//         {
-//             NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-//
-//             if (!output[@"id"])
-//             {
-//                 NSLog(@"Transfer failed with error: %@", error.localizedDescription);
-//                 [self showFaliure:YES];
-//             }
-//             else
-//             {
-//                 NSString *transferId = output[@"id"];
-//                 NSLog(@"Transfer successful with id: %@", transferId);
-//                 [self recordTransactionWithAmount:amount Customer:customerId Recipient:recipientId Charge:chargeId Transfer:transferId];
-//                 [self showFaliure:NO];
-//
-//                 NSString *name = [[NSUserDefaults standardUserDefaults] objectForKey:@"name"];
-//                 NSString *phoneNumber = _contacts[_recipientIndex][@"phone"];
-//                 NSString *message = [NSString stringWithFormat:@"%@ sent you $%@", name, amount];
-//                 [self sendPushNotificationTo:phoneNumber With:message Of:@"send" With:amount With:name];
-//             }
-//         }
-//         _cancel.enabled = YES;
-//         _confirm.enabled = YES;
-//     }];
 }
 
 - (void)recordTransactionWithAmount:(NSString *)amount

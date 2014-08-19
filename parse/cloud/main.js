@@ -14,7 +14,6 @@ Parse.Cloud.define("verifyNum", function(request, response) {
   });
 });
 
-
 var Stripe = require('stripe');
 Stripe.initialize('sk_test_4TyIk8adGJTfvHq9YDt4raCx');
 
@@ -35,7 +34,7 @@ Parse.Cloud.define("createCustomer", function(request, response) {
 
 Parse.Cloud.define("createCharge", function(request, response) {
   Stripe.Charges.create({
-    amount: 100 * request.params.amount,
+    amount: request.params.amount,
     currency: "usd",
     customer: request.params.customer
   }, {
@@ -74,7 +73,4 @@ Parse.Cloud.define("createTransfer", function(request, response) {
       response.error(httpResponse);
     }
   });
-});
-
-Parse.Cloud.define("customRecipient", function(request, response) {
 });

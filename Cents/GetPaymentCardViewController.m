@@ -203,9 +203,9 @@
 
 - (void)createCustomer:(STPToken *)token
 {
+    NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
     [PFCloud callFunctionInBackground:@"createCustomer"
-                       withParameters:@{@"token":token.tokenId,
-                                        @"phoneNumber":[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]}
+                       withParameters:@{@"token":token.tokenId, @"phoneNumber":phoneNumber}
                                 block:^(id customer, NSError *error)
     {
         if (error)
@@ -273,39 +273,6 @@
             }
         }
     }];
-
-//    NSString *urlString = [NSString stringWithFormat:@"https://%@:@api.stripe.com/v1/recipients",kStripeSecretKey];
-//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
-//    NSString *params = [NSString stringWithFormat:@"name=%@&type=individual&card=%@",name,token.tokenId];
-//    request.HTTPMethod = @"POST";
-//    request.HTTPBody = [params dataUsingEncoding:NSUTF8StringEncoding];
-//
-//    [NSURLConnection sendAsynchronousRequest:request
-//                                       queue:[NSOperationQueue mainQueue]
-//                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-//    {
-//        if (error)
-//        {
-//            NSLog(@"ERROR: %@",error);
-//#warning handle error
-//        }
-//        else
-//        {
-//            NSDictionary *output = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-//            NSLog(@"SUCCESS: %@", output);
-//
-//            if (output[@"id"])
-//            {
-//                [[NSUserDefaults standardUserDefaults] setObject:output[@"id"] forKey:@"recipientId"];
-//                [[NSUserDefaults standardUserDefaults] synchronize];
-//                [self addUserToDataBase];
-//            }
-//            else
-//            {
-//#warning handle error
-//            }
-//        }
-//    }];
 }
 
 - (void)addUserToDataBase
