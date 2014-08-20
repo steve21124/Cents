@@ -39,9 +39,12 @@
 #pragma mark - Where The Magic Happens
 -(void)morph:(UITapGestureRecognizer *)tapRecognizer
 {
-    if (self.displayingMenu) {
+    if (self.displayingMenu)
+    {
         [self morphToLine];
-    } else {
+    }
+    else
+    {
         [self morphToX];
     }
     self.displayingMenu = !self.displayingMenu;
@@ -80,7 +83,7 @@
         strongSelf.topLineView.center = CGPointMake(120., 2.);
 
         strongSelf.bottomLineView.transform = CGAffineTransformIdentity;
-        strongSelf.bottomLineView.center = CGPointMake(120., 238.);
+        strongSelf.bottomLineView.center = CGPointMake(120., 60);
 
         strongSelf.centerLineView.transform = CGAffineTransformIdentity;
 
@@ -93,8 +96,9 @@
 
 -(UIView *)topLineView
 {
-    if (!_topLineView) {
-        _topLineView = [[UIView alloc] initWithFrame:CGRectMake(0., 0., 240, 4.)];
+    if (!_topLineView)
+    {
+        _topLineView = [[UIView alloc] initWithFrame:CGRectMake(0., 0., 240/4, 4./4)];
         _topLineView.backgroundColor = [UIColor whiteColor];
     }
 
@@ -103,8 +107,9 @@
 
 -(UIView *)centerLineView
 {
-    if (!_centerLineView) {
-        _centerLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 120., 240, 4.)];
+    if (!_centerLineView)
+    {
+        _centerLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 120./4, 240/4, 4./4)];
         _centerLineView.backgroundColor = [UIColor whiteColor];
     }
 
@@ -113,8 +118,9 @@
 
 -(UIView *)bottomLineView
 {
-    if (!_bottomLineView) {
-        _bottomLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 240., 240., 4.)];
+    if (!_bottomLineView)
+    {
+        _bottomLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 240./4, 240./4, 4./4)];
         _bottomLineView.backgroundColor = [UIColor whiteColor];
     }
 
@@ -123,9 +129,10 @@
 
 -(UIView *)containerView
 {
-    if (!_containerView) {
+    if (!_containerView)
+    {
         _containerView = [UIView new];
-        _containerView.bounds = CGRectMake(0.0, 0.0, 240., 240.);
+        _containerView.bounds = CGRectMake(0.0, 0.0, 240./4, 240./4);
         _containerView.center = self.view.center;
     }
 

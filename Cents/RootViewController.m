@@ -56,6 +56,11 @@
 @property NSMutableArray *scenes;
 @property NSArray *transactions;
 @property UITableView *historyTableView;
+@property (nonatomic) UIView *topLineView;
+@property (nonatomic) UIView *centerLineView;
+@property (nonatomic) UIView *bottomLineView;
+@property (nonatomic) UIView *containerView;
+@property (nonatomic) BOOL displayingMenu;
 @end
 
 @implementation RootViewController
@@ -74,6 +79,7 @@
     [self createHistoryView];
     [self createBlurView];
     [self createNotificationsView];
+    [self createMenuButton];
     _showingNotifications = false;
     _notifications = [NSMutableArray new];
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
@@ -333,6 +339,11 @@
     [_amountField becomeFirstResponder];
 
     _hasDecimal = NO;
+}
+
+- (void)createMenuButton
+{
+    
 }
 
 - (void)createConfirmCancelButtons
@@ -741,22 +752,22 @@
     }
     else
     {
-        MCSwipeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
         if (!cell)
         {
-            cell = [[MCSwipeTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
             [cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 //            cell.contentView.backgroundColor = [UIColor whiteColor];
             cell.backgroundColor = [UIColor clearColor];
             cell.textLabel.textColor = [UIColor whiteColor];
+            cell.imageView.layer.masksToBounds = YES;
+            cell.imageView.layer.cornerRadius = 24;
         }
-        [self configureCell:cell forRowAtIndexPath:indexPath];
+//        [self configureCell:cell forRowAtIndexPath:indexPath];
         NSDictionary *notification = _notifications[indexPath.item];
         cell.textLabel.text = notification[@"message"];
         cell.textLabel.font = [UIFont systemFontOfSize:10];
         cell.imageView.image = [UIImage imageWithData:_contacts[indexPath.item][@"image"]];
-        cell.imageView.layer.masksToBounds = YES;
-        cell.imageView.layer.cornerRadius = cell.imageView.frame.size.width/2;
         return cell;
     }
 }
