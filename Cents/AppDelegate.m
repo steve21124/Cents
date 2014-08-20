@@ -10,7 +10,6 @@
 #import <Parse/Parse.h>
 #import "VCFlow.h"
 #import "RootViewController.h"
-#import "MenuViewController.h"
 
 @implementation AppDelegate
 
@@ -25,7 +24,7 @@
                                                     UIRemoteNotificationTypeSound];
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = [MenuViewController new];//[VCFlow nextVC];
+    self.window.rootViewController = [VCFlow nextVC];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
 

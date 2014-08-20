@@ -28,6 +28,9 @@
         [query whereKey:@"phoneNumber" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
         NSArray *objects = [query findObjects];
 #warning handle error connecting/finding
+
+        NSLog(@"Count of users with this phone number: %i",objects.count);
+
         if (objects.count == 0)
         {
             return [GetPaymentCardViewController new];
@@ -41,7 +44,7 @@
 
             if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
             {
-                return [GetPaymentCardViewController new];
+                return [GetContactsViewController new];
             }
             else
             {
@@ -50,7 +53,10 @@
         }
         else
         {
-#warning remove all users with that number and get number again
+            for (PFObject *user in objects)
+            {
+                [user deleteInBackground];
+            }
             return [GetPaymentCardViewController new];
         }
     }

@@ -27,6 +27,7 @@
 @import AddressBook;
 #import "FXBlurView.h"
 #import "MCSwipeTableViewCell.h"
+#import "MenuView.h"
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate>
 @property UILabel *dollarSign;
@@ -61,6 +62,7 @@
 @property (nonatomic) UIView *bottomLineView;
 @property (nonatomic) UIView *containerView;
 @property (nonatomic) BOOL displayingMenu;
+@property MenuView *menuView;
 @end
 
 @implementation RootViewController
@@ -79,10 +81,12 @@
     [self createHistoryView];
     [self createBlurView];
     [self createNotificationsView];
-    [self createMenuButton];
+    [self createMenuView];
     _showingNotifications = false;
     _notifications = [NSMutableArray new];
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showNotifications) name:@"morph" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideNotifications) name:@"unmorph" object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -113,6 +117,7 @@
              if (enableNotifications)
              {
                  [self showNotifications];
+                 [_menuView morphToX];
              }
          }
      }];
@@ -341,9 +346,26 @@
     _hasDecimal = NO;
 }
 
-- (void)createMenuButton
+- (void)createMenuView
 {
-    
+    _menuView = [[MenuView alloc] initWithFrame:CGRectMake(270, 30, 40, 40)];
+    [self.view addSubview:_menuView];
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleMenu)];
+    [_menuView addGestureRecognizer:tapRecognizer];
+}
+
+- (void)toggleMenu
+{
+    if (_showingNotifications)
+    {
+        [self hideNotifications];
+        [_menuView morphToLine];
+    }
+    else
+    {
+        [self showNotifications];
+        [_menuView morphToX];
+    }
 }
 
 - (void)createConfirmCancelButtons
@@ -416,6 +438,16 @@
     {
         _request.enabled = YES;
         _send.enabled = YES;
+    }
+
+    _menuView.label.text = @(_notifications.count).description;
+    if (_notifications.count > 0 && !_showingNotifications)
+    {
+        _menuView.backgroundColor = [UIColor tangerineColor];
+    }
+    else
+    {
+        _menuView.backgroundColor = [UIColor clearColor];
     }
 }
 
@@ -767,7 +799,10 @@
         NSDictionary *notification = _notifications[indexPath.item];
         cell.textLabel.text = notification[@"message"];
         cell.textLabel.font = [UIFont systemFontOfSize:10];
-        cell.imageView.image = [UIImage imageWithData:_contacts[indexPath.item][@"image"]];
+        if (_contacts.count > indexPath.item)
+        {
+            cell.imageView.image = [UIImage imageWithData:_contacts[indexPath.item][@"image"]];
+        }
         return cell;
     }
 }
@@ -804,6 +839,7 @@
     if (_notifications.count == 0)
     {
         [self hideNotifications];
+        [_menuView morphToLine];
     }
 
 #warning delete from Parse servers
