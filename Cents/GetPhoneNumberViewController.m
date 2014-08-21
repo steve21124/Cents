@@ -57,8 +57,6 @@
 
 - (void)createButton
 {
-
-
     _verify = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0,
                                                               self.view.frame.size.height-216-54,
                                                               self.view.frame.size.width,

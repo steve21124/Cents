@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		4A1A39A9BC824263B6EDC4D7 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F53920D10514BACA85462A0 /* libPods.a */; };
 		8E179C8619A52A5300B9C8D8 /* MenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E179C8519A52A5300B9C8D8 /* MenuView.m */; };
+		8E211ECC19A662A50070A026 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ECB19A662A50070A026 /* Reachability.m */; };
+		8E211ECF19A663B60070A026 /* FailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ECE19A663B60070A026 /* FailViewController.m */; };
 		8E3C9E22199D164900502320 /* CleanPhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E3C9E21199D164900502320 /* CleanPhoneNumber.m */; };
 		8E6F7B64198889FC00068ED7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */; };
 		8E6F7B6619888A0700068ED7 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6519888A0700068ED7 /* CFNetwork.framework */; };
@@ -63,6 +65,10 @@
 		2F53920D10514BACA85462A0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E179C8419A52A5300B9C8D8 /* MenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuView.h; sourceTree = "<group>"; };
 		8E179C8519A52A5300B9C8D8 /* MenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuView.m; sourceTree = "<group>"; };
+		8E211ECA19A662A50070A026 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		8E211ECB19A662A50070A026 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		8E211ECD19A663B60070A026 /* FailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FailViewController.h; sourceTree = "<group>"; };
+		8E211ECE19A663B60070A026 /* FailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FailViewController.m; sourceTree = "<group>"; };
 		8E3C9E20199D164900502320 /* CleanPhoneNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CleanPhoneNumber.h; sourceTree = "<group>"; };
 		8E3C9E21199D164900502320 /* CleanPhoneNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CleanPhoneNumber.m; sourceTree = "<group>"; };
 		8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -267,6 +273,10 @@
 				8E3C9E21199D164900502320 /* CleanPhoneNumber.m */,
 				8E82FA8C19A0DEA000B79431 /* VCFlow.h */,
 				8E82FA8D19A0DEA000B79431 /* VCFlow.m */,
+				8E211ECA19A662A50070A026 /* Reachability.h */,
+				8E211ECB19A662A50070A026 /* Reachability.m */,
+				8E211ECD19A663B60070A026 /* FailViewController.h */,
+				8E211ECE19A663B60070A026 /* FailViewController.m */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -421,6 +431,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E211ECF19A663B60070A026 /* FailViewController.m in Sources */,
+				8E211ECC19A662A50070A026 /* Reachability.m in Sources */,
 				8E782739198566360030DB99 /* AppDelegate.m in Sources */,
 				8E6F7B7C1988A7B400068ED7 /* VerifyPhoneNumberViewController.m in Sources */,
 				8E6F7B7F1988A7CA00068ED7 /* GetPaymentCardViewController.m in Sources */,

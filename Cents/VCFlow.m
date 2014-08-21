@@ -13,29 +13,35 @@
 #import "GetPaymentCardViewController.h"
 #import "GetContactsViewController.h"
 @import AddressBook;
-#import "SettingsViewController.h"
+#import "FailViewController.h"
+#import "Reachability.h"
 
 @implementation VCFlow
 
 + (UIViewController *)nextVC
 {
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"verifiedPhoneNumber"])
+    Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus networkStatus = [networkReachability currentReachabilityStatus];
+    if (networkStatus == NotReachable)
     {
-        return [GetPhoneNumberViewController new];
+        NSLog(@"There IS NO internet connection");
+
+        return [FailViewController new];
     }
     else
     {
-        PFQuery *query = [PFQuery queryWithClassName:@"User"];
-        [query whereKey:@"phoneNumber" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
-        NSArray *objects = [query findObjects];
+        NSLog(@"There IS internet connection");
 
-//        if (error)
-//        {
-#warning handle error connecting/finding
-//            return [SettingsViewController new];
-//        }
-//        else
+        if (![[NSUserDefaults standardUserDefaults] objectForKey:@"verifiedPhoneNumber"])
         {
+            return [GetPhoneNumberViewController new];
+        }
+        else
+        {
+            PFQuery *query = [PFQuery queryWithClassName:@"User"];
+            [query whereKey:@"phoneNumber" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
+            NSArray *objects = [query findObjects];
+
             NSLog(@"Count of users with this phone number: %lu",(unsigned long)objects.count);
 
             if (objects.count == 0)
