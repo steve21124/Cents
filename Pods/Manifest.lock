@@ -1,5 +1,5 @@
 PODS:
-  - Bolts (1.1.1)
+  - Bolts (1.1.2)
   - CardIO (3.8.3)
   - Facebook-iOS-SDK (3.17.0):
     - Bolts
@@ -16,6 +16,7 @@ PODS:
   - PaymentKit (1.0.5)
   - Stripe (1.1.4):
     - PaymentKit (~> 1.0.4)
+  - SWTableViewCell (0.3.3)
   - TSCurrencyTextField (0.1.0):
     - TSCurrencyTextField/Core
   - TSCurrencyTextField/Core (0.1.0)
@@ -30,10 +31,11 @@ DEPENDENCIES:
   - MCSwipeTableViewCell
   - Parse
   - Stripe
+  - SWTableViewCell
   - TSCurrencyTextField (~> 0.1.0)
 
 SPEC CHECKSUMS:
-  Bolts: 0ca796081c3e7c139bd86d6903c27f1b83036a5d
+  Bolts: 2635e8698a630774689441047f3465d78c48d485
   CardIO: de8d02da5003619533f52e4a5c44d84496ddb25c
   Facebook-iOS-SDK: f20274d809f112ba540842e2b6cbe50128d51b7b
   FlatUIKit: edc1ed0c130687dc64a10e45851cc58925f6893d
@@ -46,6 +48,7 @@ SPEC CHECKSUMS:
   Parse: 28c0dc54f30201a369d29a2f76c09fa43b2add16
   PaymentKit: 14b54835f57ae9e2bf5628140fcd67001740cba2
   Stripe: a0ed1c0675a3c36f6e8d575820cfec1dc9335f53
+  SWTableViewCell: 32bc77dd4e8b2675c7c0bed8e6976c56e22ac3e3
   TSCurrencyTextField: d63c385890f2d41200ecdd2268f01fd5968405cc
 
 COCOAPODS: 0.33.1

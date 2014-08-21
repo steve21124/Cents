@@ -18,6 +18,9 @@
 #define includeBlankContacts NO
 #define enableNotifications !NO
 
+#define greenColor [UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0]
+#define redColor [UIColor colorWithRed:232.0 / 255.0 green:61.0 / 255.0 blue:14.0 / 255.0 alpha:1.0];
+
 #import "RootViewController.h"
 #import "JSQFlatButton.h"
 #import "UIColor+FlatUI.h"
@@ -28,6 +31,7 @@
 #import "FXBlurView.h"
 #import "MCSwipeTableViewCell.h"
 #import "MenuView.h"
+#import "SettingsViewController.h"
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate>
 @property UILabel *dollarSign;
@@ -63,6 +67,7 @@
 @property (nonatomic) UIView *containerView;
 @property (nonatomic) BOOL displayingMenu;
 @property MenuView *menuView;
+@property UIButton *settingsButton;
 @end
 
 @implementation RootViewController
@@ -79,6 +84,7 @@
     [self createScenesView];
     [self createContactsView];
     [self createHistoryView];
+    [self createSettingsButton];
     [self createBlurView];
     [self createNotificationsView];
     [self createMenuView];
@@ -87,11 +93,13 @@
     _buttonCheckTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(buttonCheck) userInfo:nil repeats:YES];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showNotifications) name:@"morph" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideNotifications) name:@"unmorph" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pingParseForNotifications) name:@"push" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideSettings) name:@"spin" object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pingParseForNotifications) name:@"push" object:nil];
+    [_amountField becomeFirstResponder];
     [self pingParseForNotifications];
 }
 
@@ -116,8 +124,8 @@
              [_notificationsTableView reloadData];
              if (enableNotifications)
              {
-                 [self showNotifications];
-                 [_menuView morphToX];
+//                 [self showNotifications];
+//                 [_menuView morphToX];
              }
          }
      }];
@@ -187,7 +195,7 @@
 
 - (void)createNotificationsView
 {
-    _notificationsTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 30, self.view.frame.size.width-20*2, self.view.frame.size.height-216-30)
+    _notificationsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 30, self.view.frame.size.width-50, self.view.frame.size.height-216-30)
                                                            style:UITableViewStylePlain];
     _notificationsTableView.delegate = self;
     _notificationsTableView.dataSource = self;
@@ -198,6 +206,48 @@
     _notificationsTableView.alwaysBounceVertical = NO;
     [self.view addSubview:_notificationsTableView];
     _notificationsTableView.transform = CGAffineTransformMakeTranslation(0, -(self.view.frame.size.height-216));
+}
+
+- (void)createSettingsButton
+{
+    _settingsButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    _settingsButton.frame = CGRectMake(270, 80, 40, 40);
+    _settingsButton.tintColor = [UIColor whiteColor];
+    [_settingsButton setImage:[UIImage imageNamed:@"gear"] forState:UIControlStateNormal];
+    [_settingsButton addTarget:self action:@selector(showSettings) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_settingsButton];
+}
+
+- (void)showSettings
+{
+//    [self slideOutButtons];
+    [self animateSettingsButton];
+}
+
+- (void)hideSettings
+{
+//    [self slideInButtons];
+    [self animateSettingsButton];
+}
+
+- (void)animateSettingsButton
+{
+    if (CGAffineTransformIsIdentity(_settingsButton.transform))
+    {
+        [UIView animateWithDuration:0.8 delay:0.0 usingSpringWithDamping:0.6 initialSpringVelocity:2.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            _settingsButton.transform = CGAffineTransformMakeRotation(M_PI);
+            [self presentViewController:[SettingsViewController new] animated:YES completion:nil];
+        } completion:^(BOOL finished) {
+        }];
+    }
+    else
+    {
+        [UIView animateWithDuration:0.8 delay:0.0 usingSpringWithDamping:0.6 initialSpringVelocity:2.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            _settingsButton.transform = CGAffineTransformIdentity;
+            [self presentViewController:[SettingsViewController new] animated:YES completion:nil];
+        } completion:^(BOOL finished) {
+        }];
+    }
 }
 
 - (void)createHistoryView
@@ -449,6 +499,10 @@
     {
         _menuView.backgroundColor = [UIColor clearColor];
     }
+
+    [self.view bringSubviewToFront:_blurView];
+    [self.view bringSubviewToFront:_notificationsTableView];
+    [self.view bringSubviewToFront:_menuView];
 }
 
 - (void)request:(JSQFlatButton *)sender
@@ -767,6 +821,8 @@
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
             cell.backgroundColor = [UIColor clearColor];
             cell.textLabel.textColor = [UIColor whiteColor];
+            cell.imageView.layer.masksToBounds = YES;
+            cell.imageView.layer.cornerRadius = 24;
         }
 
         NSDictionary *transaction = _transactions[indexPath.item];
@@ -779,23 +835,25 @@
         //    {
         //        cell.textLabel.textAlignment = NSTextAlignmentLeft;
         //    }
-        
+        if (_contacts.count > indexPath.item)
+        {
+            cell.imageView.image = [UIImage imageWithData:_contacts[indexPath.item][@"image"]];
+        }
+#warning correct image
         return cell;
     }
     else
     {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
+        MCSwipeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
         if (!cell)
         {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
+            cell = [[MCSwipeTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
             [cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-//            cell.contentView.backgroundColor = [UIColor whiteColor];
             cell.backgroundColor = [UIColor clearColor];
             cell.textLabel.textColor = [UIColor whiteColor];
             cell.imageView.layer.masksToBounds = YES;
             cell.imageView.layer.cornerRadius = 24;
         }
-//        [self configureCell:cell forRowAtIndexPath:indexPath];
         NSDictionary *notification = _notifications[indexPath.item];
         cell.textLabel.text = notification[@"message"];
         cell.textLabel.font = [UIFont systemFontOfSize:10];
@@ -803,30 +861,15 @@
         {
             cell.imageView.image = [UIImage imageWithData:_contacts[indexPath.item][@"image"]];
         }
+#warning correct image
+        [self configureCell:cell forRowAtIndexPath:indexPath];
         return cell;
     }
 }
 
 - (void)configureCell:(MCSwipeTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Configuring the views and colors.
-    UIView *checkView = [self viewWithImageName:@"check"];
-    UIColor *greenColor = [UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0];
-
-    UIView *crossView = [self viewWithImageName:@"cross"];
-    UIColor *redColor = [UIColor colorWithRed:232.0 / 255.0 green:61.0 / 255.0 blue:14.0 / 255.0 alpha:1.0];
-
-//    [cell setDefaultColor:_notificationsTableView.backgroundView.backgroundColor];
-
-    [cell setSwipeGestureWithView:checkView color:greenColor mode:MCSwipeTableViewCellModeExit state:MCSwipeTableViewCellState1 completionBlock:^(MCSwipeTableViewCell *cell, MCSwipeTableViewCellState state, MCSwipeTableViewCellMode mode)
-    {
-        [self deleteCell:cell];
-    }];
-
-    [cell setSwipeGestureWithView:crossView color:redColor mode:MCSwipeTableViewCellModeExit state:MCSwipeTableViewCellState2 completionBlock:^(MCSwipeTableViewCell *cell, MCSwipeTableViewCellState state, MCSwipeTableViewCellMode mode)
-    {
-        [self deleteCell:cell];
-    }];
+#warning configure swipe
 }
 
 - (void)deleteCell:(MCSwipeTableViewCell *)cell
@@ -843,14 +886,6 @@
     }
 
 #warning delete from Parse servers
-}
-
-- (UIView *)viewWithImageName:(NSString *)imageName
-{
-    UIImage *image = [UIImage imageNamed:imageName];
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.contentMode = UIViewContentModeCenter;
-    return imageView;
 }
 
 #pragma mark - UICollectionView DataSource/Delegate Methods
