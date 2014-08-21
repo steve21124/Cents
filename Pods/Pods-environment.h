@@ -12,6 +12,12 @@
 #define COCOAPODS_VERSION_MINOR_Bolts 1
 #define COCOAPODS_VERSION_PATCH_Bolts 2
 
+// Canvas
+#define COCOAPODS_POD_AVAILABLE_Canvas
+#define COCOAPODS_VERSION_MAJOR_Canvas 0
+#define COCOAPODS_VERSION_MINOR_Canvas 1
+#define COCOAPODS_VERSION_PATCH_Canvas 2
+
 // CardIO
 #define COCOAPODS_POD_AVAILABLE_CardIO
 #define COCOAPODS_VERSION_MAJOR_CardIO 3
@@ -35,12 +41,6 @@
 #define COCOAPODS_VERSION_MAJOR_FlatUIKit 1
 #define COCOAPODS_VERSION_MINOR_FlatUIKit 4
 #define COCOAPODS_VERSION_PATCH_FlatUIKit 0
-
-// JDFCurrencyTextField
-#define COCOAPODS_POD_AVAILABLE_JDFCurrencyTextField
-#define COCOAPODS_VERSION_MAJOR_JDFCurrencyTextField 2
-#define COCOAPODS_VERSION_MINOR_JDFCurrencyTextField 1
-#define COCOAPODS_VERSION_PATCH_JDFCurrencyTextField 0
 
 // JSQFlatButton
 #define COCOAPODS_POD_AVAILABLE_JSQFlatButton
@@ -83,18 +83,6 @@
 #define COCOAPODS_VERSION_MAJOR_Stripe 1
 #define COCOAPODS_VERSION_MINOR_Stripe 1
 #define COCOAPODS_VERSION_PATCH_Stripe 4
-
-// TSCurrencyTextField
-#define COCOAPODS_POD_AVAILABLE_TSCurrencyTextField
-#define COCOAPODS_VERSION_MAJOR_TSCurrencyTextField 0
-#define COCOAPODS_VERSION_MINOR_TSCurrencyTextField 1
-#define COCOAPODS_VERSION_PATCH_TSCurrencyTextField 0
-
-// TSCurrencyTextField/Core
-#define COCOAPODS_POD_AVAILABLE_TSCurrencyTextField_Core
-#define COCOAPODS_VERSION_MAJOR_TSCurrencyTextField_Core 0
-#define COCOAPODS_VERSION_MINOR_TSCurrencyTextField_Core 1
-#define COCOAPODS_VERSION_PATCH_TSCurrencyTextField_Core 0
 
 // libPhoneNumber-iOS
 #define COCOAPODS_POD_AVAILABLE_libPhoneNumber_iOS

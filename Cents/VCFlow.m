@@ -13,6 +13,7 @@
 #import "GetPaymentCardViewController.h"
 #import "GetContactsViewController.h"
 @import AddressBook;
+#import "SettingsViewController.h"
 
 @implementation VCFlow
 
@@ -27,37 +28,44 @@
         PFQuery *query = [PFQuery queryWithClassName:@"User"];
         [query whereKey:@"phoneNumber" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
         NSArray *objects = [query findObjects];
+
+//        if (error)
+//        {
 #warning handle error connecting/finding
-
-        NSLog(@"Count of users with this phone number: %i",objects.count);
-
-        if (objects.count == 0)
+//            return [SettingsViewController new];
+//        }
+//        else
         {
-            return [GetPaymentCardViewController new];
-        }
-        else if (objects.count == 1)
-        {
-            [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"phoneNumber"] forKey:@"phoneNumber"];
-            [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"customerId"] forKey:@"customerId"];
-            [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"recipientId"] forKey:@"recipientId"];
-            [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"name"] forKey:@"name"];
+            NSLog(@"Count of users with this phone number: %lu",(unsigned long)objects.count);
 
-            if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+            if (objects.count == 0)
             {
-                return [GetContactsViewController new];
+                return [GetPaymentCardViewController new];
+            }
+            else if (objects.count == 1)
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"phoneNumber"] forKey:@"phoneNumber"];
+                [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"customerId"] forKey:@"customerId"];
+                [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"recipientId"] forKey:@"recipientId"];
+                [[NSUserDefaults standardUserDefaults] setObject:objects.firstObject[@"name"] forKey:@"name"];
+
+                if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+                {
+                    return [GetContactsViewController new];
+                }
+                else
+                {
+                    return [RootViewController new];
+                }
             }
             else
             {
-                return [RootViewController new];
+                for (PFObject *user in objects)
+                {
+                    [user deleteInBackground];
+                }
+                return [GetPaymentCardViewController new];
             }
-        }
-        else
-        {
-            for (PFObject *user in objects)
-            {
-                [user deleteInBackground];
-            }
-            return [GetPaymentCardViewController new];
         }
     }
 }
