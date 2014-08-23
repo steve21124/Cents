@@ -12,6 +12,7 @@
 #import "VerifyPhoneNumberViewController.h"
 #import "LTPhoneNumberField.h"
 #import "CleanPhoneNumber.h"
+#import "VCFlow.h"
 
 @interface GetPhoneNumberViewController ()
 @property LTPhoneNumberField *phoneEntry;
@@ -77,8 +78,8 @@
     NSLog(@"Clean number: %@",[CleanPhoneNumber clean:_phoneEntry.text]);
     [[NSUserDefaults standardUserDefaults] setObject:[CleanPhoneNumber clean:_phoneEntry.text] forKey:@"phoneNumber"];
     [[NSUserDefaults standardUserDefaults] synchronize];
-    VerifyPhoneNumberViewController *vc = [VerifyPhoneNumberViewController new];
-    [self presentViewController:vc animated:NO completion:nil];
+//    VerifyPhoneNumberViewController *vc = [VerifyPhoneNumberViewController new];
+    [self presentViewController:[VCFlow nextVC] animated:NO completion:nil];
 }
 
 - (void)buttonCheck

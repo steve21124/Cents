@@ -18,6 +18,7 @@
 #import "CardIO.h"
 @import AddressBook;
 #import <Parse/Parse.h>
+#import "VCFlow.h"
 
 @interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate>
 @property STPView *stripeView;
@@ -296,16 +297,7 @@
 
 - (void)showNextVC
 {
-    UIViewController *vc;
-    if (ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusNotDetermined)
-    {
-        vc = [RootViewController new];
-    }
-    else
-    {
-        vc = [GetContactsViewController new];
-    }
-    [self presentViewController:vc animated:NO completion:nil];
+    [self presentViewController:[VCFlow nextVC] animated:NO completion:nil];
 }
 
 @end

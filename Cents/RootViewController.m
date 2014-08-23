@@ -29,11 +29,14 @@
 #import "CleanPhoneNumber.h"
 @import AddressBook;
 #import "FXBlurView.h"
-#import "MCSwipeTableViewCell.h"
+#import "SWTableViewCell.h"
+#import "NSMutableArray+SWUtilityButtons.h"
 #import "MenuView.h"
 #import "SettingsViewController.h"
+#import "SBTableViewCell.h"
+#import "SettingsButton.h"
 
-@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, SWTableViewCellDelegate>
 @property UILabel *dollarSign;
 @property UITextField *amountField;
 @property CGRect frame;
@@ -106,7 +109,7 @@
 - (void)pingParseForNotifications
 {
     PFQuery *query = [PFQuery queryWithClassName:@"Notification"];
-    [query whereKey:@"phoneNumber" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
+    [query whereKey:@"recipientPhoneNumber" equalTo:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
      {
          if (error)
@@ -122,11 +125,12 @@
 //             NSLog(@"notifications %@",objects);
              _notifications = [objects mutableCopy];
              [_notificationsTableView reloadData];
-             if (enableNotifications)
-             {
+             [[UIApplication sharedApplication] setApplicationIconBadgeNumber:_notifications.count];
+//             if (enableNotifications)
+//             {
 //                 [self showNotifications];
 //                 [_menuView morphToX];
-             }
+//             }
          }
      }];
 }
@@ -147,7 +151,8 @@
     [push sendPushInBackground];
 
     PFObject *notification = [PFObject objectWithClassName:@"Notification"];
-    notification[@"phoneNumber"] = phoneNumber;
+    notification[@"recipientPhoneNumber"] = phoneNumber;
+    notification[@"senderPhoneNumber"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
     notification[@"message"] = message;
     notification[@"type"] = type;
     notification[@"amount"] = amount;
@@ -166,9 +171,12 @@
     if (!_showingNotifications)
     {
         _showingNotifications = true;
+        _blurView.dynamic = YES;
         [UIView animateWithDuration:.3 animations:^{
             _blurView.transform = CGAffineTransformMakeTranslation(0, 0);
             _notificationsTableView.transform = CGAffineTransformMakeTranslation(0, 0);
+        } completion:^(BOOL finished) {
+            _blurView.dynamic = NO;
         }];
     }
 }
@@ -178,9 +186,12 @@
     if (_showingNotifications)
     {
         _showingNotifications = false;
+        _blurView.dynamic = YES;
         [UIView animateWithDuration:.3 animations:^{
             _blurView.transform = CGAffineTransformMakeTranslation(0, -(self.view.frame.size.height-216));
             _notificationsTableView.transform = CGAffineTransformMakeTranslation(0,-(self.view.frame.size.height-216));
+        } completion:^(BOOL finished) {
+            _blurView.dynamic = NO;
         }];
     }
 }
@@ -203,14 +214,14 @@
     _notificationsTableView.separatorColor = [UIColor clearColor];
     _notificationsTableView.tag = kNotificationsTableView;
     _notificationsTableView.allowsSelection = NO;
-    _notificationsTableView.alwaysBounceVertical = NO;
+//    _notificationsTableView.alwaysBounceVertical = NO;
     [self.view addSubview:_notificationsTableView];
     _notificationsTableView.transform = CGAffineTransformMakeTranslation(0, -(self.view.frame.size.height-216));
 }
 
 - (void)createSettingsButton
 {
-    _settingsButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    _settingsButton = [SettingsButton buttonWithType:UIButtonTypeSystem];
     _settingsButton.frame = CGRectMake(270, 80, 40, 40);
     _settingsButton.tintColor = [UIColor whiteColor];
     [_settingsButton setImage:[UIImage imageNamed:@"gear"] forState:UIControlStateNormal];
@@ -406,6 +417,7 @@
 
 - (void)toggleMenu
 {
+    [self pingParseForNotifications];
     if (_showingNotifications)
     {
         [self hideNotifications];
@@ -454,7 +466,7 @@
                                                                 _frame.origin.y,
                                                                 _frame.size.height/2,
                                                                 _frame.size.height/2)];
-    _confirmPic.image = [UIImage imageWithData:_contacts[_recipientIndex][@"image"]];
+    _confirmPic.image = _contacts[_recipientIndex][@"image"];
     _confirmPic.layer.masksToBounds = YES;
     _confirmPic.layer.cornerRadius = _contactsCollectionView.bounds.size.height/4;
     [self.view addSubview:_confirmPic];
@@ -521,8 +533,6 @@
 {
     _takingAction = YES;
 
-    NSLog(@"%@",_contacts[_recipientIndex][@"phone"]);
-
     PFQuery *query = [PFQuery queryWithClassName:@"User"];
     [query whereKey:@"phoneNumber" equalTo:_contacts[_recipientIndex][@"phone"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
@@ -547,7 +557,11 @@
              }
              else
              {
-#warning handle error multiple user with same number
+                 for (PFObject *user in objects)
+                 {
+                     [user deleteInBackground];
+                 }
+                 [self handleRecepientNotOnService];
              }
          }
      }];
@@ -577,6 +591,8 @@
     [self createConfirmView];
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx-320, 0);
+        _menuView.transform = CGAffineTransformMakeTranslation(_menuView.transform.tx-320, 0);
+        _settingsButton.transform = CGAffineTransformMakeTranslation(_settingsButton.transform.tx-320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
         _scenesCollectionView.transform = CGAffineTransformMakeTranslation(_scenesCollectionView.transform.tx-320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
@@ -599,6 +615,8 @@
 {
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320, 0);
+        _menuView.transform = CGAffineTransformMakeTranslation(_menuView.transform.tx+320, 0);
+        _settingsButton.transform = CGAffineTransformMakeTranslation(_settingsButton.transform.tx+320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320, 0);
         _scenesCollectionView.transform = CGAffineTransformMakeTranslation(_scenesCollectionView.transform.tx+320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320, 0);
@@ -702,6 +720,8 @@
     transaction[@"recipientId"] = recipientId;
     transaction[@"chargeId"] = chargeId;
     transaction[@"transferId"] = transferId;
+    transaction[@"recipientPhoneNumber"] = _contacts[_recipientIndex][@"phone"];
+    transaction[@"senderPhoneNumber"] = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
     [transaction saveInBackground];
 }
 
@@ -744,6 +764,8 @@
 
     [UIView animateWithDuration:.3 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx-320, 0);
+        _menuView.transform = CGAffineTransformMakeTranslation(_menuView.transform.tx-320, 0);
+        _settingsButton.transform = CGAffineTransformMakeTranslation(_settingsButton.transform.tx-320, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx-320, 0);
         _scenesCollectionView.transform = CGAffineTransformMakeTranslation(_scenesCollectionView.transform.tx-320, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx-320, 0);
@@ -761,6 +783,8 @@
 {
     [UIView animateWithDuration:.6 animations:^{
         _dollarSign.transform = CGAffineTransformMakeTranslation(_dollarSign.transform.tx+320*2, 0);
+        _menuView.transform = CGAffineTransformMakeTranslation(_menuView.transform.tx+320*2, 0);
+        _settingsButton.transform = CGAffineTransformMakeTranslation(_settingsButton.transform.tx+320*2, 0);
         _amountField.transform = CGAffineTransformMakeTranslation(_amountField.transform.tx+320*2, 0);
         _scenesCollectionView.transform = CGAffineTransformMakeTranslation(_scenesCollectionView.transform.tx+320*2, 0);
         _confirmText.transform = CGAffineTransformMakeTranslation(_confirmText.transform.tx+320*2, 0);
@@ -811,81 +835,149 @@
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView.tag == kHistoryTableView)
+    {
+        return 44;
+    }
+    else
+    {
+        return 60;
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView.tag == kHistoryTableView)
+    {
+        //do nothing
+    }
+    else
+    {
+        
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (tableView.tag == kHistoryTableView)
     {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"historyCell"];
+        SBTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"historyCell"];
         if (!cell)
         {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
-            cell.backgroundColor = [UIColor clearColor];
-            cell.textLabel.textColor = [UIColor whiteColor];
-            cell.imageView.layer.masksToBounds = YES;
-            cell.imageView.layer.cornerRadius = 24;
+            cell = [[SBTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
         }
 
         NSDictionary *transaction = _transactions[indexPath.item];
-        cell.textLabel.text = transaction[@"amount"];
-        //    if (![transaction[@"customerId"] isEqualToString:[[NSUserDefaults standardUserDefaults] objectForKey:@"customerId"]])
-        //    {
-        //        cell.textLabel.textAlignment = NSTextAlignmentRight;
-        //    }
-        //    else
-        //    {
-        //        cell.textLabel.textAlignment = NSTextAlignmentLeft;
-        //    }
-        if (_contacts.count > indexPath.item)
+
+        if ([transaction[@"senderPhoneNumber"] isEqualToString:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]])
         {
-            cell.imageView.image = [UIImage imageWithData:_contacts[indexPath.item][@"image"]];
+            cell.rightLabel.text = transaction[@"amount"];
+            cell.textLabel.text = @"";
+            cell.imageView.image = nil;
+
+            for (NSDictionary *contact in _contacts)
+            {
+                if ([contact[@"phone"] isEqualToString:transaction[@"senderPhoneNumber"]])
+                {
+                    cell.rightImageView.image = contact[@"image"];
+                }
+            }
         }
-#warning correct image
+        else
+        {
+            cell.textLabel.text = transaction[@"amount"];
+            cell.textLabel.textAlignment = NSTextAlignmentLeft;
+            cell.rightLabel.text = @"";
+            cell.rightImageView.image = nil;
+
+            for (NSDictionary *contact in _contacts)
+            {
+                if ([contact[@"phone"] isEqualToString:transaction[@"senderPhoneNumber"]])
+                {
+                    cell.imageView.image = contact[@"image"];
+                }
+            }
+        }
+
         return cell;
     }
     else
     {
-        MCSwipeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
+        SWTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell"];
         if (!cell)
         {
-            cell = [[MCSwipeTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
+            cell = [[SWTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"notificationCell"];
             [cell setSelectionStyle:UITableViewCellSelectionStyleGray];
             cell.backgroundColor = [UIColor clearColor];
             cell.textLabel.textColor = [UIColor whiteColor];
             cell.imageView.layer.masksToBounds = YES;
-            cell.imageView.layer.cornerRadius = 24;
+            cell.imageView.layer.cornerRadius = 30;
+            cell.leftUtilityButtons = [self leftButtons];
+            cell.delegate = self;
         }
         NSDictionary *notification = _notifications[indexPath.item];
         cell.textLabel.text = notification[@"message"];
         cell.textLabel.font = [UIFont systemFontOfSize:10];
-        if (_contacts.count > indexPath.item)
+
+        for (NSDictionary *contact in _contacts)
         {
-            cell.imageView.image = [UIImage imageWithData:_contacts[indexPath.item][@"image"]];
+            if ([contact[@"phone"] isEqualToString:notification[@"senderPhoneNumber"]])
+            {
+                cell.imageView.image = contact[@"image"];
+            }
         }
-#warning correct image
-        [self configureCell:cell forRowAtIndexPath:indexPath];
+
         return cell;
     }
 }
 
-- (void)configureCell:(MCSwipeTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+- (NSArray *)leftButtons
 {
-#warning configure swipe
+    NSMutableArray *leftUtilityButtons = [NSMutableArray new];
+
+    [leftUtilityButtons sw_addUtilityButtonWithColor:
+     [UIColor colorWithRed:0.07 green:0.75f blue:0.16f alpha:1.0]
+                                                icon:[UIImage imageNamed:@"check.png"]];
+    [leftUtilityButtons sw_addUtilityButtonWithColor:
+     [UIColor colorWithRed:1.0f green:0.231f blue:0.188f alpha:1.0]
+                                                icon:[UIImage imageNamed:@"cross.png"]];
+    return leftUtilityButtons;
 }
 
-- (void)deleteCell:(MCSwipeTableViewCell *)cell
+- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index;
 {
-    NSParameterAssert(cell);
+    switch (index)
+    {
+        case 0:
+            NSLog(@"check button was pressed");
+            //[self createCharge]; but with predefined amount, recipient and without UIChanges, upon success or faliure show alert
+            [self delete:cell];
+            break;
+        case 1:
+            NSLog(@"clock button was pressed");
+            [self delete:cell];
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)delete:(SWTableViewCell *)cell
+{
     NSIndexPath *indexPath = [_notificationsTableView indexPathForCell:cell];
     [_notifications removeObjectAtIndex:indexPath.row];
     [_notificationsTableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
 
-    if (_notifications.count == 0)
-    {
-        [self hideNotifications];
-        [_menuView morphToLine];
-    }
-
-#warning delete from Parse servers
+    PFQuery *query = [PFQuery queryWithClassName:@"Notification"];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (objects.count == _notifications.count+1)
+        {
+            PFObject *notification = objects[indexPath.row];
+            [notification delete];
+        }
+    }];
 }
 
 #pragma mark - UICollectionView DataSource/Delegate Methods
@@ -926,7 +1018,7 @@
     }
     else
     {
-        return _notifications.count;
+        return 0;
     }
 }
 
@@ -938,20 +1030,33 @@
 
         if (_recipientIndex == (int)indexPath.item)
         {
-            UIImageView *check = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"check"]];
+            UIImageView *check = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"check-black"]];
             check.layer.masksToBounds = YES;
             check.layer.cornerRadius = 48/2;
             cell.backgroundView = check;
         }
         else
         {
-            NSData *imageData = _contacts[indexPath.item][@"image"];
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageData]];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:_contacts[indexPath.item][@"image"]];
             imageView.layer.masksToBounds = YES;
             imageView.layer.cornerRadius = 48/2;
             cell.backgroundView = imageView;
         }
-        
+
+//        for (UIView *view in cell.contentView.subviews)
+//        {
+//            if ([view isKindOfClass:[UILabel class]])
+//            {
+//                [view removeFromSuperview];
+//            }
+//        }
+//        UILabel *nameLabel = [[UILabel alloc] initWithFrame:cell.bounds];
+//        nameLabel.textColor = [UIColor whiteColor];
+//        nameLabel.text = _contacts[indexPath.item][@"firstName"];
+//        nameLabel.textAlignment = NSTextAlignmentCenter;
+//        nameLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:10];
+//        [cell.contentView addSubview:nameLabel];
+
         return cell;
     }
     else if (collectionView.tag == kScenesCollectionView)
@@ -974,34 +1079,6 @@
     else
     {
         return nil;
-#warning complete
-//        NSDictionary *notification = _notifications[indexPath.item];
-//
-//        UIImage *image;
-//        for (NSDictionary *contact in _contacts)
-//        {
-//            if ([notification[@"phoneNumber"] isEqualToString:contact[@"phone"]])
-//            {
-//                image = [UIImage imageWithData:contact[@"image"]];
-//                break;
-//            }
-//        }
-//        NSString *message = notification[@"message"];
-//
-//        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 20, 60, 60)];
-//        imageView.image = image;
-//        imageView.layer.masksToBounds = YES;
-//        imageView.layer.cornerRadius = imageView.frame.size.width/2;
-//        [self.view addSubview:imageView];
-//
-//        UIView *blackBox = [[UIView alloc] initWithFrame:CGRectMake(40, 30, self.view.frame.size.width-10*2-40, 40)];
-//        blackBox.backgroundColor = [UIColor blackColor];
-//        [self.view insertSubview:blackBox belowSubview:imageView];
-//
-//        UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 30, self.view.frame.size.width-10*2-80, 40)];
-//        messageLabel.text = message;
-//        messageLabel.textColor = [UIColor whiteColor];
-//        [self.view addSubview:messageLabel];
     }
 }
 
@@ -1111,6 +1188,8 @@
         CFStringRef firstName, lastName;
 		firstName = ABRecordCopyValue(person, kABPersonFirstNameProperty);
 		lastName  = ABRecordCopyValue(person, kABPersonLastNameProperty);
+        [dOfPerson setObject:[NSString stringWithFormat:@"%@",firstName] forKey:@"firstName"];
+        [dOfPerson setObject:[NSString stringWithFormat:@"%@",lastName] forKey:@"lastName"];
 		[dOfPerson setObject:[NSString stringWithFormat:@"%@ %@", firstName, lastName] forKey:@"name"];
 
 		NSString *mobileLabel;
@@ -1131,7 +1210,7 @@
         if (ABPersonHasImageData(person))
         {
             NSData *contactImageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
-            [dOfPerson setObject:contactImageData forKey:@"image"];
+            [dOfPerson setObject:[UIImage imageWithData:contactImageData] forKey:@"image"];
         }
         else if (includeBlankContacts)
         {
