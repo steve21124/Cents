@@ -33,7 +33,6 @@
 #import "NSMutableArray+SWUtilityButtons.h"
 #import "MenuView.h"
 #import "SettingsViewController.h"
-#import "SBTableViewCell.h"
 #import "SettingsButton.h"
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, SWTableViewCellDelegate>
@@ -311,13 +310,11 @@
     if (self.view.frame.size.height <= 480)
     {
         flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-//        frame = CGRectMake(0, 30+amountFont, 320, 70);
         frame = _scenesCollectionView.bounds;
     }
     else
     {
         flow.scrollDirection = UICollectionViewScrollDirectionVertical;
-//        frame = CGRectMake(0, 30+amountFont, 320, self.view.frame.size.height - 30 - amountFont - 216 -54);
         frame = _scenesCollectionView.bounds;
     }
 
@@ -327,7 +324,6 @@
     _contactsCollectionView.dataSource = self;
     [_contactsCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"ContactsCell"];
     _contactsCollectionView.tag = kContactsCollectionView;
-//    [self.view addSubview:_contactsCollectionView];
     [_scenes addObject:_contactsCollectionView];
     [_scenesCollectionView reloadData];
 }
@@ -855,7 +851,15 @@
     }
     else
     {
-        
+        SWTableViewCell *cell = (SWTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+        if ([cell isUtilityButtonsHidden])
+        {
+            [cell showLeftUtilityButtonsAnimated:YES];
+        }
+        else
+        {
+            [cell hideUtilityButtonsAnimated:YES];
+        }
     }
 }
 
@@ -863,44 +867,39 @@
 {
     if (tableView.tag == kHistoryTableView)
     {
-        SBTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"historyCell"];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"historyCell"];
         if (!cell)
         {
-            cell = [[SBTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
         }
 
-        NSDictionary *transaction = _transactions[indexPath.item];
+        NSDictionary *transaction = _transactions[indexPath.row];
+        cell.detailTextLabel.text = transaction[@"amount"];
 
         if ([transaction[@"senderPhoneNumber"] isEqualToString:[[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"]])
         {
-            cell.rightLabel.text = transaction[@"amount"];
-            cell.textLabel.text = @"";
-            cell.imageView.image = nil;
-
             for (NSDictionary *contact in _contacts)
             {
-                if ([contact[@"phone"] isEqualToString:transaction[@"senderPhoneNumber"]])
+                if ([contact[@"phone"] isEqualToString:transaction[@"recipientPhoneNumber"]])
                 {
-                    cell.rightImageView.image = contact[@"image"];
+                    cell.imageView.image = contact[@"image"];
+                    cell.textLabel.text = contact[@"name"];
+                    cell.detailTextLabel.textColor = greenColor;
                 }
             }
         }
         else
         {
-            cell.textLabel.text = transaction[@"amount"];
-            cell.textLabel.textAlignment = NSTextAlignmentLeft;
-            cell.rightLabel.text = @"";
-            cell.rightImageView.image = nil;
-
             for (NSDictionary *contact in _contacts)
             {
                 if ([contact[@"phone"] isEqualToString:transaction[@"senderPhoneNumber"]])
                 {
                     cell.imageView.image = contact[@"image"];
+                    cell.textLabel.text = contact[@"name"];
+                    cell.detailTextLabel.textColor = redColor;
                 }
             }
         }
-
         return cell;
     }
     else
@@ -1133,7 +1132,6 @@
 
 - (void)showSMS:(NSString*)file
 {
-//    NSArray *recipients = @[@"12345678", @"72345524"];
     NSArray *recipients = @[_contacts[_recipientIndex][@"phone"]];
     NSString *message;
     if (_actionIsSend)
@@ -1223,10 +1221,6 @@
         }
 	}
     [_contacts sortUsingDescriptors:[NSArray arrayWithObjects:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES], nil]];
-//    for (NSDictionary *contact in _contacts)
-//    {
-//        NSLog(@"Name: %@, Number: %@",contact[@"name"],contact[@"phone"]);
-//    }
     [_contactsCollectionView reloadData];
 }
 

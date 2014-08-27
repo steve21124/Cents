@@ -11,7 +11,6 @@
 		8E179C8619A52A5300B9C8D8 /* MenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E179C8519A52A5300B9C8D8 /* MenuView.m */; };
 		8E211ECC19A662A50070A026 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ECB19A662A50070A026 /* Reachability.m */; };
 		8E211ECF19A663B60070A026 /* FailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ECE19A663B60070A026 /* FailViewController.m */; };
-		8E211ED219A6A8250070A026 /* SBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ED119A6A8250070A026 /* SBTableViewCell.m */; };
 		8E211ED519A6B9070070A026 /* SettingsButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ED419A6B9070070A026 /* SettingsButton.m */; };
 		8E3C9E22199D164900502320 /* CleanPhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E3C9E21199D164900502320 /* CleanPhoneNumber.m */; };
 		8E6F7B64198889FC00068ED7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */; };
@@ -71,8 +70,6 @@
 		8E211ECB19A662A50070A026 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8E211ECD19A663B60070A026 /* FailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FailViewController.h; sourceTree = "<group>"; };
 		8E211ECE19A663B60070A026 /* FailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FailViewController.m; sourceTree = "<group>"; };
-		8E211ED019A6A8250070A026 /* SBTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBTableViewCell.h; sourceTree = "<group>"; };
-		8E211ED119A6A8250070A026 /* SBTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBTableViewCell.m; sourceTree = "<group>"; };
 		8E211ED319A6B9070070A026 /* SettingsButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsButton.h; sourceTree = "<group>"; };
 		8E211ED419A6B9070070A026 /* SettingsButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsButton.m; sourceTree = "<group>"; };
 		8E3C9E20199D164900502320 /* CleanPhoneNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CleanPhoneNumber.h; sourceTree = "<group>"; };
@@ -275,8 +272,6 @@
 		8E82FA8F19A0E37600B79431 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
-				8E211ED019A6A8250070A026 /* SBTableViewCell.h */,
-				8E211ED119A6A8250070A026 /* SBTableViewCell.m */,
 				8E179C8419A52A5300B9C8D8 /* MenuView.h */,
 				8E179C8519A52A5300B9C8D8 /* MenuView.m */,
 				8E3C9E20199D164900502320 /* CleanPhoneNumber.h */,
@@ -454,7 +449,6 @@
 				8E82FA8E19A0DEA000B79431 /* VCFlow.m in Sources */,
 				8E9C948719A5A03C00005699 /* SettingsViewController.m in Sources */,
 				8E6F7B791988A7A700068ED7 /* GetPhoneNumberViewController.m in Sources */,
-				8E211ED219A6A8250070A026 /* SBTableViewCell.m in Sources */,
 				8E6F7B8C198D97B200068ED7 /* GetContactsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
