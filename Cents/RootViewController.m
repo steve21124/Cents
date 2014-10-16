@@ -17,6 +17,7 @@
 
 #define includeBlankContacts NO
 #define enableNotifications !NO
+#define enableSettings NO
 
 #define greenColor [UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0]
 #define redColor [UIColor colorWithRed:232.0 / 255.0 green:61.0 / 255.0 blue:14.0 / 255.0 alpha:1.0];
@@ -34,6 +35,7 @@
 #import "MenuView.h"
 #import "SettingsViewController.h"
 #import "SettingsButton.h"
+#import "SBCollectionViewCell.h"
 
 @interface RootViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIPopoverControllerDelegate, MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, SWTableViewCellDelegate>
 @property UILabel *dollarSign;
@@ -226,6 +228,7 @@
     [_settingsButton setImage:[UIImage imageNamed:@"gear"] forState:UIControlStateNormal];
     [_settingsButton addTarget:self action:@selector(showSettings) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_settingsButton];
+    _settingsButton.hidden = !enableSettings;
 }
 
 - (void)showSettings
@@ -322,7 +325,7 @@
     _contactsCollectionView.backgroundColor = [UIColor clearColor];
     _contactsCollectionView.delegate = self;
     _contactsCollectionView.dataSource = self;
-    [_contactsCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"ContactsCell"];
+    [_contactsCollectionView registerClass:[SBCollectionViewCell class] forCellWithReuseIdentifier:@"ContactsCell"];
     _contactsCollectionView.tag = kContactsCollectionView;
     [_scenes addObject:_contactsCollectionView];
     [_scenesCollectionView reloadData];
@@ -870,7 +873,11 @@
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"historyCell"];
         if (!cell)
         {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"historyCell"];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"historyCell"];
+            cell.backgroundColor = [UIColor clearColor];
+            cell.imageView.layer.masksToBounds = YES;
+            cell.imageView.layer.cornerRadius = 22;
+            cell.textLabel.textColor = [UIColor whiteColor];
         }
 
         NSDictionary *transaction = _transactions[indexPath.row];
@@ -884,7 +891,7 @@
                 {
                     cell.imageView.image = contact[@"image"];
                     cell.textLabel.text = contact[@"name"];
-                    cell.detailTextLabel.textColor = greenColor;
+                    cell.detailTextLabel.textColor = redColor;
                 }
             }
         }
@@ -896,7 +903,7 @@
                 {
                     cell.imageView.image = contact[@"image"];
                     cell.textLabel.text = contact[@"name"];
-                    cell.detailTextLabel.textColor = redColor;
+                    cell.detailTextLabel.textColor = greenColor;
                 }
             }
         }
@@ -947,15 +954,39 @@
 
 - (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index;
 {
+    NSString *type = _notifications[index][@"type"];
+    NSString *recipient = _notifications[index][@"recipientPhoneNumber"];
+    NSString *sender = _notifications[index][@"senderPhoneNumber"];
+    NSString *myPhone = [[NSUserDefaults standardUserDefaults] objectForKey:@"phoneNumber"];
+
     switch (index)
     {
         case 0:
             NSLog(@"check button was pressed");
-            //[self createCharge]; but with predefined amount, recipient and without UIChanges, upon success or faliure show alert
+
+            if ([type isEqualToString:@"send"] && [myPhone isEqualToString:recipient]) // if send to you
+            {
+                //finish transfer & notify sender
+            }
+            else if ([type isEqualToString:@"request"] && [myPhone isEqualToString:recipient]) // if request from you
+            {
+                //initiate charge to you & notify sender
+            }
             [self delete:cell];
             break;
         case 1:
             NSLog(@"clock button was pressed");
+
+            if ([type isEqualToString:@"send"] && [myPhone isEqualToString:recipient]) //if send to you
+            {
+                //cancel charge & transfer
+                //notify sender
+            }
+            else if ([type isEqualToString:@"request"] && [myPhone isEqualToString:recipient]) // if request from you
+            {
+                //notify requester
+            }
+
             [self delete:cell];
             break;
         default:
@@ -971,11 +1002,8 @@
 
     PFQuery *query = [PFQuery queryWithClassName:@"Notification"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (objects.count == _notifications.count+1)
-        {
             PFObject *notification = objects[indexPath.row];
-            [notification delete];
-        }
+            [notification deleteInBackground];
     }];
 }
 
@@ -994,14 +1022,6 @@
             _recipientIndex = (int)indexPath.item;
         }
         [collectionView reloadData];
-    }
-    else if (collectionView.tag == kScenesCollectionView)
-    {
-#warning complete
-    }
-    else
-    {
-#warning complete
     }
 }
 
@@ -1025,7 +1045,7 @@
 {
     if (collectionView.tag == kContactsCollectionView)
     {
-        UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ContactsCell" forIndexPath:indexPath];
+        SBCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ContactsCell" forIndexPath:indexPath];
 
         if (_recipientIndex == (int)indexPath.item)
         {
@@ -1042,19 +1062,7 @@
             cell.backgroundView = imageView;
         }
 
-//        for (UIView *view in cell.contentView.subviews)
-//        {
-//            if ([view isKindOfClass:[UILabel class]])
-//            {
-//                [view removeFromSuperview];
-//            }
-//        }
-//        UILabel *nameLabel = [[UILabel alloc] initWithFrame:cell.bounds];
-//        nameLabel.textColor = [UIColor whiteColor];
-//        nameLabel.text = _contacts[indexPath.item][@"firstName"];
-//        nameLabel.textAlignment = NSTextAlignmentCenter;
-//        nameLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:10];
-//        [cell.contentView addSubview:nameLabel];
+        cell.nameLabel.text = _contacts[indexPath.item][@"firstName"];
 
         return cell;
     }

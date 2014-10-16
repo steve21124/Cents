@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-#import "FBDialogs.h"
-#import "FBLikeDialogParams.h"
+#import "FBUtility.h"
 
-@interface FBDialogs (Internal)
+#ifndef __IPHONE_8_0
+// Once the SDK builds with the iOS 8.0 or later SDK this block can be removed.
 
-+ (FBAppCall *)presentLikeDialogWithParams:(FBLikeDialogParams *)params
-                               clientState:(NSDictionary *)clientState
-                                   handler:(FBDialogAppCallCompletionHandler)handler;
+typedef struct {
+    NSInteger majorVersion;
+    NSInteger minorVersion;
+    NSInteger patchVersion;
+} NSOperatingSystemVersion;
+
+@interface NSProcessInfo (UIKit8)
+@property (readonly) NSOperatingSystemVersion operatingSystemVersion;
 @end
+#endif/*__IPHONE_8_0*/
+
+NSOperatingSystemVersion FBUtilityGetSystemVersion(void);
+BOOL FBUtilityIsSystemVersionIOSVersionOrLater(NSOperatingSystemVersion systemVersion, FBIOSVersion version);

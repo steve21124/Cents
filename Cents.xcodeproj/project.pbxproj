@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4A1A39A9BC824263B6EDC4D7 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F53920D10514BACA85462A0 /* libPods.a */; };
+		8E0A73E819AEBF1000C8F203 /* SBCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E0A73E719AEBF1000C8F203 /* SBCollectionViewCell.m */; };
 		8E179C8619A52A5300B9C8D8 /* MenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E179C8519A52A5300B9C8D8 /* MenuView.m */; };
 		8E211ECC19A662A50070A026 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ECB19A662A50070A026 /* Reachability.m */; };
 		8E211ECF19A663B60070A026 /* FailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ECE19A663B60070A026 /* FailViewController.m */; };
@@ -64,6 +65,8 @@
 
 /* Begin PBXFileReference section */
 		2F53920D10514BACA85462A0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E0A73E619AEBF1000C8F203 /* SBCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBCollectionViewCell.h; sourceTree = "<group>"; };
+		8E0A73E719AEBF1000C8F203 /* SBCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBCollectionViewCell.m; sourceTree = "<group>"; };
 		8E179C8419A52A5300B9C8D8 /* MenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuView.h; sourceTree = "<group>"; };
 		8E179C8519A52A5300B9C8D8 /* MenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuView.m; sourceTree = "<group>"; };
 		8E211ECA19A662A50070A026 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -227,6 +230,8 @@
 				8E782738198566360030DB99 /* AppDelegate.m */,
 				8E782759198566E80030DB99 /* RootViewController.h */,
 				8E78275A198566E80030DB99 /* RootViewController.m */,
+				8E0A73E619AEBF1000C8F203 /* SBCollectionViewCell.h */,
+				8E0A73E719AEBF1000C8F203 /* SBCollectionViewCell.m */,
 				8E211ED319A6B9070070A026 /* SettingsButton.h */,
 				8E211ED419A6B9070070A026 /* SettingsButton.m */,
 				8E9C948519A5A03C00005699 /* SettingsViewController.h */,
@@ -443,6 +448,7 @@
 				8E6F7B7F1988A7CA00068ED7 /* GetPaymentCardViewController.m in Sources */,
 				8E3C9E22199D164900502320 /* CleanPhoneNumber.m in Sources */,
 				8E782735198566360030DB99 /* main.m in Sources */,
+				8E0A73E819AEBF1000C8F203 /* SBCollectionViewCell.m in Sources */,
 				8E78275B198566E80030DB99 /* RootViewController.m in Sources */,
 				8E179C8619A52A5300B9C8D8 /* MenuView.m in Sources */,
 				8E211ED519A6B9070070A026 /* SettingsButton.m in Sources */,

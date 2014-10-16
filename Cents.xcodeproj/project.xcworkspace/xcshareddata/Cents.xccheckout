@@ -5,7 +5,7 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>9BAD5A6F-BA81-4635-8371-5D5891B0B110</string>
+	<string>10545FEA-DF33-4B78-AB31-F7E96E0B3B21</string>
 	<key>IDESourceControlProjectName</key>
 	<string>Cents</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
@@ -14,11 +14,11 @@
 		<string>https://github.com/sapanbhuta/Cents</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Cents.xcworkspace</string>
+	<string>Cents.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>7119A08C30C7655B47CFBAD2AE857B72CA03E1BF</key>
-		<string>..</string>
+		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/sapanbhuta/Cents</string>

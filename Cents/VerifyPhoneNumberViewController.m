@@ -9,14 +9,9 @@
 #import "VerifyPhoneNumberViewController.h"
 #import "JSQFlatButton.h"
 #import "UIColor+FlatUI.h"
-#import "GetPaymentCardViewController.h"
 #import <Parse/Parse.h>
-#import "RootViewController.h"
-#import "GetPhoneNumberViewController.h"
-#import "GetPaymentCardViewController.h"
-#import "GetContactsViewController.h"
-@import AddressBook;
 #import "VCFlow.h"
+@import AddressBook;
 
 @interface VerifyPhoneNumberViewController ()
 @property UITextField *codeEntry;

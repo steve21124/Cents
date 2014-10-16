@@ -19,6 +19,7 @@
 @import AddressBook;
 #import <Parse/Parse.h>
 #import "VCFlow.h"
+#import "PKTextField.h"
 
 @interface GetPaymentCardViewController () <STPViewDelegate, CardIOPaymentViewControllerDelegate>
 @property STPView *stripeView;
@@ -195,6 +196,13 @@
     self.stripeView = [[STPView alloc] initWithFrame:CGRectMake(15,127.5,290,55) andKey:kStripePublishableKey];
     self.stripeView.delegate = self;
     [self.view addSubview:self.stripeView];
+
+    self.stripeView.paymentView.cardNumberField.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.stripeView.paymentView.cardExpiryField.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.stripeView.paymentView.cardCVCField.keyboardAppearance = UIKeyboardAppearanceDark;
+    [self.stripeView.paymentView.subviews[0] setHidden:YES];
+    [self.stripeView.paymentView.innerView.subviews[1] setHidden:YES];
+    [self.stripeView.paymentView.innerView.subviews[2] setHidden:YES];
 }
 
 - (void)stripeView:(STPView *)view withCard:(PKCard *)card isValid:(BOOL)valid
