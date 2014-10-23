@@ -4,7 +4,6 @@ PODS:
   - CardIO (3.8.3)
   - Facebook-iOS-SDK (3.19.0):
     - Bolts (~> 1.0)
-  - FlatUIKit (1.4)
   - FXBlurView (1.6.2)
   - JSQFlatButton (2.0.0)
   - libPhoneNumber-iOS (0.7.3)
@@ -21,7 +20,6 @@ PODS:
 DEPENDENCIES:
   - Canvas
   - CardIO
-  - FlatUIKit
   - FXBlurView
   - JSQFlatButton
   - LTPhoneNumberField
@@ -35,7 +33,6 @@ SPEC CHECKSUMS:
   Canvas: ae2faca05a15c4d6659fb3ae5e2a14817df4449a
   CardIO: de8d02da5003619533f52e4a5c44d84496ddb25c
   Facebook-iOS-SDK: cb7d74759d0b1ba546e6e6f1dde407b0d4e448d6
-  FlatUIKit: edc1ed0c130687dc64a10e45851cc58925f6893d
   FXBlurView: 47496afc9160097fa34af35fc4b310bd85d65dca
   JSQFlatButton: e8a11ba46496e7db757ddc24469774c254365ece
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e

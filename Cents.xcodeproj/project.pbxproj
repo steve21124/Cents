@@ -14,6 +14,7 @@
 		8E211ECF19A663B60070A026 /* FailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ECE19A663B60070A026 /* FailViewController.m */; };
 		8E211ED519A6B9070070A026 /* SettingsButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E211ED419A6B9070070A026 /* SettingsButton.m */; };
 		8E3C9E22199D164900502320 /* CleanPhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E3C9E21199D164900502320 /* CleanPhoneNumber.m */; };
+		8E6959DE19F8B76D0004D016 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E6959DD19F8B76D0004D016 /* Constants.m */; };
 		8E6F7B64198889FC00068ED7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */; };
 		8E6F7B6619888A0700068ED7 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6519888A0700068ED7 /* CFNetwork.framework */; };
 		8E6F7B6819888A1B00068ED7 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E6F7B6719888A1B00068ED7 /* CoreLocation.framework */; };
@@ -77,6 +78,8 @@
 		8E211ED419A6B9070070A026 /* SettingsButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsButton.m; sourceTree = "<group>"; };
 		8E3C9E20199D164900502320 /* CleanPhoneNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CleanPhoneNumber.h; sourceTree = "<group>"; };
 		8E3C9E21199D164900502320 /* CleanPhoneNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CleanPhoneNumber.m; sourceTree = "<group>"; };
+		8E6959DC19F8B76D0004D016 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		8E6959DD19F8B76D0004D016 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		8E6F7B63198889FC00068ED7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		8E6F7B6519888A0700068ED7 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		8E6F7B6719888A1B00068ED7 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -277,6 +280,8 @@
 		8E82FA8F19A0E37600B79431 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				8E6959DC19F8B76D0004D016 /* Constants.h */,
+				8E6959DD19F8B76D0004D016 /* Constants.m */,
 				8E179C8419A52A5300B9C8D8 /* MenuView.h */,
 				8E179C8519A52A5300B9C8D8 /* MenuView.m */,
 				8E3C9E20199D164900502320 /* CleanPhoneNumber.h */,
@@ -444,6 +449,7 @@
 				8E211ECF19A663B60070A026 /* FailViewController.m in Sources */,
 				8E211ECC19A662A50070A026 /* Reachability.m in Sources */,
 				8E782739198566360030DB99 /* AppDelegate.m in Sources */,
+				8E6959DE19F8B76D0004D016 /* Constants.m in Sources */,
 				8E6F7B7C1988A7B400068ED7 /* VerifyPhoneNumberViewController.m in Sources */,
 				8E6F7B7F1988A7CA00068ED7 /* GetPaymentCardViewController.m in Sources */,
 				8E3C9E22199D164900502320 /* CleanPhoneNumber.m in Sources */,

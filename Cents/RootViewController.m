@@ -24,7 +24,7 @@
 
 #import "RootViewController.h"
 #import "JSQFlatButton.h"
-#import "UIColor+FlatUI.h"
+#import "Constants.h"
 #import <MessageUI/MessageUI.h>
 #import <Parse/Parse.h>
 #import "CleanPhoneNumber.h"
@@ -383,7 +383,7 @@
 
 - (void)createAmountLabel
 {
-    self.view.backgroundColor = [UIColor wisteriaColor];
+    self.view.backgroundColor = [Constants backgroundColor];
 
     _dollarSign = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 20, amountFont)];
     _dollarSign.text = @"$";
@@ -504,7 +504,7 @@
     _menuView.label.text = @(_notifications.count).description;
     if (_notifications.count > 0 && !_showingNotifications)
     {
-        _menuView.backgroundColor = [UIColor tangerineColor];
+        _menuView.backgroundColor = [UIColor orangeColor];
     }
     else
     {

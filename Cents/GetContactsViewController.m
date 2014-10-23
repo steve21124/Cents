@@ -8,7 +8,7 @@
 
 #import "GetContactsViewController.h"
 #import "JSQFlatButton.h"
-#import "UIColor+FlatUI.h"
+#import "Constants.h"
 #import "RootViewController.h"
 @import AddressBook;
 #import "RootViewController.h"
@@ -22,7 +22,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor wisteriaColor];
+    self.view.backgroundColor = [Constants backgroundColor];
     [self createTitle];
     [self createButton];
 }

@@ -8,7 +8,7 @@
 
 #import "VerifyPhoneNumberViewController.h"
 #import "JSQFlatButton.h"
-#import "UIColor+FlatUI.h"
+#import "Constants.h"
 #import <Parse/Parse.h>
 #import "VCFlow.h"
 @import AddressBook;
@@ -26,7 +26,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor wisteriaColor];
+    self.view.backgroundColor = [Constants backgroundColor];
     [self createTitle];
     [self createEntryField];
     [self createButtons];

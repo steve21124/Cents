@@ -12,7 +12,7 @@
 #import "GetPaymentCardViewController.h"
 #import "STPView.h"
 #import "JSQFlatButton.h"
-#import "UIColor+FlatUI.h"
+#import "Constants.h"
 #import "GetContactsViewController.h"
 #import "RootViewController.h"
 #import "CardIO.h"
@@ -35,7 +35,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor wisteriaColor];
+    self.view.backgroundColor = [Constants backgroundColor];
     [self createTitle];
     [self createName];
     [self createStripeViewDefault];

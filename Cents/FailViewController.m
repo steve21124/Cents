@@ -8,7 +8,7 @@
 
 #import "FailViewController.h"
 #import "JSQFlatButton.h"
-#import "UIColor+FlatUI.h"
+#import "Constants.h"
 #import "Reachability.h"
 #import "VCFlow.h"
 
@@ -32,7 +32,7 @@
 
 - (void)setupScene
 {
-    self.view.backgroundColor = [UIColor wisteriaColor];
+    self.view.backgroundColor = [Constants backgroundColor];
     _retry = [[JSQFlatButton alloc] initWithFrame:CGRectMake(0,
                                                               self.view.frame.size.height-54,
                                                               self.view.frame.size.width,

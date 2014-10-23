@@ -8,7 +8,7 @@
 
 #import "GetPhoneNumberViewController.h"
 #import "JSQFlatButton.h"
-#import "UIColor+FlatUI.h"
+#import "Constants.h"
 #import "VerifyPhoneNumberViewController.h"
 #import "LTPhoneNumberField.h"
 #import "CleanPhoneNumber.h"
@@ -25,7 +25,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor wisteriaColor];
+    self.view.backgroundColor = [Constants backgroundColor];
     [self createTitle];
     [self createEntryField];
     [self createButton];

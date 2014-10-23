@@ -1,6 +1,5 @@
 pod 'Stripe'
 pod 'JSQFlatButton'
-pod 'FlatUIKit'
 pod 'Parse'
 pod 'LTPhoneNumberField'
 pod 'CardIO'

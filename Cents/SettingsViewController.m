@@ -8,7 +8,7 @@
 
 #import "SettingsViewController.h"
 #import "JSQFlatButton.h"
-#import "UIColor+FlatUI.h"
+#import "Constants.h"
 
 @interface SettingsViewController ()
 @property JSQFlatButton *cancel;
@@ -20,7 +20,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor wisteriaColor];
+    self.view.backgroundColor = [Constants backgroundColor];
     [self createButtons];
 }
 

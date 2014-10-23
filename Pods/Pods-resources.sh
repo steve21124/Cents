@@ -42,10 +42,6 @@ install_resource()
   esac
 }
 install_resource "Facebook-iOS-SDK/src/FBUserSettingsViewResources.bundle"
-install_resource "FlatUIKit/Resources/Lato-Bold.ttf"
-install_resource "FlatUIKit/Resources/Lato-Italic.ttf"
-install_resource "FlatUIKit/Resources/Lato-Light.ttf"
-install_resource "FlatUIKit/Resources/Lato-Regular.ttf"
 install_resource "PaymentKit/PaymentKit/Resources/Cards/amex.png"
 install_resource "PaymentKit/PaymentKit/Resources/Cards/amex@2x.png"
 install_resource "PaymentKit/PaymentKit/Resources/Cards/cvc-amex.png"
