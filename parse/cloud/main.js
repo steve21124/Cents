@@ -1,5 +1,5 @@
 Parse.Cloud.define("verifyNum", function(request, response) {
-  var twilio = require('twilio')('AC908eebcf092ee13d9db6fa67d71b38dc', '63ebb7a9828cd15dce79a6658092def4');
+  var twilio = require('twilio')('AC908eebcf092ee13d9db6fa67d71b38dc', '6f3f86b93a18d424cbb5e5cab2cf4bec');
 	twilio.sendSms({
     	to: request.params.number, 
     	from: '+16145154079',

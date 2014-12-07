@@ -579,6 +579,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Sapan Bhuta (HKM58E3T66)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -587,7 +588,7 @@
 				GCC_PREFIX_HEADER = "Cents/Cents-Prefix.pch";
 				INFOPLIST_FILE = "Cents/Cents-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "83dd813d-2f97-4387-a686-8d7bc07c5f29";
+				PROVISIONING_PROFILE = "b6aea000-2407-4573-81a8-428e4b279347";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -598,6 +599,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Sapan Bhuta (HKM58E3T66)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Sapan Bhuta (HKM58E3T66)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -606,7 +609,7 @@
 				GCC_PREFIX_HEADER = "Cents/Cents-Prefix.pch";
 				INFOPLIST_FILE = "Cents/Cents-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "83dd813d-2f97-4387-a686-8d7bc07c5f29";
+				PROVISIONING_PROFILE = "b6aea000-2407-4573-81a8-428e4b279347";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
